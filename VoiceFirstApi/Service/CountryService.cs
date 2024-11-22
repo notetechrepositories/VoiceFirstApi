@@ -1,4 +1,5 @@
-﻿using VoiceFirstApi.DtoModels;
+﻿using System.Diagnostics.Metrics;
+using VoiceFirstApi.DtoModels;
 using VoiceFirstApi.IRepository;
 using VoiceFirstApi.IService;
 using VoiceFirstApi.Models;
@@ -30,14 +31,16 @@ namespace VoiceFirstApi.Service
             var userId = GetCurrentUserId();
             var data = new Dictionary<string, object>();
             var generatedId = Guid.NewGuid().ToString();
+           
+
             var filter = new Dictionary<string, object>
-                {
+            {
                     { "t2_1_country_name", CountryDtoModel.t2_1_country_name }
-                };
+            };
 
-            var countryList = _CountryRepo.GetAllAsync(filter).Result;
+            var countryList = _CountryRepo.GetAllAsync(filter).Result.FirstOrDefault();
 
-            if(countryList.Count()>0)
+            if (countryList != null)
             {
                 return (data, StatusUtilities.ALREADY_EXIST);
             }

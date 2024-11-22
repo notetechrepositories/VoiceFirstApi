@@ -1,7 +1,9 @@
-﻿using VoiceFirstApi.DtoModels;
+﻿using System.Diagnostics.Metrics;
+using VoiceFirstApi.DtoModels;
 using VoiceFirstApi.IRepository;
 using VoiceFirstApi.IService;
 using VoiceFirstApi.Models;
+using VoiceFirstApi.Repository;
 using VoiceFirstApi.Utilities;
 namespace VoiceFirstApi.Service
 {
@@ -30,7 +32,18 @@ namespace VoiceFirstApi.Service
             var userId = GetCurrentUserId();
             var data = new Dictionary<string, object>();
             var generatedId = Guid.NewGuid().ToString();
+            var filter = new Dictionary<string, object>
+            {
+                    { "id_t2_1_country", DivisionOneDtoModel.id_t2_1_country },
+                    { "t2_1_div1_name", DivisionOneDtoModel.t2_1_div1_name }
+            };
 
+            var countryList = _DivisionOneRepo.GetAllAsync(filter).Result.FirstOrDefault();
+
+            if (countryList != null)
+            {
+                return (data, StatusUtilities.ALREADY_EXIST);
+            }
             var parameters = new
             {
                 Id = generatedId.Trim(),
@@ -57,6 +70,20 @@ namespace VoiceFirstApi.Service
         {
             var userId = GetCurrentUserId();
             var data = new Dictionary<string, object>();
+
+            var filter = new Dictionary<string, object>
+            {
+                    { "id_t2_1_country", DivisionOne.id_t2_1_country },
+                    { "t2_1_div1_name", DivisionOne.t2_1_div1_name }
+            };
+
+            var countryList = _DivisionOneRepo.GetAllAsync(filter).Result.FirstOrDefault();
+
+            if (countryList != null && DivisionOne.id_t2_1_div1 != DivisionOne.id_t2_1_div1)
+            {
+                return (data, StatusUtilities.ALREADY_EXIST);
+            }
+
             var parameters = new
             {
                 Id = DivisionOne.id_t2_1_div1,

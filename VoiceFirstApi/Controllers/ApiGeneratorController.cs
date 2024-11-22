@@ -60,7 +60,7 @@ namespace VoiceFirstApi.Controllers
                 $"    public interface I{formattedName}Service\r\n" +
                 $"    {{\r\n" +
                 $"        Task<(Dictionary<string, object>, string)> AddAsync({formattedName}DtoModel {formattedName});\r\n" +
-                $"        Task<(Dictionary<string, object>, string)> UpdateAsync({formattedName}DtoModel {formattedName});\r\n" +
+                $"        Task<(Dictionary<string, object>, string)> UpdateAsync(Update{formattedName}DtoModel {formattedName});\r\n" +
                 $"        Task<(Dictionary<string, object>, string)> GetAllAsync(Dictionary<string, object> filters);\r\n" +
                 $"        Task<(Dictionary<string, object>, string)> GetByIdAsync(string id, Dictionary<string, object> filters);\r\n" +
                 $"        Task<(Dictionary<string, object>, string)> DeleteAsync(string id);\r\n" +
@@ -203,7 +203,7 @@ namespace VoiceFirstApi.Controllers
                 $"                return (data, StatusUtilities.FAILED);\r\n" +
                 $"            }}\r\n" +
                 $"        }}\r\n\r\n" +
-                $"        public async Task<(Dictionary<string, object>, string)> UpdateAsync({formattedName}DtoModel {formattedName})\r\n" +
+                $"        public async Task<(Dictionary<string, object>, string)> UpdateAsync(Update{formattedName}DtoModel {formattedName})\r\n" +
                 $"        {{\r\n" +
                 $"            var userId = GetCurrentUserId();\r\n" +
                 $"            var data = new Dictionary<string, object>();\r\n" +
@@ -284,7 +284,7 @@ namespace VoiceFirstApi.Controllers
                 $"            return Ok(new {{ data = data, message = status }});\r\n" +
                 $"        }}\r\n\r\n" +
                 $"        [HttpPut]\r\n" +
-                $"        public async Task<IActionResult> UpdateAsync([FromBody] {formattedName}DtoModel {formattedName}Dto)\r\n" +
+                $"        public async Task<IActionResult> UpdateAsync([FromBody] Update{formattedName}DtoModel {formattedName}Dto)\r\n" +
                 $"        {{\r\n" +
                 $"            var (data, status) = await _{formattedName}Service.UpdateAsync({formattedName}Dto);\r\n" +
                 $"            return Ok(new {{ data = data, message = status }});\r\n" +
@@ -317,10 +317,13 @@ namespace VoiceFirstApi.Controllers
                 $"{{\r\n" +
                 $"    public class {formattedName}DtoModel\r\n" +
                 $"    {{\r\n" +
-                $"        public string id {{ get; set; }}\r\n\r\n" +
                 $"        [Required(ErrorMessage = \"Name is required.\")]\r\n" +
-                $"        [StringLength(100, ErrorMessage = \"Name must be between 2 and 100 characters.\", MinimumLength = 2)]\r\n" +
                 $"        public string name {{ get; set; }}\r\n" +
+                $"    }}\r\n" +
+                $"    public class Update{formattedName}DtoModel : {formattedName}DtoModel\r\n" +
+                $"    {{\r\n" +
+                $"        [Required(ErrorMessage = \"Name is required.\")]\r\n" +
+                $"        public string id {{ get; set; }}\r\n\r\n" +
                 $"    }}\r\n" +
                 $"}}";
 
