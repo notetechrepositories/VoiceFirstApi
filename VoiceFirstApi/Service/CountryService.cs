@@ -30,7 +30,17 @@ namespace VoiceFirstApi.Service
             var userId = GetCurrentUserId();
             var data = new Dictionary<string, object>();
             var generatedId = Guid.NewGuid().ToString();
+            var filter = new Dictionary<string, object>
+                {
+                    { "t2_1_country_name", CountryDtoModel.t2_1_country_name }
+                };
 
+            var countryList = _CountryRepo.GetAllAsync(filter).Result;
+
+            if(countryList.Count()>0)
+            {
+                return (data, StatusUtilities.ALREADY_EXIST);
+            }
             var parameters = new
             {
                 Id = generatedId.Trim(),
@@ -59,6 +69,19 @@ namespace VoiceFirstApi.Service
         {
             var userId = GetCurrentUserId();
             var data = new Dictionary<string, object>();
+
+            var filter = new Dictionary<string, object>
+                {
+                    { "t2_1_country_name", Country.t2_1_country_name }
+                };
+
+            var countryList = _CountryRepo.GetAllAsync(filter).Result.FirstOrDefault();
+
+            if (countryList !=null && countryList.id_t2_1_country!= Country.id_t2_1_country)
+            {
+                return (data, StatusUtilities.ALREADY_EXIST);
+            }
+
             var parameters = new
             {
                 Id = Country.id_t2_1_country,

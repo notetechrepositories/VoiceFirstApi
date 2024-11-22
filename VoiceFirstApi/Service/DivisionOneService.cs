@@ -53,7 +53,7 @@ namespace VoiceFirstApi.Service
             }
         }
 
-        public async Task<(Dictionary<string, object>, string)> UpdateAsync(DivisionOneDtoModel DivisionOne)
+        public async Task<(Dictionary<string, object>, string)> UpdateAsync(UpdateDivisionOneDtoModel DivisionOne)
         {
             var userId = GetCurrentUserId();
             var data = new Dictionary<string, object>();

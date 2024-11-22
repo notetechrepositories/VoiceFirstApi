@@ -29,7 +29,7 @@ namespace VoiceFirstApi.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateAsync([FromBody] DivisionOneDtoModel DivisionOneDto)
+        public async Task<IActionResult> UpdateAsync([FromBody] UpdateDivisionOneDtoModel DivisionOneDto)
         {
             var (data, status) = await _DivisionOneService.UpdateAsync(DivisionOneDto);
             return Ok(new { data = data, message = status });
