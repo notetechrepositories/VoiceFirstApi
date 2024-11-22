@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.Metrics;
+using System.Net.NetworkInformation;
 using VoiceFirstApi.DtoModels;
 using VoiceFirstApi.IRepository;
 using VoiceFirstApi.IService;
@@ -25,14 +26,63 @@ namespace VoiceFirstApi.Service
             }
             return userIdClaim.Value;*/
         }
-
-        public async Task<(Dictionary<string, object>, string)> AddAsync(CountryDtoModel CountryDtoModel)
+        public async Task<(Dictionary<string, object>, string)> ImportCountry(List<ImportCountryModel> import)
         {
             var userId = GetCurrentUserId();
             var data = new Dictionary<string, object>();
-            var generatedId = Guid.NewGuid().ToString();
-           
+            var Countrys = new List<CountryModel>();
+            foreach ( var country in import)
+            {
+                var filter = new Dictionary<string, object>
+                {
+                        { "t2_1_country_name", country.country_name }
+                };
+                var countryList = _CountryRepo.GetAllAsync(filter).Result.FirstOrDefault();
 
+                if (countryList == null)
+                {
+                    var generatedId = Guid.NewGuid().ToString();
+                    var parameters = new
+                    {
+                        Id = generatedId.Trim(),
+                        Name = country.country_name.Trim(),
+                        Div1 = country.div1.Trim(),
+                        Div2 = country.div2.Trim(),
+                        Div3 = country.div3.Trim(),
+                        InsertedBy = userId.Trim(),
+                        InsertedDate = DateTime.UtcNow
+                    };
+                    var status=await _CountryRepo.AddAsync(parameters);
+                    if (status > 0)
+                    {
+                        CountryModel obj = new CountryModel();
+                        obj.id_t2_1_country = parameters.Id;
+                        obj.t2_1_country_name = parameters.Name;
+                        obj.t2_1_div1_called = parameters.Div1;
+                        obj.t2_1_div2_called = parameters.Div2;
+                        obj.t2_1_div3_called = parameters.Div3;
+                        obj.inserted_by = parameters.InsertedBy;
+                        obj.inserted_date = parameters.InsertedDate;
+
+                        Countrys.Add(obj);
+                    }
+                }
+
+
+            }
+            if (Countrys.Count > 0)
+            {
+                data["data"] = Countrys;
+                return (data, StatusUtilities.SUCCESS);
+            }
+            else
+            {
+                return (data, StatusUtilities.FAILED);
+            }
+        }
+        public async Task<(Dictionary<string, object>, string)> AddAsync(CountryDtoModel CountryDtoModel)
+        {
+            var data = new Dictionary<string, object>();
             var filter = new Dictionary<string, object>
             {
                     { "t2_1_country_name", CountryDtoModel.t2_1_country_name }
@@ -44,6 +94,13 @@ namespace VoiceFirstApi.Service
             {
                 return (data, StatusUtilities.ALREADY_EXIST);
             }
+
+            var userId = GetCurrentUserId();
+
+            var generatedId = Guid.NewGuid().ToString();
+
+
+
             var parameters = new
             {
                 Id = generatedId.Trim(),
@@ -138,5 +195,7 @@ namespace VoiceFirstApi.Service
                 return (data, StatusUtilities.FAILED);
             }
         }
+
+        
     }
 }

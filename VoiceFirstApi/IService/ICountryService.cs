@@ -10,5 +10,6 @@ namespace VoiceFirstApi.IService
         Task<(Dictionary<string, object>, string)> GetAllAsync(Dictionary<string, object> filters);
         Task<(Dictionary<string, object>, string)> GetByIdAsync(string id, Dictionary<string, object> filters);
         Task<(Dictionary<string, object>, string)> DeleteAsync(string id);
+        Task<(Dictionary<string, object>, string)> ImportCountry(List<ImportCountryModel> import);
     }
 }
