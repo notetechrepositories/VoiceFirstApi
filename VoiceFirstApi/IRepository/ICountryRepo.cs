@@ -1,21 +1,15 @@
-﻿using VoiceFirstApi.Models;
+﻿using System.Diagnostics.Metrics;
+using VoiceFirstApi.DtoModels;
+using VoiceFirstApi.Models;
 
 namespace VoiceFirstApi.IRepository
 {
     public interface ICountryRepo
     {
-        public Task<IEnumerable<CountryModel>> GetAllAsync(Dictionary<string, object> filters);
-
-
-        public Task<CountryModel> GetByIdAsync(string id, Dictionary<string, object> filters);
-
-
-        public Task<int> AddAsync(object parameters);
-
-
-        public Task<int> UpdateAsync(object parameters);
-
-
-        public Task<int> DeleteAsync(string id);
+        Task<IEnumerable<CountryModel>> GetAllAsync(Dictionary<string, object> filters);
+        Task<CountryModel> GetByIdAsync(string id, Dictionary<string, object> filters);
+        Task<int> AddAsync(object parameters);
+        Task<int> UpdateAsync(object parameters);
+        Task<int> DeleteAsync(string id);
     }
 }

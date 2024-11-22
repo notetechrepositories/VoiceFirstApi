@@ -1,4 +1,6 @@
-﻿namespace VoiceFirstApi.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace VoiceFirstApi.Models
 {
     public class CountryModel
     {
