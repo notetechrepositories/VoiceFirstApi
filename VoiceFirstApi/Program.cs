@@ -15,7 +15,8 @@ builder.Services.AddControllers();
 builder.Services.AddSingleton<DapperContext>();
 builder.Services.AddScoped<IDivisionOneService, DivisionOneService>();
 builder.Services.AddScoped<IDivisionOneRepo, DivisionOneRepo>();
-
+builder.Services.AddScoped<IDivisionTwoService, DivisionTwoService>();
+builder.Services.AddScoped<IDivisionTwoRepo, DivisionTwoRepo>();
 builder.Services.AddScoped<ITestService, TestService>();
 builder.Services.AddScoped<ITestRepo, TestRepo>();
 

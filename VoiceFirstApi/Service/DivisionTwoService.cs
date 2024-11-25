@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.Metrics;
-using VoiceFirstApi.DtoModels;
+﻿using VoiceFirstApi.DtoModels;
 using VoiceFirstApi.IRepository;
 using VoiceFirstApi.IService;
 using VoiceFirstApi.Models;
@@ -7,13 +6,13 @@ using VoiceFirstApi.Repository;
 using VoiceFirstApi.Utilities;
 namespace VoiceFirstApi.Service
 {
-    public class DivisionOneService : IDivisionOneService
+    public class DivisionTwoService : IDivisionTwoService
     {
-        private readonly IDivisionOneRepo _DivisionOneRepo;
+        private readonly IDivisionTwoRepo _DivisionTwoRepo;
 
-        public DivisionOneService(IDivisionOneRepo DivisionOneRepo)
+        public DivisionTwoService(IDivisionTwoRepo DivisionTwoRepo)
         {
-            _DivisionOneRepo = DivisionOneRepo;
+            _DivisionTwoRepo = DivisionTwoRepo;
         }
 
         private string GetCurrentUserId()
@@ -27,18 +26,18 @@ namespace VoiceFirstApi.Service
             return userIdClaim.Value;*/
         }
 
-        public async Task<(Dictionary<string, object>, string)> AddAsync(DivisionOneDtoModel DivisionOneDtoModel)
+        public async Task<(Dictionary<string, object>, string)> AddAsync(DivisionTwoDtoModel DivisionTwoDtoModel)
         {
             var userId = GetCurrentUserId();
             var data = new Dictionary<string, object>();
             var generatedId = Guid.NewGuid().ToString();
             var filter = new Dictionary<string, string>
             {
-                    { "id_t2_1_country", DivisionOneDtoModel.id_t2_1_country },
-                    { "t2_1_div1_name", DivisionOneDtoModel.t2_1_div1_name }
+                    { "id_t2_1_div1", DivisionTwoDtoModel.id_t2_1_div1 },
+                    { "t2_1_div2_name", DivisionTwoDtoModel.t2_1_div2_name }
             };
 
-            var exsitList = _DivisionOneRepo.GetAllAsync(filter).Result.FirstOrDefault();
+            var exsitList = _DivisionTwoRepo.GetAllAsync(filter).Result.FirstOrDefault();
 
             if (exsitList != null)
             {
@@ -47,13 +46,13 @@ namespace VoiceFirstApi.Service
             var parameters = new
             {
                 Id = generatedId.Trim(),
-                Name = DivisionOneDtoModel.t2_1_div1_name.Trim(),
-                CountryId = DivisionOneDtoModel.id_t2_1_country.Trim(),
+                Div1Id = DivisionTwoDtoModel.id_t2_1_div1,
+                Name = DivisionTwoDtoModel.t2_1_div2_name,
                 InsertedBy = userId.Trim(),
                 InsertedDate = DateTime.UtcNow
             };
 
-            var status = await _DivisionOneRepo.AddAsync(parameters);
+            var status = await _DivisionTwoRepo.AddAsync(parameters);
 
             if (status > 0)
             {
@@ -66,34 +65,33 @@ namespace VoiceFirstApi.Service
             }
         }
 
-        public async Task<(Dictionary<string, object>, string)> UpdateAsync(UpdateDivisionOneDtoModel DivisionOne)
+        public async Task<(Dictionary<string, object>, string)> UpdateAsync(UpdateDivisionTwoDtoModel DivisionTwo)
         {
             var userId = GetCurrentUserId();
             var data = new Dictionary<string, object>();
-
             var filter = new Dictionary<string, string>
             {
-                    { "id_t2_1_country", DivisionOne.id_t2_1_country },
-                    { "t2_1_div1_name", DivisionOne.t2_1_div1_name }
+                    { "id_t2_1_div1", DivisionTwo.id_t2_1_div1 },
+                    { "t2_1_div2_name", DivisionTwo.t2_1_div2_name }
             };
 
-            var exsitList = _DivisionOneRepo.GetAllAsync(filter).Result.FirstOrDefault();
+            var exsitList = _DivisionTwoRepo.GetAllAsync(filter).Result.FirstOrDefault();
 
-            if (exsitList != null && exsitList.id_t2_1_div1 != DivisionOne.id_t2_1_div1)
+            if (exsitList != null && exsitList.id_t2_1_div2 != DivisionTwo.id_t2_1_div2)
             {
                 return (data, StatusUtilities.ALREADY_EXIST);
             }
 
             var parameters = new
             {
-                Id = DivisionOne.id_t2_1_div1,
-                Name = DivisionOne.t2_1_div1_name.Trim(),
-                CountryId = DivisionOne.id_t2_1_country.Trim(),
+                Id = DivisionTwo.id_t2_1_div2,
+                Div1Id = DivisionTwo.id_t2_1_div1,
+                Name = DivisionTwo.t2_1_div2_name,
                 UpdatedBy = userId,
                 UpdatedDate = DateTime.UtcNow
             };
 
-            var status = await _DivisionOneRepo.UpdateAsync(parameters);
+            var status = await _DivisionTwoRepo.UpdateAsync(parameters);
 
             if (status > 0)
             {
@@ -109,7 +107,7 @@ namespace VoiceFirstApi.Service
         public async Task<(Dictionary<string, object>, string)> GetAllAsync(Dictionary<string, string> filters)
         {
             var data = new Dictionary<string, object>();
-            var list = await _DivisionOneRepo.GetAllAsync(filters);
+            var list = await _DivisionTwoRepo.GetAllAsync(filters);
             data["data"] = list;
             return (data, StatusUtilities.SUCCESS);
         }
@@ -117,7 +115,7 @@ namespace VoiceFirstApi.Service
         public async Task<(Dictionary<string, object>, string)> GetByIdAsync(string id, Dictionary<string, string> filters)
         {
             var data = new Dictionary<string, object>();
-            var list = await _DivisionOneRepo.GetByIdAsync(id, filters);
+            var list = await _DivisionTwoRepo.GetByIdAsync(id, filters);
             data["data"] = list;
             return (data, StatusUtilities.SUCCESS);
         }
@@ -125,7 +123,7 @@ namespace VoiceFirstApi.Service
         public async Task<(Dictionary<string, object>, string)> DeleteAsync(string id)
         {
             var data = new Dictionary<string, object>();
-            var list = await _DivisionOneRepo.DeleteAsync(id);
+            var list = await _DivisionTwoRepo.DeleteAsync(id);
             if (list > 0)
             {
                 return (data, StatusUtilities.SUCCESS);

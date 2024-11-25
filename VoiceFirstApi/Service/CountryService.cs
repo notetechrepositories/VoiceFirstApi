@@ -33,7 +33,7 @@ namespace VoiceFirstApi.Service
             var Countrys = new List<CountryModel>();
             foreach ( var country in import)
             {
-                var filter = new Dictionary<string, object>
+                var filter = new Dictionary<string, string>
                 {
                         { "t2_1_country_name", country.country_name }
                 };
@@ -67,8 +67,6 @@ namespace VoiceFirstApi.Service
                         Countrys.Add(obj);
                     }
                 }
-
-
             }
             if (Countrys.Count > 0)
             {
@@ -83,7 +81,7 @@ namespace VoiceFirstApi.Service
         public async Task<(Dictionary<string, object>, string)> AddAsync(CountryDtoModel CountryDtoModel)
         {
             var data = new Dictionary<string, object>();
-            var filter = new Dictionary<string, object>
+            var filter = new Dictionary<string, string>
             {
                     { "t2_1_country_name", CountryDtoModel.t2_1_country_name }
             };
@@ -130,7 +128,7 @@ namespace VoiceFirstApi.Service
             var userId = GetCurrentUserId();
             var data = new Dictionary<string, object>();
 
-            var filter = new Dictionary<string, object>
+            var filter = new Dictionary<string, string>
                 {
                     { "t2_1_country_name", Country.t2_1_country_name }
                 };
@@ -166,7 +164,7 @@ namespace VoiceFirstApi.Service
             }
         }
 
-        public async Task<(Dictionary<string, object>, string)> GetAllAsync(Dictionary<string, object> filters)
+        public async Task<(Dictionary<string, object>, string)> GetAllAsync(Dictionary<string, string> filters)
         {
             var data = new Dictionary<string, object>();
             var list = await _CountryRepo.GetAllAsync(filters);
@@ -174,7 +172,7 @@ namespace VoiceFirstApi.Service
             return (data, StatusUtilities.SUCCESS);
         }
 
-        public async Task<(Dictionary<string, object>, string)> GetByIdAsync(string id, Dictionary<string, object> filters)
+        public async Task<(Dictionary<string, object>, string)> GetByIdAsync(string id, Dictionary<string, string> filters)
         {
             var data = new Dictionary<string, object>();
             var list = await _CountryRepo.GetByIdAsync(id, filters);

@@ -7,8 +7,8 @@ namespace VoiceFirstApi.IService
     {
         Task<(Dictionary<string, object>, string)> AddAsync(DivisionOneDtoModel DivisionOne);
         Task<(Dictionary<string, object>, string)> UpdateAsync(UpdateDivisionOneDtoModel DivisionOne);
-        Task<(Dictionary<string, object>, string)> GetAllAsync(Dictionary<string, object> filters);
-        Task<(Dictionary<string, object>, string)> GetByIdAsync(string id, Dictionary<string, object> filters);
+        Task<(Dictionary<string, object>, string)> GetAllAsync(Dictionary<string, string> filters);
+        Task<(Dictionary<string, object>, string)> GetByIdAsync(string id, Dictionary<string, string> filters);
         Task<(Dictionary<string, object>, string)> DeleteAsync(string id);
     }
 }

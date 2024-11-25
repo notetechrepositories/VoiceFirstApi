@@ -39,14 +39,14 @@ namespace VoiceFirstApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync([FromQuery] Dictionary<string, object> filters)
+        public async Task<IActionResult> GetAllAsync([FromQuery] Dictionary<string, string> filters)
         {
             var (data, status) = await _CountryService.GetAllAsync(filters);
             return Ok(new { data = data, message = status });
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetByIdAsync(string id, [FromQuery] Dictionary<string, object> filters)
+        public async Task<IActionResult> GetByIdAsync(string id, [FromQuery] Dictionary<string, string> filters)
         {
             var (data, status) = await _CountryService.GetByIdAsync(id, filters);
             return Ok(new { data = data, message = status });

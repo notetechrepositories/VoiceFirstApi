@@ -44,8 +44,8 @@ namespace VoiceFirstApi.Controllers
                  $"{{\r\n" +
                  $"    public interface I{formattedName}Repo\r\n" +
                             $"    {{\r\n" +
-                 $"        Task<IEnumerable<{formattedName}Model>> GetAllAsync(Dictionary<string, object> filters);\r\n" +
-                 $"        Task<{formattedName}Model> GetByIdAsync(string id, Dictionary<string, object> filters);\r\n" +
+                 $"        Task<IEnumerable<{formattedName}Model>> GetAllAsync(Dictionary<string, string> filters);\r\n" +
+                 $"        Task<{formattedName}Model> GetByIdAsync(string id, Dictionary<string, string> filters);\r\n" +
                  $"        Task<int> AddAsync(object parameters);\r\n" +
                  $"        Task<int> UpdateAsync(object parameters);\r\n" +
                  $"        Task<int> DeleteAsync(string id);\r\n" +
@@ -61,8 +61,8 @@ namespace VoiceFirstApi.Controllers
                 $"    {{\r\n" +
                 $"        Task<(Dictionary<string, object>, string)> AddAsync({formattedName}DtoModel {formattedName});\r\n" +
                 $"        Task<(Dictionary<string, object>, string)> UpdateAsync(Update{formattedName}DtoModel {formattedName});\r\n" +
-                $"        Task<(Dictionary<string, object>, string)> GetAllAsync(Dictionary<string, object> filters);\r\n" +
-                $"        Task<(Dictionary<string, object>, string)> GetByIdAsync(string id, Dictionary<string, object> filters);\r\n" +
+                $"        Task<(Dictionary<string, object>, string)> GetAllAsync(Dictionary<string, string> filters);\r\n" +
+                $"        Task<(Dictionary<string, object>, string)> GetByIdAsync(string id, Dictionary<string, string> filters);\r\n" +
                 $"        Task<(Dictionary<string, object>, string)> DeleteAsync(string id);\r\n" +
                 $"    }}\r\n" +
                 $"}}";
@@ -104,36 +104,50 @@ namespace VoiceFirstApi.Controllers
                 $"                return await connection.ExecuteAsync(query, new {{ id = id }});\r\n" +
                 $"            }}\r\n" +
                 $"        }}\r\n\r\n" +
-                $"        public async Task<IEnumerable<{formattedName}Model>> GetAllAsync(Dictionary<string, object> filters)\r\n" +
+                $"        public async Task<IEnumerable<{formattedName}Model>> GetAllAsync(Dictionary<string, string> filters)\r\n" +
                 $"        {{\r\n" +
-                $"            var query = \"SELECT * FROM {name}\";\r\n\r\n" +
-                $"            if (filters != null && filters.Any())\r\n" +
-                $"            {{\r\n" +
-                $"                var whereClauses = filters.Select(f => $\"{{f.Key}} = @{{f.Key}}\");\r\n" +
-                $"                query += \" WHERE \" + string.Join(\" AND \", whereClauses);\r\n" +
-                $"            }}\r\n\r\n" +
-                $"            using (var connection = _dapperContext.CreateConnection())\r\n" +
-                $"            {{\r\n" +
-                $"                return await connection.QueryAsync<{formattedName}Model>(query, filters);\r\n" +
+                $"          var query = \"SELECT * FROM {name} \";\r\n\r\n" +
+                $"          if (filters != null && filters.Any())\r\n" +
+                $"          {{\r\n" +
+                $"              var keys = new List<string>(filters.Keys);\r\n" +
+                $"              var whereClauses = \"\";\r\n" +
+                $"              for (int i = 0; i < keys.Count; i++)\r\n" +
+                $"              {{\r\n" +
+                $"                  string key = keys[i];\r\n" +
+                $"                  string value = filters[key];\r\n" +
+                $"                  if (i == 0)\r\n" +
+                $"                  {{\r\n" +
+                $"                      whereClauses = \" \" + key + \"='\" + value + \"'\";\r\n" +
+                $"                  }}\r\n" +
+                $"                  else\r\n" +
+                $"                  {{\r\n" +
+                $"                      whereClauses += \" AND \" + key + \"='\" + value + \"'\";\r\n" +
+                $"                  }}\r\n" +
+                $"              }}\r\n" +
+                $"              query += \" WHERE \" + whereClauses + \";\";\r\n" +
+                $"          }}\r\n\r\n" +
+                $"          using (var connection = _dapperContext.CreateConnection())\r\n" +
+                $"          {{\r\n" +
+                $"                  return await connection.QueryAsync<{formattedName}Model>(query);\r\n" +
                 $"            }}\r\n" +
                 $"        }}\r\n\r\n" +
-                $"        public async Task<{formattedName}Model> GetByIdAsync(string id, Dictionary<string, object> filters)\r\n" +
+                $"        public async Task<{formattedName}Model> GetByIdAsync(string id, Dictionary<string, string> filters)\r\n" +
                 $"        {{\r\n" +
                 $"            var query = \"SELECT * FROM {name} WHERE id = @id\";\r\n\r\n" +
                 $"            if (filters != null && filters.Any())\r\n" +
                 $"            {{\r\n" +
-                $"                var whereClauses = filters.Select(f => $\"{{f.Key}} = @{{f.Key}}\");\r\n" +
-                $"                query += \" AND \" + string.Join(\" AND \", whereClauses);\r\n" +
+                $"              var keys = new List<string>(filters.Keys);\r\n" +
+                $"              var whereClauses = \"\";\r\n" +
+                $"              for (int i = 0; i < keys.Count; i++)\r\n" +
+                $"              {{\r\n" +
+                $"                  string key = keys[i];\r\n" +
+                $"                  string value = filters[key];\r\n" +
+                $"                  whereClauses += \" AND \" + key + \"='\" + value + \"'\";\r\n" +
+                $"              }}\r\n" +
+                $"              query +=  whereClauses + \";\";\r\n" +
                 $"            }}\r\n\r\n" +
                 $"            var parameters = new DynamicParameters();\r\n" +
                 $"            parameters.Add(\"id\", id);\r\n\r\n" +
-                $"            if (filters != null)\r\n" +
-                $"            {{\r\n" +
-                $"                foreach (var filter in filters)\r\n" +
-                $"                {{\r\n" +
-                $"                    parameters.Add(filter.Key, filter.Value);\r\n" +
-                $"                }}\r\n" +
-                $"            }}\r\n\r\n" +
                 $"            using (var connection = _dapperContext.CreateConnection())\r\n" +
                 $"            {{\r\n" +
                 $"                return await connection.QuerySingleOrDefaultAsync<{formattedName}Model>(query, parameters);\r\n" +
@@ -225,14 +239,14 @@ namespace VoiceFirstApi.Controllers
                 $"                return (data, StatusUtilities.FAILED);\r\n" +
                 $"            }}\r\n" +
                 $"        }}\r\n\r\n" +
-                $"        public async Task<(Dictionary<string, object>, string)> GetAllAsync(Dictionary<string, object> filters)\r\n" +
+                $"        public async Task<(Dictionary<string, object>, string)> GetAllAsync(Dictionary<string, string> filters)\r\n" +
                 $"        {{\r\n" +
                 $"            var data = new Dictionary<string, object>();\r\n" +
                 $"            var list = await _{formattedName}Repo.GetAllAsync(filters);\r\n" +
                 $"            data[\"data\"] = list;\r\n" +
                 $"            return (data, StatusUtilities.SUCCESS);\r\n" +
                 $"        }}\r\n\r\n" +
-                $"        public async Task<(Dictionary<string, object>, string)> GetByIdAsync(string id, Dictionary<string, object> filters)\r\n" +
+                $"        public async Task<(Dictionary<string, object>, string)> GetByIdAsync(string id, Dictionary<string, string> filters)\r\n" +
                 $"        {{\r\n" +
                 $"            var data = new Dictionary<string, object>();\r\n" +
                 $"            var list = await _{formattedName}Repo.GetByIdAsync(id, filters);\r\n" +
@@ -290,13 +304,13 @@ namespace VoiceFirstApi.Controllers
                 $"            return Ok(new {{ data = data, message = status }});\r\n" +
                 $"        }}\r\n\r\n" +
                 $"        [HttpGet]\r\n" +
-                $"        public async Task<IActionResult> GetAllAsync([FromQuery] Dictionary<string, object> filters)\r\n" +
+                $"        public async Task<IActionResult> GetAllAsync([FromQuery] Dictionary<string, string> filters)\r\n" +
                 $"        {{\r\n" +
                 $"            var (data, status) = await _{formattedName}Service.GetAllAsync(filters);\r\n" +
                 $"            return Ok(new {{ data = data, message = status }});\r\n" +
                 $"        }}\r\n\r\n" +
                 $"        [HttpGet(\"{{id}}\")]\r\n" +
-                $"        public async Task<IActionResult> GetByIdAsync(string id, [FromQuery] Dictionary<string, object> filters)\r\n" +
+                $"        public async Task<IActionResult> GetByIdAsync(string id, [FromQuery] Dictionary<string, string> filters)\r\n" +
                 $"        {{\r\n" +
                 $"            var (data, status) = await _{formattedName}Service.GetByIdAsync(id, filters);\r\n" +
                 $"            return Ok(new {{ data = data, message = status }});\r\n" +
