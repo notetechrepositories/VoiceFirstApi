@@ -19,6 +19,8 @@ builder.Services.AddScoped<IDivisionTwoService, DivisionTwoService>();
 builder.Services.AddScoped<IDivisionTwoRepo, DivisionTwoRepo>();
 builder.Services.AddScoped<ITestService, TestService>();
 builder.Services.AddScoped<ITestRepo, TestRepo>();
+builder.Services.AddScoped<IDivisionThreeRepo, DivisionThreeRepo>();
+builder.Services.AddScoped<IDivisionThreeService, DivisionThreeService>();
 
 builder.Services.AddScoped<ICountryService, CountryService>();
 builder.Services.AddScoped<ICountryRepo, CountryRepo>();
