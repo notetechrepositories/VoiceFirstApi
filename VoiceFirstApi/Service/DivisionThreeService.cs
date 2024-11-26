@@ -2,6 +2,7 @@
 using VoiceFirstApi.IRepository;
 using VoiceFirstApi.IService;
 using VoiceFirstApi.Models;
+using VoiceFirstApi.Repository;
 using VoiceFirstApi.Utilities;
 namespace VoiceFirstApi.Service
 {
@@ -30,6 +31,18 @@ namespace VoiceFirstApi.Service
             var userId = GetCurrentUserId();
             var data = new Dictionary<string, object>();
             var generatedId = Guid.NewGuid().ToString();
+            var filter = new Dictionary<string, string>
+            {
+                    { "id_t2_1_div2", DivisionThreeDtoModel.id_t2_1_div2 },
+                    { "t2_1_div3_name", DivisionThreeDtoModel.t2_1_div3_name }
+            };
+
+            var exsitList = _DivisionThreeRepo.GetAllAsync(filter).Result.FirstOrDefault();
+
+            if (exsitList != null)
+            {
+                return (data, StatusUtilities.ALREADY_EXIST);
+            }
 
             var parameters = new
             {
@@ -57,6 +70,19 @@ namespace VoiceFirstApi.Service
         {
             var userId = GetCurrentUserId();
             var data = new Dictionary<string, object>();
+            var filter = new Dictionary<string, string>
+            {
+                    { "id_t2_1_div2", DivisionThree.id_t2_1_div2 },
+                    { "t2_1_div3_name", DivisionThree.t2_1_div3_name }
+            };
+
+            var exsitList = _DivisionThreeRepo.GetAllAsync(filter).Result.FirstOrDefault();
+
+            if (exsitList != null && exsitList.id_t2_1_div3!=DivisionThree.id_t2_1_div3)
+            {
+                return (data, StatusUtilities.ALREADY_EXIST);
+            }
+           
             var parameters = new
             {
                 Id = DivisionThree.id_t2_1_div3,

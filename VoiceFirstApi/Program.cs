@@ -28,6 +28,9 @@ builder.Services.AddScoped<ICountryRepo, CountryRepo>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors(options => {
+    options.AddPolicy("CORSPolicy", builder => builder.AllowAnyMethod().AllowAnyHeader().AllowCredentials().SetIsOriginAllowed((hosts) => true));
+});
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
@@ -80,6 +83,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UseCors("CORSPolicy");
 
 app.UseHttpsRedirection();
 
