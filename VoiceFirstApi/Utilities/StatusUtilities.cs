@@ -6,6 +6,7 @@
         public const int ALREADY_USING_CODE = 208;
         public const int ALREADY_EXIST_CODE = 409;
         public const int NOT_FOUND_CODE = 404;
+        public const int FAILED_CODE = 400;
         public const int PARTIAL_CONTENT_CODE = 406;
         public const int UNAUTHORIZED_ACCESS_CODE = 401;
         public const int LANGUAGE_NOT_ENGLISH = 422;
@@ -19,6 +20,7 @@
 
         public const string SUCCESS = "Success";
         public const string FAILED = "Failed";
+        public const string COUNTRY_NOT_EXSISTS = "Country not exists";
         public const string UPDATION_FAILED = "Updation Failed";
         public const string CREATED = "CREATED";
         public const string USER_NOT_FOUND = "USER NOT FOUND";

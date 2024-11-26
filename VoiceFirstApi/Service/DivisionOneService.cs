@@ -143,7 +143,7 @@ namespace VoiceFirstApi.Service
         {
             var userId = GetCurrentUserId();
             var data = new Dictionary<string, object>();
-            var Countrys = new List<DivisionOneModel>();
+            var Divisions = new List<DivisionOneModel>();
             foreach (var division in importlist)
             {
                 if (division.Country_name != null)
@@ -156,7 +156,7 @@ namespace VoiceFirstApi.Service
 
                     if (countryList == null)
                     {
-                        return (data, StatusUtilities.FAILED);
+                        return (data, StatusUtilities.COUNTRY_NOT_EXSISTS);
                     }
                     else
                     {
@@ -166,12 +166,51 @@ namespace VoiceFirstApi.Service
                 }
                 else
                 {
-                    return (data, StatusUtilities.FAILED);
+                    return (data, StatusUtilities.COUNTRY_NOT_EXSISTS);
                 }
 
                 
             }
-            return (data, StatusUtilities.FAILED);
+            foreach(var division in importlist)
+            {
+                var generatedId = Guid.NewGuid().ToString();
+                var filter = new Dictionary<string, string>
+                {
+                    { "id_t2_1_country", division.Country_name },
+                    { "t2_1_div1_name", division.Division_one }
+                };
+
+                var exsitList = _DivisionOneRepo.GetAllAsync(filter).Result.FirstOrDefault();
+
+                if (exsitList == null)
+                {
+                    var parameters = new
+                    {
+                        Id = generatedId.Trim(),
+                        Name = division.Division_one.Trim(),
+                        CountryId = division.Country_name.Trim(),
+                        InsertedBy = userId.Trim(),
+                        InsertedDate = DateTime.UtcNow
+                    };
+
+                    var status = await _DivisionOneRepo.AddAsync(parameters);
+
+                    if (status > 0)
+                    {
+                        DivisionOneModel obj = new DivisionOneModel();
+                        obj.id_t2_1_country = parameters.CountryId;
+                        obj.id_t2_1_div1 = parameters.Id;
+                        obj.t2_1_div1_name = parameters.Name;
+                        obj.inserted_by = parameters.InsertedBy;
+                        obj.inserted_date = parameters.InsertedDate;
+
+                        Divisions.Add(obj);
+                    }
+                }
+                
+            }
+            data["items"] = Divisions;
+            return (data, StatusUtilities.SUCCESS);
         }
 
         

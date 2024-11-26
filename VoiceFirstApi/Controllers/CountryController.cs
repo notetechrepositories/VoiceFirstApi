@@ -27,36 +27,36 @@ namespace VoiceFirstApi.Controllers
         [HttpPost]
         public async Task<IActionResult> AddAsync([FromBody] CountryDtoModel CountryDto)
         {
-            var (data, status) = await _CountryService.AddAsync(CountryDto);
-            return Ok(new { data = data, message = status });
+            var (data, message, status_code) = await _CountryService.AddAsync(CountryDto);
+            return Ok(new { data = data, message = message, status = status_code });
         }
 
         [HttpPut]
         public async Task<IActionResult> UpdateAsync([FromBody] UpdateCountryDtoModel CountryDto)
         {
-            var (data, status) = await _CountryService.UpdateAsync(CountryDto);
-            return Ok(new { data = data, message = status });
+            var (data, message, status_code) = await _CountryService.UpdateAsync(CountryDto);
+            return Ok(new { data = data, message = message, status = status_code });
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllAsync([FromQuery] Dictionary<string, string> filters)
         {
-            var (data, status) = await _CountryService.GetAllAsync(filters);
-            return Ok(new { data = data, message = status });
+            var (data, message, status_code) = await _CountryService.GetAllAsync(filters);
+            return Ok(new { data = data, message = message, status = status_code });
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdAsync(string id, [FromQuery] Dictionary<string, string> filters)
         {
-            var (data, status) = await _CountryService.GetByIdAsync(id, filters);
-            return Ok(new { data = data, message = status });
+            var (data, message, status_code) = await _CountryService.GetByIdAsync(id, filters);
+            return Ok(new { data = data, message = message, status = status_code });
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(string id)
         {
-            var (data, status) = await _CountryService.DeleteAsync(id);
-            return Ok(new { data = data, message = status });
+            var (data, message, status_code) = await _CountryService.DeleteAsync(id);
+            return Ok(new { data = data, message = message, status = status_code });
         }
 
         [HttpPost("upload")]
@@ -76,8 +76,8 @@ namespace VoiceFirstApi.Controllers
             using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
             {
                 var records = csv.GetRecords<ImportCountryModel>().ToList();
-                var (data, status) = await _CountryService.ImportCountry(records);
-                return Ok(new { data = data, message = status });
+                var (data, message, status_code) = await _CountryService.ImportCountry(records);
+                return Ok(new { data = data, message = message,status= status_code });
             }
         }
     }

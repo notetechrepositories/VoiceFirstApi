@@ -26,7 +26,7 @@ namespace VoiceFirstApi.Service
             }
             return userIdClaim.Value;*/
         }
-        public async Task<(Dictionary<string, object>, string)> ImportCountry(List<ImportCountryModel> import)
+        public async Task<(Dictionary<string, object>, string, int)> ImportCountry(List<ImportCountryModel> import)
         {
             var userId = GetCurrentUserId();
             var data = new Dictionary<string, object>();
@@ -71,14 +71,14 @@ namespace VoiceFirstApi.Service
             if (Countrys.Count > 0)
             {
                 data["Items"] = Countrys;
-                return (data, StatusUtilities.SUCCESS);
+                return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
             }
             else
             {
-                return (data, StatusUtilities.FAILED);
+                return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
             }
         }
-        public async Task<(Dictionary<string, object>, string)> AddAsync(CountryDtoModel CountryDtoModel)
+        public async Task<(Dictionary<string, object>, string, int)> AddAsync(CountryDtoModel CountryDtoModel)
         {
             var data = new Dictionary<string, object>();
             var filter = new Dictionary<string, string>
@@ -90,7 +90,7 @@ namespace VoiceFirstApi.Service
 
             if (countryList != null)
             {
-                return (data, StatusUtilities.ALREADY_EXIST);
+                return (data, StatusUtilities.ALREADY_EXIST, StatusUtilities.FAILED_CODE);
             }
 
             var userId = GetCurrentUserId();
@@ -115,15 +115,15 @@ namespace VoiceFirstApi.Service
             if (status > 0)
             {
                 data["Items"] = parameters;
-                return (data, StatusUtilities.SUCCESS);
+                return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
             }
             else
             {
-                return (data, StatusUtilities.FAILED);
+                return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
             }
         }
 
-        public async Task<(Dictionary<string, object>, string)> UpdateAsync(UpdateCountryDtoModel Country)
+        public async Task<(Dictionary<string, object>, string, int)> UpdateAsync(UpdateCountryDtoModel Country)
         {
             var userId = GetCurrentUserId();
             var data = new Dictionary<string, object>();
@@ -137,7 +137,7 @@ namespace VoiceFirstApi.Service
 
             if (countryList !=null && countryList.id_t2_1_country!= Country.id_t2_1_country)
             {
-                return (data, StatusUtilities.ALREADY_EXIST);
+                return (data, StatusUtilities.ALREADY_EXIST, StatusUtilities.FAILED_CODE);
             }
 
             var parameters = new
@@ -156,41 +156,41 @@ namespace VoiceFirstApi.Service
             if (status > 0)
             {
                 data["Items"] = parameters;
-                return (data, StatusUtilities.SUCCESS);
+                return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
             }
             else
             {
-                return (data, StatusUtilities.FAILED);
+                return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
             }
         }
 
-        public async Task<(Dictionary<string, object>, string)> GetAllAsync(Dictionary<string, string> filters)
+        public async Task<(Dictionary<string, object>, string, int)> GetAllAsync(Dictionary<string, string> filters)
         {
             var data = new Dictionary<string, object>();
             var list = await _CountryRepo.GetAllAsync(filters);
             data["Items"] = list;
-            return (data, StatusUtilities.SUCCESS);
+            return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
         }
 
-        public async Task<(Dictionary<string, object>, string)> GetByIdAsync(string id, Dictionary<string, string> filters)
+        public async Task<(Dictionary<string, object>, string, int)> GetByIdAsync(string id, Dictionary<string, string> filters)
         {
             var data = new Dictionary<string, object>();
             var list = await _CountryRepo.GetByIdAsync(id, filters);
             data["Items"] = list;
-            return (data, StatusUtilities.SUCCESS);
+            return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
         }
 
-        public async Task<(Dictionary<string, object>, string)> DeleteAsync(string id)
+        public async Task<(Dictionary<string, object>, string,int)> DeleteAsync(string id)
         {
             var data = new Dictionary<string, object>();
             var list = await _CountryRepo.DeleteAsync(id);
             if (list > 0)
             {
-                return (data, StatusUtilities.SUCCESS);
+                return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
             }
             else
             {
-                return (data, StatusUtilities.FAILED);
+                return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
             }
         }
 
