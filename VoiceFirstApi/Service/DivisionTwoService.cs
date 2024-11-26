@@ -56,7 +56,7 @@ namespace VoiceFirstApi.Service
 
             if (status > 0)
             {
-                data["data"] = parameters;
+                data["Items"] = parameters;
                 return (data, StatusUtilities.SUCCESS);
             }
             else
@@ -95,7 +95,7 @@ namespace VoiceFirstApi.Service
 
             if (status > 0)
             {
-                data["data"] = parameters;
+                data["Items"] = parameters;
                 return (data, StatusUtilities.SUCCESS);
             }
             else
@@ -108,7 +108,7 @@ namespace VoiceFirstApi.Service
         {
             var data = new Dictionary<string, object>();
             var list = await _DivisionTwoRepo.GetAllAsync(filters);
-            data["data"] = list;
+            data["Items"] = list;
             return (data, StatusUtilities.SUCCESS);
         }
 
@@ -116,7 +116,7 @@ namespace VoiceFirstApi.Service
         {
             var data = new Dictionary<string, object>();
             var list = await _DivisionTwoRepo.GetByIdAsync(id, filters);
-            data["data"] = list;
+            data["Items"] = list;
             return (data, StatusUtilities.SUCCESS);
         }
 

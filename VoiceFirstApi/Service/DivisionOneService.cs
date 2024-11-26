@@ -10,10 +10,13 @@ namespace VoiceFirstApi.Service
     public class DivisionOneService : IDivisionOneService
     {
         private readonly IDivisionOneRepo _DivisionOneRepo;
+        private readonly ICountryRepo _CountryRepo;
 
-        public DivisionOneService(IDivisionOneRepo DivisionOneRepo)
+       
+        public DivisionOneService(IDivisionOneRepo DivisionOneRepo, ICountryRepo countryRepo)
         {
             _DivisionOneRepo = DivisionOneRepo;
+            _CountryRepo = countryRepo;
         }
 
         private string GetCurrentUserId()
@@ -57,7 +60,7 @@ namespace VoiceFirstApi.Service
 
             if (status > 0)
             {
-                data["data"] = parameters;
+                data["Items"] = parameters;
                 return (data, StatusUtilities.SUCCESS);
             }
             else
@@ -97,7 +100,7 @@ namespace VoiceFirstApi.Service
 
             if (status > 0)
             {
-                data["data"] = parameters;
+                data["Items"] = parameters;
                 return (data, StatusUtilities.SUCCESS);
             }
             else
@@ -110,7 +113,7 @@ namespace VoiceFirstApi.Service
         {
             var data = new Dictionary<string, object>();
             var list = await _DivisionOneRepo.GetAllAsync(filters);
-            data["data"] = list;
+            data["Items"] = list;
             return (data, StatusUtilities.SUCCESS);
         }
 
@@ -118,7 +121,7 @@ namespace VoiceFirstApi.Service
         {
             var data = new Dictionary<string, object>();
             var list = await _DivisionOneRepo.GetByIdAsync(id, filters);
-            data["data"] = list;
+            data["Items"] = list;
             return (data, StatusUtilities.SUCCESS);
         }
 
@@ -136,9 +139,41 @@ namespace VoiceFirstApi.Service
             }
         }
 
-        public async Task<Dictionary<string, object>> ImportStateByCountry(List<ImportCountryModel> importlist)
+        public async Task<(Dictionary<string, object>, string)> ImportStateByCountry(List<ImportDivisionOneModel> importlist)
         {
-            throw new NotImplementedException();
+            var userId = GetCurrentUserId();
+            var data = new Dictionary<string, object>();
+            var Countrys = new List<DivisionOneModel>();
+            foreach (var division in importlist)
+            {
+                if (division.Country_name != null)
+                {
+                    var filter = new Dictionary<string, string>
+                    {
+                        { "t2_1_country_name", division.Country_name }
+                    };
+                    var countryList = _CountryRepo.GetAllAsync(filter).Result.FirstOrDefault();
+
+                    if (countryList == null)
+                    {
+                        return (data, StatusUtilities.FAILED);
+                    }
+                    else
+                    {
+                        division.Country_name = countryList.id_t2_1_country;
+                    }
+
+                }
+                else
+                {
+                    return (data, StatusUtilities.FAILED);
+                }
+
+                
+            }
+            return (data, StatusUtilities.FAILED);
         }
+
+        
     }
 }

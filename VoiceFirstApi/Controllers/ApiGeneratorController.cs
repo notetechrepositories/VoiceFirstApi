@@ -209,7 +209,7 @@ namespace VoiceFirstApi.Controllers
                 $"            var status = await _{formattedName}Repo.AddAsync(parameters);\r\n\r\n" +
                 $"            if (status > 0)\r\n" +
                 $"            {{\r\n" +
-                $"                data[\"data\"] = parameters;\r\n" +
+                $"                data[\"Items\"] = parameters;\r\n" +
                 $"                return (data, StatusUtilities.SUCCESS);\r\n" +
                 $"            }}\r\n" +
                 $"            else\r\n" +
@@ -231,7 +231,7 @@ namespace VoiceFirstApi.Controllers
                 $"            var status = await _{formattedName}Repo.UpdateAsync(parameters);\r\n\r\n" +
                 $"            if (status > 0)\r\n" +
                 $"            {{\r\n" +
-                $"                data[\"data\"] = parameters;\r\n" +
+                $"                data[\"Items\"] = parameters;\r\n" +
                 $"                return (data, StatusUtilities.SUCCESS);\r\n" +
                 $"            }}\r\n" +
                 $"            else\r\n" +
@@ -243,14 +243,14 @@ namespace VoiceFirstApi.Controllers
                 $"        {{\r\n" +
                 $"            var data = new Dictionary<string, object>();\r\n" +
                 $"            var list = await _{formattedName}Repo.GetAllAsync(filters);\r\n" +
-                $"            data[\"data\"] = list;\r\n" +
+                $"            data[\"Items\"] = list;\r\n" +
                 $"            return (data, StatusUtilities.SUCCESS);\r\n" +
                 $"        }}\r\n\r\n" +
                 $"        public async Task<(Dictionary<string, object>, string)> GetByIdAsync(string id, Dictionary<string, string> filters)\r\n" +
                 $"        {{\r\n" +
                 $"            var data = new Dictionary<string, object>();\r\n" +
                 $"            var list = await _{formattedName}Repo.GetByIdAsync(id, filters);\r\n" +
-                $"            data[\"data\"] = list;\r\n" +
+                $"            data[\"Items\"] = list;\r\n" +
                 $"            return (data, StatusUtilities.SUCCESS);\r\n" +
                 $"        }}\r\n\r\n" +
                 $"        public async Task<(Dictionary<string, object>, string)> DeleteAsync(string id)\r\n" +
