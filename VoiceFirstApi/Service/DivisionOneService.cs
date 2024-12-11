@@ -197,8 +197,14 @@ namespace VoiceFirstApi.Service
 
                     if (status > 0)
                     {
+                        var filters = new Dictionary<string, string>
+                        {
+                            { "id_t2_1_country", division.Country_name }
+                        };
+                        var countryList = _CountryRepo.GetAllAsync(filters).Result.FirstOrDefault();
                         DivisionOneModel obj = new DivisionOneModel();
-                        obj.id_t2_1_country = parameters.CountryId;
+                       // obj.id_t2_1_country = parameters.CountryId;
+                        obj.t2_1_country_name = countryList.t2_1_country_name;
                         obj.id_t2_1_div1 = parameters.Id;
                         obj.t2_1_div1_name = parameters.Name;
                         obj.inserted_by = parameters.InsertedBy;

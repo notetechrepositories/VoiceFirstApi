@@ -167,7 +167,7 @@ namespace VoiceFirstApi.Service
         public async Task<(Dictionary<string, object>, string, int)> GetAllAsync(Dictionary<string, string> filters)
         {
             var data = new Dictionary<string, object>();
-            var list = await _CountryRepo.GetAllAsync(filters);
+            var list = await _CountryRepo.GetAscAll(filters);
             data["Items"] = list;
             return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
         }

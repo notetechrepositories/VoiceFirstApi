@@ -39,7 +39,7 @@ namespace VoiceFirstApi.Repository
 
         public async Task<IEnumerable<CountryModel>> GetAllAsync(Dictionary<string, string> filters)
         {
-            var query = "SELECT * FROM t2_1_country order by t2_1_country_name ASC";
+            var query = "SELECT * FROM t2_1_country ";
 
             if (filters != null && filters.Any())
             {
@@ -67,10 +67,40 @@ namespace VoiceFirstApi.Repository
                 return await connection.QueryAsync<CountryModel>(query);
             }
         }
+        public async Task<IEnumerable<CountryModel>> GetAscAll(Dictionary<string, string> filters)
+        {
+            var query = "SELECT * FROM t2_1_country order by t2_1_country_name ASC";
+
+            if (filters != null && filters.Any())
+            {
+                var keys = new List<string>(filters.Keys);
+                var whereClauses = "";
+                for (int i = 0; i < keys.Count; i++)
+                {
+                    string key = keys[i];
+                    string value = filters[key];
+                    if (i == 0)
+                    {
+                        whereClauses = " " + key + "='" + value + "'";
+                    }
+                    else
+                    {
+                        whereClauses += " AND " + key + "='" + value + "'";
+                    }
+
+                }
+                query += " WHERE " + whereClauses + ";";
+            }
+
+            using (var connection = _dapperContext.CreateConnection())
+            {
+                return await connection.QueryAsync<CountryModel>(query);
+            }
+        }
 
         public async Task<CountryModel> GetByIdAsync(string id, Dictionary<string, string> filters)
         {
-            var query = "SELECT * FROM t2_1_country  WHERE id_t2_1_country = @id order by t2_1_country_name ASC";
+            var query = "SELECT * FROM t2_1_country  WHERE id_t2_1_country = @id ";
 
             if (filters != null && filters.Any())
             {
