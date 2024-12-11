@@ -51,11 +51,11 @@ namespace VoiceFirstApi.Repository
                     string value = filters[key];
                     if (i == 0)
                     {
-                        whereClauses = " " + key + "='" + value + "'";
+                        whereClauses = " t2_1_div1." + key + "='" + value + "'";
                     }
                     else
                     {
-                        whereClauses += " AND " + key + "='" + value + "'";
+                        whereClauses += " AND t2_1_div1." + key + "='" + value + "'";
                     }
 
                 }
@@ -80,7 +80,7 @@ namespace VoiceFirstApi.Repository
                 {
                     string key = keys[i];
                     string value = filters[key];
-                    whereClauses += " AND " + key + "='" + value + "'";
+                    whereClauses += " AND t2_1_div1." + key + "='" + value + "'";
 
 
                 }
