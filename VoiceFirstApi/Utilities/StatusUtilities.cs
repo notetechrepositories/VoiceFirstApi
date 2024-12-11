@@ -21,6 +21,8 @@
         public const string SUCCESS = "Success";
         public const string FAILED = "Failed";
         public const string COUNTRY_NOT_EXSISTS = "Country not exists";
+        public const string DIVISION_ONE_NOT_EXSISTS = "Division one not exists";
+        public const string DIVISION_TWO_NOT_EXSISTS = "Division two not exists";
         public const string UPDATION_FAILED = "Updation Failed";
         public const string CREATED = "CREATED";
         public const string USER_NOT_FOUND = "USER NOT FOUND";

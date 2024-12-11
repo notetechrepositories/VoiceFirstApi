@@ -176,7 +176,7 @@ namespace VoiceFirstApi.Service
                 var generatedId = Guid.NewGuid().ToString();
                 var filter = new Dictionary<string, string>
                 {
-                    { "id_t2_1_country", division.Country_name },
+                    { "t2_1_country_name", division.Country_name },
                     { "t2_1_div1_name", division.Division_one }
                 };
 

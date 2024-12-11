@@ -39,7 +39,7 @@ namespace VoiceFirstApi.Repository
 
         public async Task<IEnumerable<DivisionOneModel>> GetAllAsync(Dictionary<string, string> filters)
         {
-            var query = "SELECT * FROM t2_1_div1 ";
+            var query = "SELECT t2_1_div1.id_t2_1_div1,t2_1_div1.id_t2_1_country,t2_1_div1.t2_1_div1_name,t2_1_country.t2_1_country_name FROM t2_1_div1 inner join t2_1_country on t2_1_country.id_t2_1_country=t2_1_div1.id_t2_1_country ";
 
             if (filters != null && filters.Any())
             {
@@ -70,7 +70,7 @@ namespace VoiceFirstApi.Repository
 
         public async Task<DivisionOneModel> GetByIdAsync(string id, Dictionary<string, string> filters)
         {
-            var query = "SELECT * FROM t2_1_div1  WHERE id_t2_1_div1 = @id";
+            var query = "SELECT t2_1_div1.id_t2_1_div1,t2_1_div1.id_t2_1_country,t2_1_div1.t2_1_div1_name,t2_1_country.t2_1_country_name FROM t2_1_div1 inner join t2_1_country on t2_1_country.id_t2_1_country=t2_1_div1.id_t2_1_country WHERE id_t2_1_div1 = @id";
 
             if (filters != null && filters.Any())
             {

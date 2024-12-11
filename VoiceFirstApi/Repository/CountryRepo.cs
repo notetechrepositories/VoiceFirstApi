@@ -39,7 +39,7 @@ namespace VoiceFirstApi.Repository
 
         public async Task<IEnumerable<CountryModel>> GetAllAsync(Dictionary<string, string> filters)
         {
-            var query = "SELECT * FROM t2_1_country";
+            var query = "SELECT * FROM t2_1_country order by t2_1_country_name ASC";
 
             if (filters != null && filters.Any())
             {
@@ -70,7 +70,7 @@ namespace VoiceFirstApi.Repository
 
         public async Task<CountryModel> GetByIdAsync(string id, Dictionary<string, string> filters)
         {
-            var query = "SELECT * FROM t2_1_country WHERE id_t2_1_country = @id";
+            var query = "SELECT * FROM t2_1_country  WHERE id_t2_1_country = @id order by t2_1_country_name ASC";
 
             if (filters != null && filters.Any())
             {

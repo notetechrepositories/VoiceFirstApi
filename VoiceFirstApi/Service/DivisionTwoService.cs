@@ -9,10 +9,12 @@ namespace VoiceFirstApi.Service
     public class DivisionTwoService : IDivisionTwoService
     {
         private readonly IDivisionTwoRepo _DivisionTwoRepo;
+        private readonly IDivisionOneRepo _DivisionOneRepo;
 
-        public DivisionTwoService(IDivisionTwoRepo DivisionTwoRepo)
+        public DivisionTwoService(IDivisionTwoRepo DivisionTwoRepo,IDivisionOneRepo DivisionOneRepo)
         {
             _DivisionTwoRepo = DivisionTwoRepo;
+            _DivisionOneRepo = DivisionOneRepo;
         }
 
         private string GetCurrentUserId()
@@ -133,5 +135,83 @@ namespace VoiceFirstApi.Service
                 return (data, StatusUtilities.FAILED);
             }
         }
+
+        public async Task<(Dictionary<string, object>, string)> ImportDivisionTwo(List<ImportDivisionTwoModel> DivisionTwolist)
+        {
+            var userId = GetCurrentUserId();
+            var data = new Dictionary<string, object>();
+            var Divisions = new List<DivisionTwoModel>();
+            foreach (var division in DivisionTwolist)
+            {
+                if (division.Division_one_name != null && division.country_name != null)  
+                {
+                    var filter = new Dictionary<string, string>
+                    {
+                        { "t2_1_div1_name", division.Division_one_name },
+                        { "id_t2_1_country", division.country_name }
+                    };
+                    var DivisionList = _DivisionOneRepo.GetAllAsync(filter).Result.FirstOrDefault();
+
+                    if (DivisionList == null)
+                    {
+                        return (data, StatusUtilities.DIVISION_ONE_NOT_EXSISTS);
+                    }
+                    else
+                    {
+                        division.Division_one_name = DivisionList.id_t2_1_div1;
+                    }
+
+                }
+                else
+                {
+                    return (data, StatusUtilities.DIVISION_ONE_NOT_EXSISTS);
+                }
+
+
+            }
+            foreach (var division in DivisionTwolist)
+            {
+                var generatedId = Guid.NewGuid().ToString();
+                var filter = new Dictionary<string, string>
+                {
+                    { "id_t2_1_div1", division.Division_one_name},
+                    { "t2_1_div2_name", division.Division_two_name }
+                };
+
+                var exsitList = _DivisionTwoRepo.GetAllAsync(filter).Result.FirstOrDefault();
+
+                if (exsitList == null)
+                {
+                    var parameters = new
+                    {
+                        Id = generatedId.Trim(),
+                        Name = division.Division_two_name.Trim(),
+                        Div1Id = division.Division_one_name.Trim(),
+                        InsertedBy = userId.Trim(),
+                        InsertedDate = DateTime.UtcNow
+                    };
+
+                    var status = await _DivisionTwoRepo.AddAsync(parameters);
+
+                    if (status > 0)
+                    {
+                        DivisionTwoModel obj = new DivisionTwoModel();
+                        obj.id_t2_1_div1 = parameters.Div1Id;
+                        obj.id_t2_1_div2 = parameters.Id;
+                        obj.t2_1_div2_name = parameters.Name;
+                        obj.inserted_by = parameters.InsertedBy;
+                        obj.inserted_date = parameters.InsertedDate;
+
+                        Divisions.Add(obj);
+                    }
+                }
+
+            }
+            data["items"] = Divisions;
+            return (data, StatusUtilities.SUCCESS);
+        }
+
+
     }
 }
+    
