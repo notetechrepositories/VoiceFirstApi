@@ -35,7 +35,7 @@ namespace VoiceFirstApi.Service
             {
                 var filter = new Dictionary<string, string>
                 {
-                        { "t2_1_country_name", country.country_name }
+                        { "t2_1_country_name", country.t2_1_country_name }
                 };
                 var countryList = _CountryRepo.GetAllAsync(filter).Result.FirstOrDefault();
 
@@ -45,10 +45,10 @@ namespace VoiceFirstApi.Service
                     var parameters = new
                     {
                         Id = generatedId.Trim(),
-                        Name = country.country_name.Trim(),
-                        Div1 = country.div1.Trim(),
-                        Div2 = country.div2.Trim(),
-                        Div3 = country.div3.Trim(),
+                        Name = country.t2_1_country_name.Trim(),
+                        Div1 = country.t2_1_div1_called.Trim(),
+                        Div2 = country.t2_1_div2_called.Trim(),
+                        Div3 = country.t2_1_div3_called.Trim(),
                         InsertedBy = userId.Trim(),
                         InsertedDate = DateTime.UtcNow
                     };

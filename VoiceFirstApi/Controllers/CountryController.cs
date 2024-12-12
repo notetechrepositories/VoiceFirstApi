@@ -80,5 +80,12 @@ namespace VoiceFirstApi.Controllers
                 return Ok(new { data = data, message = message,status= status_code });
             }
         }
+        [HttpPost("import")]
+        public async Task<IActionResult> UploadXl(List<ImportCountryModel> model)
+        {
+            var (data, message, status_code) = await _CountryService.ImportCountry(model);
+            return Ok(new { data = data, message = message, status = status_code });
+           
+        }
     }
 }
