@@ -28,7 +28,7 @@
         public const string USER_NOT_FOUND = "USER NOT FOUND";
         public const string COMPANY_NOT_FOUND = "COMPANY NOT FOUND";
         public const string INVALID_REFERAL_CODE = "INVALID_REFERAL_CODE";
-        public const string ALREADY_EXIST = "ALREADY_EXIST";
+        public const string ALREADY_EXIST = "ALREADY EXIST";
         public const string EMAIL_ALREADY_EXIST = "Email already exist";
         public const string EMAIL_NOT_EXIST = "Email not exist";
         public const string INVALID_EMAIL = "Invalid email";
@@ -40,8 +40,8 @@
         public const string OPT_EXPIRED = "OTP Expired";
         public const string REGISTRATION_SUCCESS = "Registration Success";
         public const string NIL = "NIL";
-        public const string ALREADY_REGISTERED = "ALREADY_REGISTERED";
-        public const string NOT_REGISTERED = "NOT_REGISTERED";
+        public const string ALREADY_REGISTERED = "ALREADY REGISTERED";
+        public const string NOT_REGISTERED = "NOT REGISTERED";
         public const string INVALID_OTP = "Invalid OTP";
         public const string TESTER_MOBILE_NO = "0000987654";
         public const int TESTER_DEFAULT_OPT = 5497;

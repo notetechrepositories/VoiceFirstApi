@@ -5,11 +5,11 @@ namespace VoiceFirstApi.IService
 {
     public interface IDivisionThreeService
     {
-        Task<(Dictionary<string, object>, string)> AddAsync(DivisionThreeDtoModel DivisionThree);
-        Task<(Dictionary<string, object>, string)> UpdateAsync(UpdateDivisionThreeDtoModel DivisionThree);
-        Task<(Dictionary<string, object>, string)> GetAllAsync(Dictionary<string, string> filters);
-        Task<(Dictionary<string, object>, string)> GetByIdAsync(string id, Dictionary<string, string> filters);
-        Task<(Dictionary<string, object>, string)> DeleteAsync(string id);
-        Task<(Dictionary<string, object>, string)> ImportDivisionThree(List<ImportDivisionThreeModel> DivisionThreelist);
+        Task<(Dictionary<string, object>, string,int)> AddAsync(DivisionThreeDtoModel DivisionThree);
+        Task<(Dictionary<string, object>, string, int)> UpdateAsync(UpdateDivisionThreeDtoModel DivisionThree);
+        Task<(Dictionary<string, object>, string, int)> GetAllAsync(Dictionary<string, string> filters);
+        Task<(Dictionary<string, object>, string, int)> GetByIdAsync(string id, Dictionary<string, string> filters);
+        Task<(Dictionary<string, object>, string, int)> DeleteAsync(string id);
+        Task<(Dictionary<string, object>, string, int)> ImportDivisionThree(List<ImportDivisionThreeModel> DivisionThreelist);
     }
 }

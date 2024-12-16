@@ -27,7 +27,7 @@ namespace VoiceFirstApi.Service
             return userIdClaim.Value;*/
         }
 
-        public async Task<(Dictionary<string, object>, string)> AddAsync(DivisionThreeDtoModel DivisionThreeDtoModel)
+        public async Task<(Dictionary<string, object>, string, int)> AddAsync(DivisionThreeDtoModel DivisionThreeDtoModel)
         {
             var userId = GetCurrentUserId();
             var data = new Dictionary<string, object>();
@@ -42,7 +42,7 @@ namespace VoiceFirstApi.Service
 
             if (exsitList != null)
             {
-                return (data, StatusUtilities.ALREADY_EXIST);
+                return (data, StatusUtilities.ALREADY_EXIST,StatusUtilities.ALREADY_EXIST_CODE);
             }
 
             var parameters = new
@@ -59,15 +59,15 @@ namespace VoiceFirstApi.Service
             if (status > 0)
             {
                 data["Items"] = parameters;
-                return (data, StatusUtilities.SUCCESS);
+                return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
             }
             else
             {
-                return (data, StatusUtilities.FAILED);
+                return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
             }
         }
 
-        public async Task<(Dictionary<string, object>, string)> UpdateAsync(UpdateDivisionThreeDtoModel DivisionThree)
+        public async Task<(Dictionary<string, object>, string, int)> UpdateAsync(UpdateDivisionThreeDtoModel DivisionThree)
         {
             var userId = GetCurrentUserId();
             var data = new Dictionary<string, object>();
@@ -81,7 +81,7 @@ namespace VoiceFirstApi.Service
 
             if (exsitList != null && exsitList.id_t2_1_div3!=DivisionThree.id_t2_1_div3)
             {
-                return (data, StatusUtilities.ALREADY_EXIST);
+                return (data, StatusUtilities.ALREADY_EXIST, StatusUtilities.ALREADY_EXIST_CODE);
             }
            
             var parameters = new
@@ -98,72 +98,72 @@ namespace VoiceFirstApi.Service
             if (status > 0)
             {
                 data["Items"] = parameters;
-                return (data, StatusUtilities.SUCCESS);
+                return (data, StatusUtilities.SUCCESS,StatusUtilities.SUCCESS_CODE);
             }
             else
             {
-                return (data, StatusUtilities.FAILED);
+                return (data, StatusUtilities.FAILED,StatusUtilities.FAILED_CODE);
             }
         }
 
-        public async Task<(Dictionary<string, object>, string)> GetAllAsync(Dictionary<string, string> filters)
+        public async Task<(Dictionary<string, object>, string, int)> GetAllAsync(Dictionary<string, string> filters)
         {
             var data = new Dictionary<string, object>();
             var list = await _DivisionThreeRepo.GetAllAsync(filters);
             data["Items"] = list;
-            return (data, StatusUtilities.SUCCESS);
+            return (data, StatusUtilities.SUCCESS,StatusUtilities.SUCCESS_CODE);
         }
 
-        public async Task<(Dictionary<string, object>, string)> GetByIdAsync(string id, Dictionary<string, string> filters)
+        public async Task<(Dictionary<string, object>, string, int)> GetByIdAsync(string id, Dictionary<string, string> filters)
         {
             var data = new Dictionary<string, object>();
             var list = await _DivisionThreeRepo.GetByIdAsync(id, filters);
             data["Items"] = list;
-            return (data, StatusUtilities.SUCCESS);
+            return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
         }
 
-        public async Task<(Dictionary<string, object>, string)> DeleteAsync(string id)
+        public async Task<(Dictionary<string, object>, string, int)> DeleteAsync(string id)
         {
             var data = new Dictionary<string, object>();
             var list = await _DivisionThreeRepo.DeleteAsync(id);
             if (list > 0)
             {
-                return (data, StatusUtilities.SUCCESS);
+                return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
             }
             else
             {
-                return (data, StatusUtilities.FAILED);
+                return (data, StatusUtilities.FAILED,StatusUtilities.FAILED_CODE);
             }
         }
 
-        public async Task<(Dictionary<string, object>, string)> ImportDivisionThree(List<ImportDivisionThreeModel> DivisionThreelist)
+        public async Task<(Dictionary<string, object>, string, int)> ImportDivisionThree(List<ImportDivisionThreeModel> DivisionThreelist)
         {
             var userId = GetCurrentUserId();
             var data = new Dictionary<string, object>();
             var Divisions = new List<DivisionThreeModel>();
             foreach (var division in DivisionThreelist)
             {
-                if (division.Division_two_name != null)  
+                if (division.t2_1_div2_name != null)  
                 {
                     var filter = new Dictionary<string, string>
                     {
-                        { "t2_1_div2_name", division.Division_two_name }
+                        { "t2_1_div2_name", division.t2_1_div2_name }
                     };
                     var DivisionList = _DivisionTwoRepo.GetAllAsync(filter).Result.FirstOrDefault();
 
                     if (DivisionList != null)
                     {
-                        return (data, StatusUtilities.DIVISION_TWO_NOT_EXSISTS);
+                        return (data, StatusUtilities.DIVISION_TWO_NOT_EXSISTS,StatusUtilities.NOT_FOUND_CODE);
                     }
                     else
                     {
-                        division.Division_two_name = DivisionList.id_t2_1_div2;
+                        division.t2_1_div2_name = DivisionList.id_t2_1_div2;
                     }
 
                 }
                 else
                 {
-                    return (data, StatusUtilities.DIVISION_TWO_NOT_EXSISTS);
+                    return (data, StatusUtilities.DIVISION_TWO_NOT_EXSISTS, StatusUtilities.NOT_FOUND_CODE);
                 }
 
 
@@ -173,8 +173,8 @@ namespace VoiceFirstApi.Service
                 var generatedId = Guid.NewGuid().ToString();
                 var filter = new Dictionary<string, string>
                 {
-                    { "id_t2_1_div2", division.Division_two_name},
-                    { "t2_1_div3_name", division.Division_three_name }
+                    { "id_t2_1_div2", division.t2_1_div2_name},
+                    { "t2_1_div3_name", division.t2_1_div3_name }
                 };
 
                 var exsitList = _DivisionThreeRepo.GetAllAsync(filter).Result.FirstOrDefault();
@@ -184,8 +184,8 @@ namespace VoiceFirstApi.Service
                     var parameters = new
                     {
                         Id = generatedId.Trim(),
-                        Name = division.Division_three_name.Trim(),
-                        DivisionTwoId = division.Division_two_name.Trim(),
+                        Name = division.t2_1_div3_name.Trim(),
+                        DivisionTwoId = division.t2_1_div2_name.Trim(),
                         InsertedBy = userId.Trim(),
                         InsertedDate = DateTime.UtcNow
                     };
@@ -207,7 +207,7 @@ namespace VoiceFirstApi.Service
 
             }
             data["items"] = Divisions;
-            return (data, StatusUtilities.SUCCESS);
+            return (data, StatusUtilities.SUCCESS,StatusUtilities.SUCCESS_CODE);
         }
 
     }
