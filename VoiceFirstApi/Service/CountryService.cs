@@ -90,7 +90,7 @@ namespace VoiceFirstApi.Service
 
             if (countryList != null)
             {
-                return (data, StatusUtilities.ALREADY_EXIST, StatusUtilities.FAILED_CODE);
+                return (data, StatusUtilities.ALREADY_EXIST, StatusUtilities.ALREADY_EXIST_CODE);
             }
 
             var userId = GetCurrentUserId();
@@ -137,7 +137,7 @@ namespace VoiceFirstApi.Service
 
             if (countryList !=null && countryList.id_t2_1_country!= Country.id_t2_1_country)
             {
-                return (data, StatusUtilities.ALREADY_EXIST, StatusUtilities.FAILED_CODE);
+                return (data, StatusUtilities.ALREADY_EXIST, StatusUtilities.ALREADY_EXIST_CODE);
             }
 
             var parameters = new

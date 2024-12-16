@@ -39,7 +39,8 @@ namespace VoiceFirstApi.Repository
 
         public async Task<IEnumerable<DivisionTwoModel>> GetAllAsync(Dictionary<string, string> filters)
         {
-          var query = "SELECT * FROM t2_1_div2 ";
+          var query = "SELECT t2_1_div2.id_t2_1_div2,t2_1_div2.id_t2_1_div1,t2_1_div2.t2_1_div2_name,t2_1_div1.t2_1_div1_name from t2_1_div2 " +
+                "inner join t2_1_div1 on t2_1_div1.id_t2_1_div1=t2_1_div2.id_t2_1_div1 ";
 
           if (filters != null && filters.Any())
           {
@@ -51,11 +52,11 @@ namespace VoiceFirstApi.Repository
                   string value = filters[key];
                   if (i == 0)
                   {
-                      whereClauses = " " + key + "='" + value + "'";
+                      whereClauses = " t2_1_div2." + key + "='" + value + "'";
                   }
                   else
                   {
-                      whereClauses += " AND " + key + "='" + value + "'";
+                      whereClauses += " AND t2_1_div2" + key + "='" + value + "'";
                   }
               }
               query += " WHERE " + whereClauses + ";";

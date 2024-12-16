@@ -30,7 +30,7 @@ namespace VoiceFirstApi.Service
             return userIdClaim.Value;*/
         }
 
-        public async Task<(Dictionary<string, object>, string)> AddAsync(DivisionOneDtoModel DivisionOneDtoModel)
+        public async Task<(Dictionary<string, object>, string, int)> AddAsync(DivisionOneDtoModel DivisionOneDtoModel)
         {
             var userId = GetCurrentUserId();
             var data = new Dictionary<string, object>();
@@ -45,7 +45,7 @@ namespace VoiceFirstApi.Service
 
             if (exsitList != null)
             {
-                return (data, StatusUtilities.ALREADY_EXIST);
+                return (data, StatusUtilities.ALREADY_EXIST, StatusUtilities.ALREADY_EXIST_CODE);
             }
             var parameters = new
             {
@@ -61,15 +61,15 @@ namespace VoiceFirstApi.Service
             if (status > 0)
             {
                 data["Items"] = parameters;
-                return (data, StatusUtilities.SUCCESS);
+                return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
             }
             else
             {
-                return (data, StatusUtilities.FAILED);
+                return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
             }
         }
 
-        public async Task<(Dictionary<string, object>, string)> UpdateAsync(UpdateDivisionOneDtoModel DivisionOne)
+        public async Task<(Dictionary<string, object>, string, int)> UpdateAsync(UpdateDivisionOneDtoModel DivisionOne)
         {
             var userId = GetCurrentUserId();
             var data = new Dictionary<string, object>();
@@ -84,7 +84,7 @@ namespace VoiceFirstApi.Service
 
             if (exsitList != null && exsitList.id_t2_1_div1 != DivisionOne.id_t2_1_div1)
             {
-                return (data, StatusUtilities.ALREADY_EXIST);
+                return (data, StatusUtilities.ALREADY_EXIST, StatusUtilities.ALREADY_EXIST_CODE);
             }
 
             var parameters = new
@@ -101,72 +101,72 @@ namespace VoiceFirstApi.Service
             if (status > 0)
             {
                 data["Items"] = parameters;
-                return (data, StatusUtilities.SUCCESS);
+                return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
             }
             else
             {
-                return (data, StatusUtilities.FAILED);
+                return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
             }
         }
 
-        public async Task<(Dictionary<string, object>, string)> GetAllAsync(Dictionary<string, string> filters)
+        public async Task<(Dictionary<string, object>, string, int)> GetAllAsync(Dictionary<string, string> filters)
         {
             var data = new Dictionary<string, object>();
             var list = await _DivisionOneRepo.GetAllAsync(filters);
             data["Items"] = list;
-            return (data, StatusUtilities.SUCCESS);
+            return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
         }
 
-        public async Task<(Dictionary<string, object>, string)> GetByIdAsync(string id, Dictionary<string, string> filters)
+        public async Task<(Dictionary<string, object>, string, int)> GetByIdAsync(string id, Dictionary<string, string> filters)
         {
             var data = new Dictionary<string, object>();
             var list = await _DivisionOneRepo.GetByIdAsync(id, filters);
             data["Items"] = list;
-            return (data, StatusUtilities.SUCCESS);
+            return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
         }
 
-        public async Task<(Dictionary<string, object>, string)> DeleteAsync(string id)
+        public async Task<(Dictionary<string, object>, string, int)> DeleteAsync(string id)
         {
             var data = new Dictionary<string, object>();
             var list = await _DivisionOneRepo.DeleteAsync(id);
             if (list > 0)
             {
-                return (data, StatusUtilities.SUCCESS);
+                return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
             }
             else
             {
-                return (data, StatusUtilities.FAILED);
+                return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
             }
         }
 
-        public async Task<(Dictionary<string, object>, string)> ImportStateByCountry(List<ImportDivisionOneModel> importlist)
+        public async Task<(Dictionary<string, object>, string, int)> ImportStateByCountry(List<ImportDivisionOneModel> importlist)
         {
             var userId = GetCurrentUserId();
             var data = new Dictionary<string, object>();
             var Divisions = new List<DivisionOneModel>();
             foreach (var division in importlist)
             {
-                if (division.Country_name != null)
+                if (division.t2_1_country_name != null)
                 {
                     var filter = new Dictionary<string, string>
                     {
-                        { "t2_1_country_name", division.Country_name }
+                        { "t2_1_country_name", division.t2_1_country_name }
                     };
                     var countryList = _CountryRepo.GetAllAsync(filter).Result.FirstOrDefault();
 
                     if (countryList == null)
                     {
-                        return (data, StatusUtilities.COUNTRY_NOT_EXSISTS);
+                        return (data, StatusUtilities.COUNTRY_NOT_EXSISTS, StatusUtilities.NOT_FOUND_CODE);
                     }
                     else
                     {
-                        division.Country_name = countryList.id_t2_1_country;
+                        division.t2_1_country_name = countryList.id_t2_1_country;
                     }
 
                 }
                 else
                 {
-                    return (data, StatusUtilities.COUNTRY_NOT_EXSISTS);
+                    return (data, StatusUtilities.COUNTRY_NOT_EXSISTS, StatusUtilities.NOT_FOUND_CODE);
                 }
 
                 
@@ -176,8 +176,8 @@ namespace VoiceFirstApi.Service
                 var generatedId = Guid.NewGuid().ToString();
                 var filter = new Dictionary<string, string>
                 {
-                    { "id_t2_1_country", division.Country_name },
-                    { "t2_1_div1_name", division.Division_one }
+                    { "id_t2_1_country", division.t2_1_country_name },
+                    { "t2_1_div1_name", division.t2_1_div1_name }
                 };
 
                 var exsitList = _DivisionOneRepo.GetAllAsync(filter).Result.FirstOrDefault();
@@ -187,8 +187,8 @@ namespace VoiceFirstApi.Service
                     var parameters = new
                     {
                         Id = generatedId.Trim(),
-                        Name = division.Division_one.Trim(),
-                        CountryId = division.Country_name.Trim(),
+                        Name = division.t2_1_div1_name.Trim(),
+                        CountryId = division.t2_1_country_name.Trim(),
                         InsertedBy = userId.Trim(),
                         InsertedDate = DateTime.UtcNow
                     };
@@ -199,7 +199,7 @@ namespace VoiceFirstApi.Service
                     {
                         var filters = new Dictionary<string, string>
                         {
-                            { "id_t2_1_country", division.Country_name }
+                            { "id_t2_1_country", division.t2_1_country_name }
                         };
                         var countryList = _CountryRepo.GetAllAsync(filters).Result.FirstOrDefault();
                         DivisionOneModel obj = new DivisionOneModel();
@@ -216,7 +216,7 @@ namespace VoiceFirstApi.Service
                 
             }
             data["items"] = Divisions;
-            return (data, StatusUtilities.SUCCESS);
+            return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
         }
 
         

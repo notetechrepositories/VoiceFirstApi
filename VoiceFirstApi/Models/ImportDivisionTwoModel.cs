@@ -2,8 +2,8 @@
 {
     public class ImportDivisionTwoModel
     {
-        public string Division_one_name { get; set; }
-        public string Division_two_name { get; set; }
-        public string country_name { get; set; }
+        public string t2_1_div1_name { get; set; }
+        public string t2_1_div2_name { get; set; }
+        public string t2_1_country_name { get; set; }
     }
 }

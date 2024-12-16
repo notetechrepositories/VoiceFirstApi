@@ -27,39 +27,39 @@ namespace VoiceFirstApi.Controllers
         [HttpPost]
         public async Task<IActionResult> AddAsync([FromBody] DivisionTwoDtoModel DivisionTwoDto)
         {
-            var (data, status) = await _DivisionTwoService.AddAsync(DivisionTwoDto);
-            return Ok(new { data = data, message = status });
+            var (data, message, status_code) = await _DivisionTwoService.AddAsync(DivisionTwoDto);
+            return Ok(new { data = data, message = message, status = status_code });
         }
 
         [HttpPut]
         public async Task<IActionResult> UpdateAsync([FromBody] UpdateDivisionTwoDtoModel DivisionTwoDto)
         {
-            var (data, status) = await _DivisionTwoService.UpdateAsync(DivisionTwoDto);
-            return Ok(new { data = data, message = status });
+            var (data, message, status_code) = await _DivisionTwoService.UpdateAsync(DivisionTwoDto);
+            return Ok(new { data = data, message = message, status = status_code });
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllAsync([FromQuery] Dictionary<string, string> filters)
         {
-            var (data, status) = await _DivisionTwoService.GetAllAsync(filters);
-            return Ok(new { data = data, message = status });
+            var (data, message, status_code) = await _DivisionTwoService.GetAllAsync(filters);
+            return Ok(new { data = data, message = message, status = status_code });
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdAsync(string id, [FromQuery] Dictionary<string, string> filters)
         {
-            var (data, status) = await _DivisionTwoService.GetByIdAsync(id, filters);
-            return Ok(new { data = data, message = status });
+            var (data, message, status_code) = await _DivisionTwoService.GetByIdAsync(id, filters);
+            return Ok(new { data = data, message = message, status = status_code });
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(string id)
         {
-            var (data, status) = await _DivisionTwoService.DeleteAsync(id);
-            return Ok(new { data = data, message = status });
+            var (data, message, status_code) = await _DivisionTwoService.DeleteAsync(id);
+            return Ok(new { data = data, message = message, status = status_code });
         }
 
-        [HttpPost("upload")]
+        /*[HttpPost("upload")]
         public async Task<IActionResult> UploadCsv(IFormFile file)
         {
             if (file == null || file.Length == 0)
@@ -76,9 +76,16 @@ namespace VoiceFirstApi.Controllers
             using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
             {
                 var records = csv.GetRecords<ImportDivisionTwoModel>().ToList();
-                var (data, status) = await _DivisionTwoService.ImportDivisionTwo(records);
-                return Ok(new { data = data, message = status });
+                var (data, message, status_code) = await _DivisionTwoService.ImportDivisionTwo(records);
+                return Ok(new { data = data, message = message, status = status_code });
             }
+        }*/
+        [HttpPost("import")]
+        public async Task<IActionResult> UploadXl(List<ImportDivisionTwoModel> model)
+        {
+            var (data, message, status_code) = await _DivisionTwoService.ImportDivisionTwo(model);
+            return Ok(new { data = data, message = message, status = status_code });
+
         }
 
     }

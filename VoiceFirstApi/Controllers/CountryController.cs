@@ -59,7 +59,7 @@ namespace VoiceFirstApi.Controllers
             return Ok(new { data = data, message = message, status = status_code });
         }
 
-        [HttpPost("upload")]
+        /*[HttpPost("upload")]
         public async Task<IActionResult> UploadCsv(IFormFile file)
         {
             if (file == null || file.Length == 0)
@@ -79,7 +79,7 @@ namespace VoiceFirstApi.Controllers
                 var (data, message, status_code) = await _CountryService.ImportCountry(records);
                 return Ok(new { data = data, message = message,status= status_code });
             }
-        }
+        }*/
         [HttpPost("import")]
         public async Task<IActionResult> UploadXl(List<ImportCountryModel> model)
         {
