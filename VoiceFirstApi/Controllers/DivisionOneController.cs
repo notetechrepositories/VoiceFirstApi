@@ -27,36 +27,111 @@ namespace VoiceFirstApi.Controllers
         [HttpPost]
         public async Task<IActionResult> AddAsync([FromBody] DivisionOneDtoModel DivisionOneDto)
         {
-            var (data, message, status_code) = await _DivisionOneService.AddAsync(DivisionOneDto);
-            return Ok(new { data = data, message = message, status = status_code });
+            try
+            {
+                var (data, message, status_code) = await _DivisionOneService.AddAsync(DivisionOneDto);
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it as needed
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
+            
         }
 
         [HttpPut]
         public async Task<IActionResult> UpdateAsync([FromBody] UpdateDivisionOneDtoModel DivisionOneDto)
         {
-            var (data, message, status_code) = await _DivisionOneService.UpdateAsync(DivisionOneDto);
-            return Ok(new { data = data, message = message, status = status_code });
+            try
+            {
+                var (data, message, status_code) = await _DivisionOneService.UpdateAsync(DivisionOneDto);
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it as needed
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
+            
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllAsync([FromQuery] Dictionary<string, string> filters)
         {
-            var (data, message, status_code) = await _DivisionOneService.GetAllAsync(filters);
-            return Ok(new { data = data, message = message, status = status_code });
+            try
+            {
+                var (data, message, status_code) = await _DivisionOneService.GetAllAsync(filters);
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it as needed
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
+            
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdAsync(string id, [FromQuery] Dictionary<string, string> filters)
         {
-            var (data, message, status_code) = await _DivisionOneService.GetByIdAsync(id, filters);
-            return Ok(new { data = data, message = message, status = status_code });
+            try
+            {
+                var (data, message, status_code) = await _DivisionOneService.GetByIdAsync(id, filters);
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it as needed
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
+            
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(string id)
         {
-            var (data, message, status_code) = await _DivisionOneService.DeleteAsync(id);
-            return Ok(new { data = data, message = message, status = status_code });
+            try
+            {
+                var (data, message, status_code) = await _DivisionOneService.DeleteAsync(id);
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it as needed
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
+            
         }
 
         /*[HttpPost("upload")]
@@ -83,9 +158,23 @@ namespace VoiceFirstApi.Controllers
         [HttpPost("import")]
         public async Task<IActionResult> UploadXl(List<ImportDivisionOneModel> model)
         {
+            try
+            {
+                var (data, message, status_code) = await _DivisionOneService.ImportStateByCountry(model);
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it as needed
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
             
-            var (data, message, status_code) = await _DivisionOneService.ImportStateByCountry(model);
-            return Ok(new { data = data, message = message, status = status_code });
 
         }
     }

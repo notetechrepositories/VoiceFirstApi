@@ -24,36 +24,111 @@ namespace VoiceFirstApi.Controllers
         [HttpPost]
         public async Task<IActionResult> AddAsync([FromBody] CompanyDtoModel CompanyDto)
         {
-            var (data, message, status_code) = await _CompanyService.AddAsync(CompanyDto);
-            return Ok(new { data = data, message = message, status = status_code });
+            try
+            {
+                var (data, message, status_code) = await _CompanyService.AddAsync(CompanyDto);
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it as needed
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
+
         }
 
         [HttpPut]
         public async Task<IActionResult> UpdateAsync([FromBody] UpdateCompanyDtoModel CompanyDto)
         {
-            var (data, message, status_code) = await _CompanyService.UpdateAsync(CompanyDto);
-            return Ok(new { data = data, message = message, status = status_code });
+            try
+            {
+                var (data, message, status_code) = await _CompanyService.UpdateAsync(CompanyDto);
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it as needed
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
+            
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllAsync([FromQuery] Dictionary<string, string> filters)
         {
-            var (data, message, status_code) = await _CompanyService.GetAllAsync(filters);
-            return Ok(new { data = data, message = message, status = status_code });
+            try
+            {
+                var (data, message, status_code) = await _CompanyService.GetAllAsync(filters);
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it as needed
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
+            
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdAsync(string id, [FromQuery] Dictionary<string, string> filters)
         {
-            var (data, message, status_code) = await _CompanyService.GetByIdAsync(id, filters);
-            return Ok(new { data = data, message = message, status = status_code });
+            try
+            {
+                var (data, message, status_code) = await _CompanyService.GetByIdAsync(id, filters);
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it as needed
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
+            
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(string id)
         {
-            var (data, message, status_code) = await _CompanyService.DeleteAsync(id);
-            return Ok(new { data = data, message = message, status = status_code });
+            try
+            {
+                var (data, message, status_code) = await _CompanyService.DeleteAsync(id);
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it as needed
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
+            
         }
     }
 }
