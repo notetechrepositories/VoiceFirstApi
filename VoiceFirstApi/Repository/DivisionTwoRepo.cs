@@ -56,7 +56,7 @@ namespace VoiceFirstApi.Repository
                   }
                   else
                   {
-                      whereClauses += " AND t2_1_div2" + key + "='" + value + "'";
+                      whereClauses += " AND t2_1_div2." + key + "='" + value + "'";
                   }
               }
               query += " WHERE " + whereClauses + ";";

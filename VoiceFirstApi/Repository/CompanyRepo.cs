@@ -8,11 +8,11 @@ using VoiceFirstApi.Utilities;
 
 namespace VoiceFirstApi.Repository
 {
-    public class DivisionThreeRepo : IDivisionThreeRepo
+    public class CompanyRepo : ICompanyRepo
     {
         private readonly DapperContext _dapperContext;
 
-        public DivisionThreeRepo(DapperContext dapperContext)
+        public CompanyRepo(DapperContext dapperContext)
         {
             _dapperContext = dapperContext;
         }
@@ -20,8 +20,8 @@ namespace VoiceFirstApi.Repository
         public async Task<int> AddAsync(object parameters)
         {
             var query = @"
-                INSERT INTO t2_1_div3(id_t2_1_div3,t2_1_div3_name,id_t2_1_div2,inserted_by,inserted_date) 
-                VALUES (@Id,@Name,@Div2Id,@InsertedBy,@InsertedDate);";
+                INSERT INTO t1_company(id_t1_company,t1_company_name,id_company_type,id_currency,is_active_till_date,inserted_by,inserted_date) 
+                VALUES (@Id,@Name,@Type,@Currency,@Date,@InsertedBy,@InsertedDate);";
             using (var connection = _dapperContext.CreateConnection())
             {
                 return await connection.ExecuteAsync(query, parameters);
@@ -30,17 +30,16 @@ namespace VoiceFirstApi.Repository
 
         public async Task<int> DeleteAsync(string id)
         {
-            var query = "DELETE FROM t2_1_div3 WHERE id_t2_1_div3 = @id";
+            var query = "DELETE FROM t1_company WHERE id_t1_company = @id";
             using (var connection = _dapperContext.CreateConnection())
             {
                 return await connection.ExecuteAsync(query, new { id = id });
             }
         }
 
-        public async Task<IEnumerable<DivisionThreeModel>> GetAllAsync(Dictionary<string, string> filters)
+        public async Task<IEnumerable<CompanyModel>> GetAllAsync(Dictionary<string, string> filters)
         {
-          var query = "SELECT t2_1_div3.id_t2_1_div3,t2_1_div3.id_t2_1_div2,t2_1_div3.t2_1_div3_name,t2_1_div2.t2_1_div2_name from t2_1_div3 " +
-                "inner join t2_1_div2 on t2_1_div2.id_t2_1_div2 = t2_1_div3.id_t2_1_div2";
+          var query = "SELECT * FROM t1_company ";
 
           if (filters != null && filters.Any())
           {
@@ -52,11 +51,11 @@ namespace VoiceFirstApi.Repository
                   string value = filters[key];
                   if (i == 0)
                   {
-                      whereClauses = " t2_1_div3." + key + "='" + value + "'";
+                      whereClauses = " " + key + "='" + value + "'";
                   }
                   else
                   {
-                      whereClauses += " AND t2_1_div3." + key + "='" + value + "'";
+                      whereClauses += " AND " + key + "='" + value + "'";
                   }
               }
               query += " WHERE " + whereClauses + ";";
@@ -64,13 +63,13 @@ namespace VoiceFirstApi.Repository
 
           using (var connection = _dapperContext.CreateConnection())
           {
-                  return await connection.QueryAsync<DivisionThreeModel>(query);
+                  return await connection.QueryAsync<CompanyModel>(query);
             }
         }
 
-        public async Task<DivisionThreeModel> GetByIdAsync(string id, Dictionary<string, string> filters)
+        public async Task<CompanyModel> GetByIdAsync(string id, Dictionary<string, string> filters)
         {
-            var query = "SELECT * FROM t2_1_div3 WHERE id_t2_1_div3 = @id";
+            var query = "SELECT * FROM t1_company WHERE id_t1_company = @id";
 
             if (filters != null && filters.Any())
             {
@@ -90,20 +89,22 @@ namespace VoiceFirstApi.Repository
 
             using (var connection = _dapperContext.CreateConnection())
             {
-                return await connection.QuerySingleOrDefaultAsync<DivisionThreeModel>(query, parameters);
+                return await connection.QuerySingleOrDefaultAsync<CompanyModel>(query, parameters);
             }
         }
 
         public async Task<int> UpdateAsync(object parameters)
         {
             var query = @"
-                UPDATE t2_1_div3
+                UPDATE t1_company
                 SET 
-                    t2_1_div3_name = @Name, 
-                    id_t2_1_div2=@Div2Id,
+                    t1_company_name = @Name, 
+                    id_company_type = @Type, 
+                    id_currency = @Currency, 
+                    is_active_till_date = @Date, 
                     updated_by = @UpdatedBy, 
                     updated_date = @UpdatedDate
-                WHERE id_t2_1_div3 = @Id";
+                WHERE id_t1_company = @Id";
 
             using (var connection = _dapperContext.CreateConnection())
             {
