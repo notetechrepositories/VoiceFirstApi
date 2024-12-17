@@ -10,10 +10,15 @@ namespace VoiceFirstApi.Service
     {
         private readonly IDivisionThreeRepo _DivisionThreeRepo;
         private readonly IDivisionTwoRepo _DivisionTwoRepo;
+        private readonly IDivisionOneRepo _DivisionOneRepo;
+        private readonly ICountryRepo _CountryRepo;
 
-        public DivisionThreeService(IDivisionThreeRepo DivisionThreeRepo,IDivisionTwoRepo _DivisionTwoRepo)
+        public DivisionThreeService(IDivisionThreeRepo DivisionThreeRepo,IDivisionTwoRepo DivisionTwoRepo, IDivisionOneRepo DivisionOneRepo, ICountryRepo CountryRepo)
         {
             _DivisionThreeRepo = DivisionThreeRepo;
+            _CountryRepo = CountryRepo;
+            _DivisionTwoRepo = DivisionTwoRepo;
+            _DivisionOneRepo = DivisionOneRepo;
         }
 
         private string GetCurrentUserId()
@@ -143,27 +148,50 @@ namespace VoiceFirstApi.Service
             var Divisions = new List<DivisionThreeModel>();
             foreach (var division in DivisionThreelist)
             {
-                if (division.t2_1_div2_name != null)  
+                if (division.t2_1_country_name != null && division.t2_1_div1_name!=null && division.t2_1_div2_name!=null&&division.t2_1_div3_name!=null)  
                 {
+                    
+
                     var filter = new Dictionary<string, string>
+                    {
+                        { "t2_1_country_name", division.t2_1_country_name }
+                    };
+                    var countryList = _CountryRepo.GetAllAsync(filter).Result.FirstOrDefault();
+
+                    if (countryList == null)
+                    {
+                        return (data, StatusUtilities.COUNTRY_NOT_EXSISTS,StatusUtilities.NOT_FOUND_CODE);
+                    }
+                    var filterDivisionOne = new Dictionary<string, string>
+                    {
+                        { "t2_1_div1_name", division.t2_1_div1_name }
+                    };
+                    var divisionOneList = _DivisionOneRepo.GetAllAsync(filterDivisionOne).Result.FirstOrDefault();
+
+                    if (divisionOneList == null || divisionOneList.id_t2_1_country!=countryList.id_t2_1_country)
+                    {
+                        return (data, StatusUtilities.DIVISION_ONE_NOT_EXSISTS, StatusUtilities.NOT_FOUND_CODE);
+                    }
+
+                    var filterDivisionTwo = new Dictionary<string, string>
                     {
                         { "t2_1_div2_name", division.t2_1_div2_name }
                     };
-                    var DivisionList = _DivisionTwoRepo.GetAllAsync(filter).Result.FirstOrDefault();
+                    var divisionTwoList = _DivisionTwoRepo.GetAllAsync(filterDivisionTwo).Result.FirstOrDefault();
 
-                    if (DivisionList != null)
+                    if (divisionTwoList == null || divisionTwoList.id_t2_1_div1 != divisionOneList.id_t2_1_div1)
                     {
-                        return (data, StatusUtilities.DIVISION_TWO_NOT_EXSISTS,StatusUtilities.NOT_FOUND_CODE);
+                        return (data, StatusUtilities.DIVISION_TWO_NOT_EXSISTS, StatusUtilities.NOT_FOUND_CODE);
                     }
                     else
                     {
-                        division.t2_1_div2_name = DivisionList.id_t2_1_div2;
+                        division.t2_1_div2_name = divisionTwoList.id_t2_1_div2;
                     }
 
                 }
                 else
                 {
-                    return (data, StatusUtilities.DIVISION_TWO_NOT_EXSISTS, StatusUtilities.NOT_FOUND_CODE);
+                    return (data, StatusUtilities.FAILED, StatusUtilities.NOT_FOUND_CODE);
                 }
 
 

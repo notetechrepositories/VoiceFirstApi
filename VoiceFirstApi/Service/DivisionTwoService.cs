@@ -10,11 +10,13 @@ namespace VoiceFirstApi.Service
     {
         private readonly IDivisionTwoRepo _DivisionTwoRepo;
         private readonly IDivisionOneRepo _DivisionOneRepo;
+        private readonly ICountryRepo _CountryRepo;
 
-        public DivisionTwoService(IDivisionTwoRepo DivisionTwoRepo,IDivisionOneRepo DivisionOneRepo)
+        public DivisionTwoService(IDivisionTwoRepo DivisionTwoRepo,IDivisionOneRepo DivisionOneRepo, ICountryRepo countryRepo)
         {
             _DivisionTwoRepo = DivisionTwoRepo;
             _DivisionOneRepo = DivisionOneRepo;
+            _CountryRepo = countryRepo;
         }
 
         private string GetCurrentUserId()
@@ -145,10 +147,22 @@ namespace VoiceFirstApi.Service
             {
                 if (division.t2_1_div1_name != null && division.t2_1_country_name != null)  
                 {
+
+
+                    var filterCountry = new Dictionary<string, string>
+                    {
+                      { "t2_1_country_name", division.t2_1_country_name }
+                    };
+                    var CountryList = _CountryRepo.GetAllAsync(filterCountry).Result.FirstOrDefault();
+
+                    if (CountryList == null)
+                    {
+                        return (data, StatusUtilities.DIVISION_ONE_NOT_EXSISTS, StatusUtilities.NOT_FOUND_CODE);
+                    }
                     var filter = new Dictionary<string, string>
                     {
                         { "t2_1_div1_name", division.t2_1_div1_name },
-                        { "id_t2_1_country", division.t2_1_country_name }
+                        { "id_t2_1_country", CountryList.id_t2_1_country }
                     };
                     var DivisionList = _DivisionOneRepo.GetAllAsync(filter).Result.FirstOrDefault();
 

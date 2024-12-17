@@ -39,7 +39,13 @@ namespace VoiceFirstApi.Repository
 
         public async Task<IEnumerable<LocalModel>> GetAllAsync(Dictionary<string, string> filters)
         {
-          var query = "SELECT * FROM t2_1_local ";
+          var query = "select t2_1_local.id_t2_1_local,t2_1_local.id_t2_1_country,t2_1_local.id_t2_1_div1,t2_1_local.id_t2_1_div2," +
+                "t2_1_local.id_t2_1_div3,t2_1_local.t2_1_local_name,t2_1_country.t2_1_country_name," +
+                "t2_1_div1.t2_1_div1_name,t2_1_div2.t2_1_div2_name,t2_1_div3.t2_1_div3_name from t2_1_local" +
+                "inner join t2_1_country on t2_1_country.id_t2_1_country=t2_1_local.id_t2_1_country " +
+                "inner join t2_1_div1 on t2_1_div1.id_t2_1_div1= t2_1_local.id_t2_1_div1" +
+                "inner join t2_1_div2 on t2_1_div2.id_t2_1_div2=t2_1_local.id_t2_1_div2" +
+                "inner join t2_1_div3 on t2_1_div3.id_t2_1_div3=t2_1_local.id_t2_1_div3 ";
 
           if (filters != null && filters.Any())
           {
@@ -51,11 +57,11 @@ namespace VoiceFirstApi.Repository
                   string value = filters[key];
                   if (i == 0)
                   {
-                      whereClauses = " " + key + "='" + value + "'";
+                      whereClauses = " t2_1_local." + key + "='" + value + "'";
                   }
                   else
                   {
-                      whereClauses += " AND " + key + "='" + value + "'";
+                      whereClauses += " AND t2_1_local." + key + "='" + value + "'";
                   }
               }
               query += " WHERE " + whereClauses + ";";
@@ -69,7 +75,13 @@ namespace VoiceFirstApi.Repository
 
         public async Task<LocalModel> GetByIdAsync(string id, Dictionary<string, string> filters)
         {
-            var query = "SELECT * FROM t2_1_local WHERE id_t2_1_local = @id";
+            var query = "select t2_1_local.id_t2_1_local,t2_1_local.id_t2_1_country,t2_1_local.id_t2_1_div1,t2_1_local.id_t2_1_div2," +
+                "t2_1_local.id_t2_1_div3,t2_1_local.t2_1_local_name,t2_1_country.t2_1_country_name," +
+                "t2_1_div1.t2_1_div1_name,t2_1_div2.t2_1_div2_name,t2_1_div3.t2_1_div3_name from t2_1_local" +
+                "inner join t2_1_country on t2_1_country.id_t2_1_country=t2_1_local.id_t2_1_country" +
+                "inner join t2_1_div1 on t2_1_div1.id_t2_1_div1= t2_1_local.id_t2_1_div1" +
+                "inner join t2_1_div2 on t2_1_div2.id_t2_1_div2=t2_1_local.id_t2_1_div2" +
+                "inner join t2_1_div3 on t2_1_div3.id_t2_1_div3=t2_1_local.id_t2_1_div3  WHERE t2_1_local.id_t2_1_local = @id";
 
             if (filters != null && filters.Any())
             {
@@ -79,7 +91,7 @@ namespace VoiceFirstApi.Repository
               {
                   string key = keys[i];
                   string value = filters[key];
-                  whereClauses += " AND " + key + "='" + value + "'";
+                  whereClauses += " AND t2_1_local." + key + "='" + value + "'";
               }
               query +=  whereClauses + ";";
             }
