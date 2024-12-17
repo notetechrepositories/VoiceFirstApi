@@ -213,7 +213,7 @@ namespace VoiceFirstApi.Service
                     {
                         Id = generatedId.Trim(),
                         Name = division.t2_1_div3_name.Trim(),
-                        DivisionTwoId = division.t2_1_div2_name.Trim(),
+                        Div2Id = division.t2_1_div2_name.Trim(),
                         InsertedBy = userId.Trim(),
                         InsertedDate = DateTime.UtcNow
                     };
@@ -223,7 +223,7 @@ namespace VoiceFirstApi.Service
                     if (status > 0)
                     {
                         DivisionThreeModel obj = new DivisionThreeModel();
-                        obj.id_t2_1_div2 = parameters.DivisionTwoId;
+                        obj.id_t2_1_div2 = parameters.Div2Id;
                         obj.id_t2_1_div3 = parameters.Id;
                         obj.t2_1_div3_name = parameters.Name;
                         obj.inserted_by = parameters.InsertedBy;

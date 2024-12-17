@@ -268,61 +268,127 @@ namespace VoiceFirstApi.Controllers
                 $"        }}\r\n" +
                 $"    }}\r\n" +
                 $"}}";
-            
 
-           var controllerContent =
-                $"using Dapper;\r\n" +
-                $"using Microsoft.AspNetCore.Http;\r\n" +
-                $"using Microsoft.AspNetCore.Mvc;\r\n" +
-                $"using System.Net.NetworkInformation;\r\n" +
-                $"using VoiceFirstApi.Context;\r\n" +
-                $"using VoiceFirstApi.DtoModels;\r\n" +
-                $"using VoiceFirstApi.IService;\r\n" +
-                $"using VoiceFirstApi.Service;\r\n" +
-                $"using static System.Runtime.InteropServices.JavaScript.JSType;\r\n\r\n" +
-                $"namespace VoiceFirstApi.Controllers\r\n" +
-                            $"{{\r\n" +
-                $"    [Route(\"api/{formattedName}\")]\r\n" +
-                $"    [ApiController]\r\n" +
-                $"    public class {formattedName}Controller : ControllerBase\r\n" +
-                $"    {{\r\n" +
-                $"        private readonly I{formattedName}Service _{formattedName}Service;\r\n\r\n" +
-                $"        public {formattedName}Controller(I{formattedName}Service {formattedName}Service)\r\n" +
-                $"        {{\r\n" +
-                $"            _{formattedName}Service = {formattedName}Service;\r\n" +
-                $"        }}\r\n\r\n" +
-                $"        [HttpPost]\r\n" +
-                $"        public async Task<IActionResult> AddAsync([FromBody] {formattedName}DtoModel {formattedName}Dto)\r\n" +
-                $"        {{\r\n" +
-                $"            var (data, status) = await _{formattedName}Service.AddAsync({formattedName}Dto);\r\n" +
-                $"            return Ok(new {{ data = data, message = status }});\r\n" +
-                $"        }}\r\n\r\n" +
-                $"        [HttpPut]\r\n" +
-                $"        public async Task<IActionResult> UpdateAsync([FromBody] Update{formattedName}DtoModel {formattedName}Dto)\r\n" +
-                $"        {{\r\n" +
-                $"            var (data, status) = await _{formattedName}Service.UpdateAsync({formattedName}Dto);\r\n" +
-                $"            return Ok(new {{ data = data, message = status }});\r\n" +
-                $"        }}\r\n\r\n" +
-                $"        [HttpGet]\r\n" +
-                $"        public async Task<IActionResult> GetAllAsync([FromQuery] Dictionary<string, string> filters)\r\n" +
-                $"        {{\r\n" +
-                $"            var (data, status) = await _{formattedName}Service.GetAllAsync(filters);\r\n" +
-                $"            return Ok(new {{ data = data, message = status }});\r\n" +
-                $"        }}\r\n\r\n" +
-                $"        [HttpGet(\"{{id}}\")]\r\n" +
-                $"        public async Task<IActionResult> GetByIdAsync(string id, [FromQuery] Dictionary<string, string> filters)\r\n" +
-                $"        {{\r\n" +
-                $"            var (data, status) = await _{formattedName}Service.GetByIdAsync(id, filters);\r\n" +
-                $"            return Ok(new {{ data = data, message = status }});\r\n" +
-                $"        }}\r\n\r\n" +
-                $"        [HttpDelete(\"{{id}}\")]\r\n" +
-                $"        public async Task<IActionResult> DeleteAsync(string id)\r\n" +
-                $"        {{\r\n" +
-                $"            var (data, status) = await _{formattedName}Service.DeleteAsync(id);\r\n" +
-                $"            return Ok(new {{ data = data, message = status }});\r\n" +
-                $"        }}\r\n" +
-                $"    }}\r\n" +
-                $"}}";
+
+            var controllerContent =
+                  $"using Dapper;\r\n" +
+                  $"using Microsoft.AspNetCore.Http;\r\n" +
+                  $"using Microsoft.AspNetCore.Mvc;\r\n" +
+                  $"using System.Net.NetworkInformation;\r\n" +
+                  $"using VoiceFirstApi.Context;\r\n" +
+                  $"using VoiceFirstApi.DtoModels;\r\n" +
+                  $"using VoiceFirstApi.IService;\r\n" +
+                  $"using VoiceFirstApi.Service;\r\n" +
+                  $"using static System.Runtime.InteropServices.JavaScript.JSType;\r\n\r\n" +
+                  $"namespace VoiceFirstApi.Controllers\r\n" +
+                  $"{{\r\n" +
+                  $"    [Route(\"api/{formattedName}\")]\r\n" +
+                  $"    [ApiController]\r\n" +
+                  $"    public class {formattedName}Controller : ControllerBase\r\n" +
+                  $"    {{\r\n" +
+                  $"        private readonly I{formattedName}Service _{formattedName}Service;\r\n\r\n" +
+                  $"        public {formattedName}Controller(I{formattedName}Service {formattedName}Service)\r\n" +
+                  $"        {{\r\n" +
+                  $"            _{formattedName}Service = {formattedName}Service;\r\n" +
+                  $"        }}\r\n\r\n" +
+                  $"        [HttpPost]\r\n" +
+                  $"        public async Task<IActionResult> AddAsync([FromBody] {formattedName}DtoModel {formattedName}Dto)\r\n" +
+                  $"        {{\r\n" +
+                  $"            try\r\n" +
+                  $"            {{\r\n" +
+                  $"                var (data, status) = await _{formattedName}Service.AddAsync({formattedName}Dto);\r\n" +
+                  $"                return Ok(new {{ data = data, message = status }});\r\n" +
+                  $"            }}\r\n" +
+                  $"            catch (Exception ex)\r\n" +
+                  $"            {{\r\n" +
+                  $"                return StatusCode(500, new\r\n" +
+                  $"                {{\r\n" +
+                  $"                    data = (object)null,\r\n" +
+                  $"                    message = \"An error occurred while processing your request.\",\r\n" +
+                  $"                    status = 500,\r\n" +
+                  $"                    error = ex.Message\r\n" +
+                  $"                }});\r\n" +
+                  $"            }}\r\n" +
+                  $"        }}\r\n\r\n" +
+                  $"        [HttpPut]\r\n" +
+                  $"        public async Task<IActionResult> UpdateAsync([FromBody] Update{formattedName}DtoModel {formattedName}Dto)\r\n" +
+                  $"        {{\r\n" +
+                  $"            try\r\n" +
+                  $"            {{\r\n" +
+                  $"                var (data, status) = await _{formattedName}Service.UpdateAsync({formattedName}Dto);\r\n" +
+                  $"                return Ok(new {{ data = data, message = status }});\r\n" +
+                  $"            }}\r\n" +
+                  $"            catch (Exception ex)\r\n" +
+                  $"            {{\r\n" +
+                  $"                return StatusCode(500, new\r\n" +
+                  $"                {{\r\n" +
+                  $"                    data = (object)null,\r\n" +
+                  $"                    message = \"An error occurred while processing your request.\",\r\n" +
+                  $"                    status = 500,\r\n" +
+                  $"                    error = ex.Message\r\n" +
+                  $"                }});\r\n" +
+                  $"            }}\r\n" +
+                  $"        }}\r\n\r\n" +
+                  $"        [HttpGet]\r\n" +
+                  $"        public async Task<IActionResult> GetAllAsync([FromQuery] Dictionary<string, string> filters)\r\n" +
+                  $"        {{\r\n" +
+                  $"            try\r\n" +
+                  $"            {{\r\n" +
+                  $"                var (data, message, status_code) = await _{formattedName}Service.GetAllAsync(filters);\r\n" +
+                  $"                return Ok(new {{ data = data, message = message, status = status_code }});\r\n" +
+                  $"            }}\r\n" +
+                  $"            catch (Exception ex)\r\n" +
+                  $"            {{\r\n" +
+                  $"                return StatusCode(500, new\r\n" +
+                  $"                {{\r\n" +
+                  $"                    data = (object)null,\r\n" +
+                  $"                    message = \"An error occurred while processing your request.\",\r\n" +
+                  $"                    status = 500,\r\n" +
+                  $"                    error = ex.Message\r\n" +
+                  $"                }});\r\n" +
+                  $"            }}\r\n" +
+                  $"        }}\r\n\r\n" +
+                  $"        [HttpGet(\"{{id}}\")]\r\n" +
+                  $"        public async Task<IActionResult> GetByIdAsync(string id, [FromQuery] Dictionary<string, string> filters)\r\n" +
+                  $"        {{\r\n" +
+                  $"            try\r\n" +
+                  $"            {{\r\n" +
+                  $"                var (data, status) = await _{formattedName}Service.GetByIdAsync(id, filters);\r\n" +
+                  $"                return Ok(new {{ data = data, message = status }});\r\n" +
+                  $"            }}\r\n" +
+                  $"            catch (Exception ex)\r\n" +
+                  $"            {{\r\n" +
+                  $"                return StatusCode(500, new\r\n" +
+                  $"                {{\r\n" +
+                  $"                    data = (object)null,\r\n" +
+                  $"                    message = \"An error occurred while processing your request.\",\r\n" +
+                  $"                    status = 500,\r\n" +
+                  $"                    error = ex.Message\r\n" +
+                  $"                }});\r\n" +
+                  $"            }}\r\n" +
+                  $"        }}\r\n\r\n" +
+                  $"        [HttpDelete(\"{{id}}\")]\r\n" +
+                  $"        public async Task<IActionResult> DeleteAsync(string id)\r\n" +
+                  $"        {{\r\n" +
+                  $"            try\r\n" +
+                  $"            {{\r\n" +
+                  $"                var (data, status) = await _{formattedName}Service.DeleteAsync(id);\r\n" +
+                  $"                return Ok(new {{ data = data, message = status }});\r\n" +
+                  $"            }}\r\n" +
+                  $"            catch (Exception ex)\r\n" +
+                  $"            {{\r\n" +
+                  $"                return StatusCode(500, new\r\n" +
+                  $"                {{\r\n" +
+                  $"                    data = (object)null,\r\n" +
+                  $"                    message = \"An error occurred while processing your request.\",\r\n" +
+                  $"                    status = 500,\r\n" +
+                  $"                    error = ex.Message\r\n" +
+                  $"                }});\r\n" +
+                  $"            }}\r\n" +
+                  $"        }}\r\n" +
+                  $"    }}\r\n" +
+                  $"}}";
+
 
 
             var dtoContent =
