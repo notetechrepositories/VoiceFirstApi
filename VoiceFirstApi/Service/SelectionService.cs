@@ -2,16 +2,17 @@
 using VoiceFirstApi.IRepository;
 using VoiceFirstApi.IService;
 using VoiceFirstApi.Models;
+using VoiceFirstApi.Repository;
 using VoiceFirstApi.Utilities;
 namespace VoiceFirstApi.Service
 {
-    public class LocalService : ILocalService
+    public class SelectionService : ISelectionService
     {
-        private readonly ILocalRepo _LocalRepo;
+        private readonly ISelectionRepo _SelectionRepo;
 
-        public LocalService(ILocalRepo LocalRepo)
+        public SelectionService(ISelectionRepo SelectionRepo)
         {
-            _LocalRepo = LocalRepo;
+            _SelectionRepo = SelectionRepo;
         }
 
         private string GetCurrentUserId()
@@ -25,31 +26,36 @@ namespace VoiceFirstApi.Service
             return userIdClaim.Value;*/
         }
 
-        public async Task<(Dictionary<string, object>, string,int)> AddAsync(LocalDtoModel LocalDtoModel)
+        public async Task<(Dictionary<string, object>, string,int)> AddAsync(SelectionDtoModel SelectionDtoModel)
         {
             var userId = GetCurrentUserId();
             var data = new Dictionary<string, object>();
+            var filter = new Dictionary<string, string>
+            {
+                    { "t4_selection_name",SelectionDtoModel.t4_selection_name }
+            };
+            var selectionList = _SelectionRepo.GetAllAsync(filter).Result.FirstOrDefault();
 
+            if (selectionList != null)
+            {
+                return (data, StatusUtilities.ALREADY_EXIST, StatusUtilities.ALREADY_EXIST_CODE);
+            }
             var generatedId = Guid.NewGuid().ToString();
 
             var parameters = new
             {
                 Id = generatedId.Trim(),
-                CountryId = LocalDtoModel.id_t2_1_country.Trim(),
-                Division1Id = LocalDtoModel.id_t2_1_div1.Trim(),
-                Division2Id = LocalDtoModel.id_t2_1_div2.Trim(),
-                Division3Id = LocalDtoModel.id_t2_1_div3.Trim(),
-                Name = LocalDtoModel.t2_1_local_name.Trim(),
+                Name = SelectionDtoModel.t4_selection_name.Trim(),
                 InsertedBy = userId.Trim(),
                 InsertedDate = DateTime.UtcNow
             };
 
-            var status = await _LocalRepo.AddAsync(parameters);
+            var status = await _SelectionRepo.AddAsync(parameters);
 
             if (status > 0)
             {
                 data["Items"] = parameters;
-                return (data, StatusUtilities.SUCCESS,StatusUtilities.SUCCESS_CODE);
+                return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
             }
             else
             {
@@ -57,47 +63,52 @@ namespace VoiceFirstApi.Service
             }
         }
 
-        public async Task<(Dictionary<string, object>, string,int)> UpdateAsync(UpdateLocalDtoModel Local)
+        public async Task<(Dictionary<string, object>, string,int)> UpdateAsync(UpdateSelectionDtoModel Selection)
         {
             var userId = GetCurrentUserId();
             var data = new Dictionary<string, object>();
+            var filter = new Dictionary<string, string>
+            {
+                    { "t4_selection_name",Selection.t4_selection_name }
+            };
+            var selectionList = _SelectionRepo.GetAllAsync(filter).Result.FirstOrDefault();
+            if (selectionList != null && selectionList.id_t4_selection!= Selection.id_t4_selection)
+            {
+                return (data, StatusUtilities.ALREADY_EXIST, StatusUtilities.ALREADY_EXIST_CODE);
+            }
             var parameters = new
             {
-                Id = Local.id_t2_1_local.Trim(),
-                CountryId = Local.id_t2_1_country.Trim(),
-                Division1Id = Local.id_t2_1_div1.Trim(),
-                Division2Id = Local.id_t2_1_div2.Trim(),
-                Division3Id = Local.id_t2_1_div3.Trim(),
-                Name = Local.t2_1_local_name.Trim(),
+                Id = Selection.id_t4_selection,
+                Name = Selection.t4_selection_name,
                 UpdatedBy = userId,
                 UpdatedDate = DateTime.UtcNow
             };
 
-            var status = await _LocalRepo.UpdateAsync(parameters);
+            var status = await _SelectionRepo.UpdateAsync(parameters);
 
             if (status > 0)
             {
                 data["Items"] = parameters;
-                return (data, StatusUtilities.SUCCESS,StatusUtilities.SUCCESS_CODE);
+                return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
             }
             else
             {
-                return (data, StatusUtilities.FAILED,StatusUtilities.FAILED_CODE);
+                return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
             }
         }
 
         public async Task<(Dictionary<string, object>, string,int)> GetAllAsync(Dictionary<string, string> filters)
         {
             var data = new Dictionary<string, object>();
-            var list = await _LocalRepo.GetAllAsync(filters);
+            var list = await _SelectionRepo.GetAllAsync(filters);
             data["Items"] = list;
-            return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+            return (data, StatusUtilities.SUCCESS,StatusUtilities.SUCCESS_CODE);
         }
 
         public async Task<(Dictionary<string, object>, string,int)> GetByIdAsync(string id, Dictionary<string, string> filters)
         {
             var data = new Dictionary<string, object>();
-            var list = await _LocalRepo.GetByIdAsync(id, filters);
+            var list = await _SelectionRepo.GetByIdAsync(id, filters);
             data["Items"] = list;
             return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
         }
@@ -105,14 +116,14 @@ namespace VoiceFirstApi.Service
         public async Task<(Dictionary<string, object>, string,int)> DeleteAsync(string id)
         {
             var data = new Dictionary<string, object>();
-            var list = await _LocalRepo.DeleteAsync(id);
+            var list = await _SelectionRepo.DeleteAsync(id);
             if (list > 0)
             {
                 return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
             }
             else
             {
-                return (data, StatusUtilities.FAILED,StatusUtilities.FAILED_CODE);
+                return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
             }
         }
     }
