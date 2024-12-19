@@ -1,9 +1,14 @@
-﻿using VoiceFirstApi.DtoModels;
+﻿using System.Collections.Generic;
+using System.Diagnostics.Metrics;
+using System.Linq;
+using System.Security;
+using VoiceFirstApi.DtoModels;
 using VoiceFirstApi.IRepository;
 using VoiceFirstApi.IService;
 using VoiceFirstApi.Models;
 using VoiceFirstApi.Repository;
 using VoiceFirstApi.Utilities;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace VoiceFirstApi.Service
 {
     public class PermissionService : IPermissionService
@@ -111,7 +116,32 @@ namespace VoiceFirstApi.Service
             data["Items"] = list;
             return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
         }
+        public async Task<(Dictionary<string, object>, string, int)> GetBtRoleIdAsync(string id)
+        {
+            var data = new Dictionary<string, object>();
+            var filter = new Dictionary<string, string>
+            {
+                { "id_t5_1_m_user_roles", id },
+                { "is_delete", "0" }
+            };
 
+            var PermissionList = _PermissionRepo.GetAllAsync(filter);
+            if (PermissionList?.Result != null && PermissionList.Result.Any())
+            {
+                // Create a list to hold the permissions
+                var permissionList = PermissionList.Result.Select(permission => permission.permission).ToList();
+
+                // Add the list to the data dictionary
+                data["Items"] = permissionList;
+            }
+            else
+            {
+                // Assign an empty list if no permissions are found
+                data["Items"] = new List<string>();
+            }
+
+            return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+        }
         public async Task<(Dictionary<string, object>, string, int)> GetByIdAsync(string id, Dictionary<string, string> filters)
         {
             var data = new Dictionary<string, object>();
@@ -133,5 +163,7 @@ namespace VoiceFirstApi.Service
                 return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
             }
         }
+
+        
     }
 }

@@ -31,109 +31,146 @@ namespace VoiceFirstApi.Service
         {
             var userId = GetCurrentUserId();
             var data = new Dictionary<string, object>();
-            UpdateRoleDtoModel roleDtoModel = new UpdateRoleDtoModel();
-            roleDtoModel.id_t5_1_m_user_roles = Role.id_t5_1_m_user_roles;
-            roleDtoModel.t5_1_m_only_assigned_location = Role.t5_1_m_only_assigned_location;
-            roleDtoModel.t5_1_m_user_roles_name = Role.t5_1_m_user_roles_name;
-            roleDtoModel.t5_1_m_all_location_type = Role.t5_1_m_all_location_type;
-            roleDtoModel.t5_1_m_all_location_access = Role.t5_1_m_all_location_access;
-            var (result, message, status) = await UpdateAsync(roleDtoModel);
-            if (status == 200)
+            var filter = new Dictionary<string, string>
             {
+                    { "t5_1_m_user_roles_name",Role.t5_1_m_user_roles_name }
+            };
+            var RoleList = _RoleRepo.GetAllAsync(filter).Result.FirstOrDefault();
+
+            if (RoleList != null && RoleList.id_t5_1_m_user_roles != Role.id_t5_1_m_user_roles)
+            {
+                return (data, StatusUtilities.ALREADY_EXIST, StatusUtilities.ALREADY_EXIST_CODE);
+            }
+            var parameters = new
+            {
+                Id = Role.id_t5_1_m_user_roles.Trim(),
+                Name = Role.t5_1_m_user_roles_name.Trim(),
+                AllLocationAccess = Role.t5_1_m_all_location_access,
+                AllLocationType = Role.t5_1_m_all_location_type,
+                OnlyAssignedLocation = Role.t5_1_m_only_assigned_location,
+                UpdatedBy = userId,
+                UpdatedDate = DateTime.UtcNow
+            };
+
+            var status = await _RoleRepo.UpdateAsync(parameters);
+            if (status >0)
+            {
+                await _PermissionRepo.DeleteByRoleIdAsync(Role.id_t5_1_m_user_roles);
                 foreach (var item in Role.Permissions)
                 {
-                    var filter = new Dictionary<string, string>
+
+                    var filterPermissions = new Dictionary<string, string>
                     {
-                            { "id_t5_1_m_user_roles",item.id_t5_1_m_user_roles },
-                            {"permission",item.permission }
+                            { "id_t5_1_m_user_roles",Role.id_t5_1_m_user_roles },
+                            {"permission",item }
                     };
-                    var PermissionList = _PermissionRepo.GetAllAsync(filter).Result.FirstOrDefault();
+                    var PermissionList = _PermissionRepo.GetAllAsync(filterPermissions).Result.FirstOrDefault();
                     if (PermissionList != null)
                     {
-                        var parameters = new
+
+                        var parametersPermissions = new
                         {
                             Id = PermissionList.id_t5_1_m_user_roles_permission.Trim(),
-                            Name = item.permission.Trim(),
-                            RoleId = item.id_t5_1_m_user_roles.Trim(),
-                            IsDelete = 1,
-                            InsertedBy = userId.Trim(),
-                            InsertedDate = DateTime.UtcNow
+                            Name = item.Trim(),
+                            RoleId = Role.id_t5_1_m_user_roles.Trim(),
+                            IsDelete = 0,
+                            UpdatedBy = userId,
+                            UpdatedDate = DateTime.UtcNow
                         };
-                        await _PermissionRepo.UpdateAsync(parameters);
+                        await _PermissionRepo.UpdateAsync(parametersPermissions);
                     }
                     else
                     {
                         var generatedId = Guid.NewGuid().ToString();
-                        var parameters = new
+                        var parametersPermissions = new
                         {
                             Id = generatedId.Trim(),
-                            Name = item.permission.Trim(),
-                            RoleId = item.id_t5_1_m_user_roles.Trim(),
+                            Name = item.Trim(),
+                            RoleId = Role.id_t5_1_m_user_roles.Trim(),
                             InsertedBy = userId.Trim(),
                             InsertedDate = DateTime.UtcNow
                         };
-                        await _PermissionRepo.AddAsync(parameters);
+                        await _PermissionRepo.AddAsync(parametersPermissions);
                     }
                 }
                 return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
             }
             else
             {
-                return (result, message, status);
+                return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
             }
         }
         public async Task<(Dictionary<string, object>, string, int)> AddRoleWithPermissionAsync(InsertRoleWithPermissionDTOModel Role)
         {
             var userId = GetCurrentUserId();
             var data = new Dictionary<string, object>();
-            RoleDtoModel roleDtoModel = new RoleDtoModel();
-            roleDtoModel.t5_1_m_only_assigned_location = Role.t5_1_m_only_assigned_location;
-            roleDtoModel.t5_1_m_user_roles_name = Role.t5_1_m_user_roles_name;
-            roleDtoModel.t5_1_m_all_location_type = Role.t5_1_m_all_location_type;
-            roleDtoModel.t5_1_m_all_location_access = Role.t5_1_m_all_location_access;
-            var (result,message,status)=await AddAsync(roleDtoModel);
-            if(status == 200) 
+            var filter = new Dictionary<string, string>
             {
+                    { "t5_1_m_user_roles_name",Role.t5_1_m_user_roles_name }
+            };
+            var RoleList = _RoleRepo.GetAllAsync(filter).Result.FirstOrDefault();
+
+            if (RoleList != null)
+            {
+                return (data, StatusUtilities.ALREADY_EXIST, StatusUtilities.ALREADY_EXIST_CODE);
+            }
+            var generatedId = Guid.NewGuid().ToString();
+
+            var parameters = new
+            {
+                Id = generatedId.Trim(),
+                Name = Role.t5_1_m_user_roles_name.Trim(),
+                AllLocationAccess = Role.t5_1_m_all_location_access,
+                AllLocationType = Role.t5_1_m_all_location_type,
+                OnlyAssignedLocation = Role.t5_1_m_only_assigned_location,
+                InsertedBy = userId.Trim(),
+                InsertedDate = DateTime.UtcNow
+            };
+
+            var status = await _RoleRepo.AddAsync(parameters);
+            if (status >0) 
+            {
+               
                 foreach (var item in Role.Permissions)
                 {
-                    var filter = new Dictionary<string, string>
+                    var Permissionsfilters = new Dictionary<string, string>
                     {
-                            { "id_t5_1_m_user_roles",item.id_t5_1_m_user_roles },
-                            {"permission",item.permission }
+                            { "id_t5_1_m_user_roles",generatedId },
+                            {"permission",item }
                     };
-                    var PermissionList = _PermissionRepo.GetAllAsync(filter).Result.FirstOrDefault();
+                    var PermissionList = _PermissionRepo.GetAllAsync(Permissionsfilters).Result.FirstOrDefault();
                     if (PermissionList != null)
                     {
-                        var parameters = new
+                        var Permissionsparameters = new
                         {
                             Id = PermissionList.id_t5_1_m_user_roles_permission.Trim(),
-                            Name = item.permission.Trim(),
-                            RoleId = item.id_t5_1_m_user_roles.Trim(),
-                            IsDelete = 1,
-                            InsertedBy = userId.Trim(),
-                            InsertedDate = DateTime.UtcNow
+                            Name = item.Trim(),
+                            RoleId = generatedId.Trim(),
+                            IsDelete = 0,
+                            UpdatedBy = userId,
+                            UpdatedDate = DateTime.UtcNow
                         };
-                        await _PermissionRepo.UpdateAsync(parameters);
+                        await _PermissionRepo.UpdateAsync(Permissionsparameters);
                     }
                     else
                     {
-                        var generatedId = Guid.NewGuid().ToString();
-                        var parameters = new
+                        var generatedPermissionsId = Guid.NewGuid().ToString();
+                        var Permissionsparameters = new
                         {
-                            Id = generatedId.Trim(),
-                            Name = item.permission.Trim(),
-                            RoleId = item.id_t5_1_m_user_roles.Trim(),
+                            Id = generatedPermissionsId.Trim(),
+                            Name = item.Trim(),
+                            RoleId = generatedId.Trim(),
                             InsertedBy = userId.Trim(),
                             InsertedDate = DateTime.UtcNow
                         };
-                        await _PermissionRepo.AddAsync(parameters);
+                        await _PermissionRepo.AddAsync(Permissionsparameters);
                     }
                 }
                 return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
             }
             else
             {
-                return (result, message, status);
+                return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
             }
         }
         public async Task<(Dictionary<string, object>, string,int)> AddAsync(RoleDtoModel RoleDtoModel)

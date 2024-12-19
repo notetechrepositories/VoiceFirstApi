@@ -23,6 +23,8 @@ builder.Services.AddScoped<ILocalRepo, LocalRepo>();
 builder.Services.AddScoped<ILocalService, LocalService>();
 builder.Services.AddScoped<ISelectionRepo, SelectionRepo>();
 builder.Services.AddScoped<ISelectionService, SelectionService>();
+builder.Services.AddScoped<ISelectionValuesRepo, SelectionValuesRepo>();
+builder.Services.AddScoped<ISelectionValuesService, SelectionValuesService>();
 builder.Services.AddScoped<IRoleRepo, RoleRepo>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IPermissionRepo, PermissionRepo>();

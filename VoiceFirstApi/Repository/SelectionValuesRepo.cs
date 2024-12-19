@@ -20,7 +20,7 @@ namespace VoiceFirstApi.Repository
         public async Task<int> AddAsync(object parameters)
         {
             var query = @"
-                INSERT INTO t4_1_selection _values(id_t4_1_selection_values,id_t4_selection,t4_1_selection_values_name,inserted_by,inserted_date) 
+                INSERT INTO t4_1_selection_values(id_t4_1_selection_values,id_t4_selection,t4_1_selection_values_name,inserted_by,inserted_date) 
                 VALUES (@Id,@SelectionId,@Name,@InsertedBy,@InsertedDate);";
             using (var connection = _dapperContext.CreateConnection())
             {
@@ -30,7 +30,7 @@ namespace VoiceFirstApi.Repository
 
         public async Task<int> DeleteAsync(string id)
         {
-            var query = "DELETE FROM t4_1_selection _values WHERE id_t4_1_selection_values = @id";
+            var query = "DELETE FROM t4_1_selection_values WHERE id_t4_1_selection_values = @id";
             using (var connection = _dapperContext.CreateConnection())
             {
                 return await connection.ExecuteAsync(query, new { id = id });
@@ -39,7 +39,7 @@ namespace VoiceFirstApi.Repository
 
         public async Task<IEnumerable<SelectionValuesModel>> GetAllAsync(Dictionary<string, string> filters)
         {
-          var query = "SELECT * FROM t4_1_selection _values ";
+          var query = "SELECT * FROM t4_1_selection_values ";
 
           if (filters != null && filters.Any())
           {
@@ -69,7 +69,7 @@ namespace VoiceFirstApi.Repository
 
         public async Task<SelectionValuesModel> GetByIdAsync(string id, Dictionary<string, string> filters)
         {
-            var query = "SELECT * FROM t4_1_selection _values WHERE id_t4_1_selection_values = @id";
+            var query = "SELECT * FROM t4_1_selection_values WHERE id_t4_1_selection_values = @id";
 
             if (filters != null && filters.Any())
             {

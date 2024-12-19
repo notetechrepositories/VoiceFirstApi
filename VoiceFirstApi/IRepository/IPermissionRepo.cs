@@ -11,5 +11,6 @@ namespace VoiceFirstApi.IRepository
         Task<int> AddAsync(object parameters);
         Task<int> UpdateAsync(object parameters);
         Task<int> DeleteAsync(string id);
+        Task<int> DeleteByRoleIdAsync(string id);
     }
 }

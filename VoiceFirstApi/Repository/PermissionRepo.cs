@@ -30,7 +30,15 @@ namespace VoiceFirstApi.Repository
 
         public async Task<int> DeleteAsync(string id)
         {
-            var query = "UPDATE t5_1_m_user_roles_permissions is_delete = 1 WHERE id_t5_1_m_user_roles_permission = @id";
+            var query = "UPDATE t5_1_m_user_roles_permissions set is_delete = 1 WHERE id_t5_1_m_user_roles_permission = @id";
+            using (var connection = _dapperContext.CreateConnection())
+            {
+                return await connection.ExecuteAsync(query, new { id = id });
+            }
+        }
+        public async Task<int> DeleteByRoleIdAsync(string id)
+        {
+            var query = "UPDATE t5_1_m_user_roles_permissions set is_delete = 1 WHERE id_t5_1_m_user_roles = @id";
             using (var connection = _dapperContext.CreateConnection())
             {
                 return await connection.ExecuteAsync(query, new { id = id });

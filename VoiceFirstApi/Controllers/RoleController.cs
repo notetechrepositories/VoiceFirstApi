@@ -21,7 +21,7 @@ namespace VoiceFirstApi.Controllers
             _RoleService = RoleService;
         }
 
-        [HttpPost("add-role-with-permission")]
+        [HttpPost]
         public async Task<IActionResult> AddAsync([FromBody] RoleDtoModel RoleDto)
         {
             try
@@ -40,7 +40,7 @@ namespace VoiceFirstApi.Controllers
                 });
             }
         }
-        [HttpPost]
+        [HttpPost("add-role-with-permission")]
         public async Task<IActionResult> AddRoleWithPermissionAsync([FromBody] InsertRoleWithPermissionDTOModel RoleDto)
         {
             try
