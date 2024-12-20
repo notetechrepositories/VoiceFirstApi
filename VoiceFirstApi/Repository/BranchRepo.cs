@@ -22,7 +22,7 @@ namespace VoiceFirstApi.Repository
             var query = @"
                 INSERT INTO t2_company_branch(id_t2_company_branch,id_t1_company,t2_company_branch_name,t2_id_branch_type,
                 t2_address_1,t2_address_2,t2_zip_code,t2_mobile_no,t2_phone_no,t2_email,id_t2_1_local,inserted_by,inserted_date) 
-                VALUES (@Id,@CompanyId,@Name,@BranchType,@Address1,@Address2,@ZipCode,@Mobile,@PhoneNo,@Email,,@Local,@InsertedBy,@InsertedDate);";
+                VALUES (@Id,@CompanyId,@Name,@BranchType,@Address1,@Address2,@ZipCode,@Mobile,@PhoneNo,@Email,@Local,@InsertedBy,@InsertedDate);";
             using (var connection = _dapperContext.CreateConnection())
             {
                 return await connection.ExecuteAsync(query, parameters);

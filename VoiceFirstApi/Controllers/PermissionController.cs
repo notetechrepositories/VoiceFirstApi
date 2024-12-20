@@ -1,4 +1,4 @@
-﻿using Dapper;
+﻿/*using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.NetworkInformation;
@@ -121,4 +121,4 @@ namespace VoiceFirstApi.Controllers
             }
         }
     }
-}
+}*/

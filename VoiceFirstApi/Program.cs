@@ -27,6 +27,8 @@ builder.Services.AddScoped<ISelectionValuesRepo, SelectionValuesRepo>();
 builder.Services.AddScoped<ISelectionValuesService, SelectionValuesService>();
 builder.Services.AddScoped<IRoleRepo, RoleRepo>();
 builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<IUserRepo, UserRepo>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICompanyRepo, CompanyRepo>();
 builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddScoped<IBranchRepo, BranchRepo>();

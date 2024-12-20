@@ -9,6 +9,8 @@ namespace VoiceFirstApi.DtoModels
         public int t5_1_m_all_location_access { get; set; }
         public int t5_1_m_all_location_type { get; set; }
         public int t5_1_m_only_assigned_location { get; set; }
+        public string t5_1_m_type { get; set; }
+        public string t5_1_m_type_id { get; set; }
         public List<string> Permissions { get; set; }= new List<string>();
     }
     public class UpdateRoleWithPermissionDtoModel : InsertRoleWithPermissionDTOModel

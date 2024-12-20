@@ -21,9 +21,9 @@ namespace VoiceFirstApi.Repository
         {
             var query = @"
                 INSERT INTO t5_users(id_t5_users,t5_first_name,t5_last_name,t5_address_1,t5_address_2,t5_zip_code,
-                t5_mobile_no,t5_email,t5_password,t5_birth_year,t5_sex,id_t2_1_local,inserted_by,inserted_date) 
+                t5_mobile_no,t5_email,t5_password,t5_birth_year,t5_sex,id_t2_1_local,id_t5_1_m_user_roles,inserted_by,inserted_date) 
                 VALUES (@Id,@FirstName,@LastName,@Address1,@Address2,@ZipCode,@Mobile,@Email,@Password,@BirthDate,
-                @Sex,@id_t2_1_local,@InsertedBy,@InsertedDate);";
+                @Sex,@Local,@RoleId,@InsertedBy,@InsertedDate);";
             using (var connection = _dapperContext.CreateConnection())
             {
                 return await connection.ExecuteAsync(query, parameters);
@@ -109,6 +109,7 @@ namespace VoiceFirstApi.Repository
                     t5_email = @Email, 
                     t5_birth_year = @BirthDate, 
                     t5_sex = @Sex, 
+                    id_t5_1_m_user_roles = @RoleId, 
                     id_t2_1_local = @Local, 
                     updated_by = @UpdatedBy, 
                     updated_date = @UpdatedDate

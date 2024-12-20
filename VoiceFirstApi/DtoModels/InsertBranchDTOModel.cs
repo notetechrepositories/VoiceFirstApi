@@ -10,6 +10,10 @@
         public string? t2_mobile_no { get; set; }
         public string? t2_phone_no { get; set; }
         public string t2_email { get; set; }
-        public string id_t2_1_local { get; set; }
+        public string id_t2_1_country { get; set; }
+        public string id_t2_1_div1 { get; set; }
+        public string id_t2_1_div2 { get; set; }
+        public string id_t2_1_div3 { get; set; }
+        public string t2_1_local_name { get; set; }
     }
 }

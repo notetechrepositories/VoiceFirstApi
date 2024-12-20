@@ -4,6 +4,7 @@ using VoiceFirstApi.IService;
 using VoiceFirstApi.Models;
 using VoiceFirstApi.Repository;
 using VoiceFirstApi.Utilities;
+using VoiceFirstApi.Utilits;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace VoiceFirstApi.Service
 {
@@ -11,11 +12,15 @@ namespace VoiceFirstApi.Service
     {
         private readonly ICompanyRepo _CompanyRepo;
         private readonly IBranchRepo _BranchRepo;
+        private readonly IUserRepo _UserRepo;
+        private readonly ILocalRepo _LocalRepo;
 
-        public CompanyService(ICompanyRepo CompanyRepo, IBranchRepo branchRepo)
+        public CompanyService(ICompanyRepo CompanyRepo, IBranchRepo BranchRepo, IUserRepo UserRepo, ILocalRepo localRepo)
         {
             _CompanyRepo = CompanyRepo;
-            _BranchRepo = branchRepo;
+            _BranchRepo = BranchRepo;
+            _UserRepo = UserRepo;
+            _LocalRepo = localRepo;
         }
 
         private string GetCurrentUserId()
@@ -70,6 +75,7 @@ namespace VoiceFirstApi.Service
         public async Task<(Dictionary<string, object>, string, int)> InsertCompany(InsertCompanyDTOModel Company)
         {
             var userId = GetCurrentUserId();
+            var emailService = new CommunicationUtilities();
             var data = new Dictionary<string, object>();
             var repoStatus = 0;
             var filter = new Dictionary<string, string>
@@ -88,8 +94,8 @@ namespace VoiceFirstApi.Service
                 Id = generatedId.Trim(),
                 Name = Company.t1_company_name.Trim(),
                 Type = Company.id_company_type.Trim(),
-                Currency = Company.id_currency.Trim(),
-                Date = Company.is_active_till_date,
+                Currency = "",
+                Date = "",
                 InsertedBy = userId.Trim(),
                 InsertedDate = DateTime.UtcNow
             };
@@ -97,17 +103,39 @@ namespace VoiceFirstApi.Service
 
             if (status > 0)
             {
+
                 var filterBranch = new Dictionary<string, string>
                 {
-                        { "t2_company_branch_name", Company.insertBranchDTOModel.t2_company_branch_name }
+                        { "t2_email", Company.insertBranchDTOModel.t2_email }
+
                 };
                 var BranchList = _BranchRepo.GetAllAsync(filterBranch).Result.FirstOrDefault();
                 if (BranchList != null)
                 {
-                    return (data, StatusUtilities.ALREADY_EXIST, StatusUtilities.ALREADY_EXIST_CODE);
+                    await _CompanyRepo.DeleteAsync(parameters.Id);
+                    return (data, StatusUtilities.EMAIL_ALREADY_EXIST_IN_BRANCH, StatusUtilities.ALREADY_EXIST_CODE);
                 }
                 var generatedBranchId = Guid.NewGuid().ToString();
+                var generatedLocalId = Guid.NewGuid().ToString();
 
+                var parametersLocal = new
+                {
+                    Id = generatedLocalId.Trim(),
+                    CountryId = Company.insertBranchDTOModel.id_t2_1_country.Trim(),
+                    Division1Id = Company.insertBranchDTOModel.id_t2_1_div1.Trim(),
+                    Division2Id = Company.insertBranchDTOModel.id_t2_1_div2.Trim(),
+                    Division3Id = Company.insertBranchDTOModel.id_t2_1_div3.Trim(),
+                    Name = Company.insertBranchDTOModel.t2_1_local_name.Trim(),
+                    InsertedBy = userId.Trim(),
+                    InsertedDate = DateTime.UtcNow
+                };
+
+                var statusLocal = await _LocalRepo.AddAsync(parametersLocal);
+
+                if (statusLocal == 0)
+                {
+                    return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+                }
                 var parametersBranch = new
                 {
                     Id = generatedBranchId.Trim(),
@@ -120,13 +148,104 @@ namespace VoiceFirstApi.Service
                     Mobile = Company.insertBranchDTOModel.t2_mobile_no.Trim(),
                     PhoneNo = Company.insertBranchDTOModel.t2_phone_no.Trim(),
                     Email = Company.insertBranchDTOModel.t2_email.Trim(),
-                    Local = Company.insertBranchDTOModel.id_t2_1_local.Trim(),
+                    Local = parametersLocal.Id.Trim(),
                     InsertedBy = userId.Trim(),
                     InsertedDate = DateTime.UtcNow
                 };
 
-                var branchStatus= _BranchRepo.AddAsync(parametersBranch);
+                var branchStatus= await _BranchRepo.AddAsync(parametersBranch);
+                if (branchStatus > 0)
+                {
+                    EmailModel mail = new EmailModel();
+                    mail.from_email_password = "frsj ucpw vaww xzmv";
+                    mail.from_email = "anil.p@notetech.com";
+                    mail.to_email = Company.insertBranchDTOModel.t2_email;
+                    mail.email_html_body = "<html><body><p> Hi " + Company.insertBranchDTOModel.t2_company_branch_name  + ",</p><p> Thank you for register your company  "  +
+                        "<p><strong> Thanks & Regards,</strong><br><em> " +
+                        " Notetech Team </em></p><p><em> Powered by Notetech software </em></p></body></html>";
+                    mail.subject = "Company successfully register";
+                    emailService.SendMail(mail);
 
+                    var generatedUserId = Guid.NewGuid().ToString();
+                    var filterUser = new Dictionary<string, string>
+                    {
+                            { "t5_email",Company.userDtoModel.t5_email },
+                            { "t5_mobile_no",Company.userDtoModel.t5_mobile_no }
+                    };
+                    var UserList = _UserRepo.GetAllAsync(filterUser).Result.FirstOrDefault();
+
+                    if (UserList != null)
+                    {
+                        return (data, StatusUtilities.EMAIL_OR_MOBILE_ALREADY_EXIST_IN_USER, StatusUtilities.ALREADY_EXIST_CODE);
+                    }
+                    var generatedUserLocalId = Guid.NewGuid().ToString();
+
+                    var parametersUserLocal = new
+                    {
+                        Id = generatedUserLocalId.Trim(),
+                        CountryId = Company.insertBranchDTOModel.id_t2_1_country.Trim(),
+                        Division1Id = Company.insertBranchDTOModel.id_t2_1_div1.Trim(),
+                        Division2Id = Company.insertBranchDTOModel.id_t2_1_div2.Trim(),
+                        Division3Id = Company.insertBranchDTOModel.id_t2_1_div3.Trim(),
+                        Name = Company.insertBranchDTOModel.t2_1_local_name.Trim(),
+                        InsertedBy = userId.Trim(),
+                        InsertedDate = DateTime.UtcNow
+                    };
+
+                    var statusUserLocal = await _LocalRepo.AddAsync(parametersUserLocal);
+
+                    if (statusUserLocal == 0)
+                    {
+                        await _CompanyRepo.DeleteAsync(parameters.Id);
+                        await _BranchRepo.DeleteAsync(parametersBranch.Id);
+                        return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+                    }
+                    var password = StringUtilities.GenerateRandomString(6);
+                    var parametersUser = new
+                    {
+                        Id = generatedUserId.Trim(),
+                        FirstName = Company.userDtoModel.t5_first_name.Trim(),
+                        LastName = Company.userDtoModel.t5_last_name.Trim(),
+                        Address1 = Company.userDtoModel.t5_address_1.Trim(),
+                        Address2 = Company.userDtoModel.t5_address_2.Trim(),
+                        ZipCode = Company.userDtoModel.t5_zip_code.Trim(),
+                        Mobile = Company.userDtoModel.t5_mobile_no.Trim(),
+                        Email = Company.userDtoModel.t5_email.Trim(),
+                        Password = SecurityUtilities.Encryption(password).Trim(),
+                        RoleId = "4b870b07-54c5-43e7-88d8-c4a03badeedb",
+                        BirthDate = Company.userDtoModel.t5_birth_year.Trim(),
+                        Sex = Company.userDtoModel.t5_sex.Trim(),
+                        Local = parametersUserLocal.Id.Trim(),
+                        InsertedBy = userId.Trim(),
+                        InsertedDate = DateTime.UtcNow
+                    };
+
+                    var statusUser = await _UserRepo.AddAsync(parametersUser);
+
+                    if (statusUser > 0)
+                    {
+                            EmailModel mailUser = new EmailModel();
+                            mailUser.from_email_password = "frsj ucpw vaww xzmv";
+                            mailUser.from_email = "anil.p@notetech.com";
+                            mailUser.to_email = Company.userDtoModel.t5_email;
+                            mailUser.email_html_body = "<html><body><p> Hi " + Company.userDtoModel.t5_first_name +" " +Company.userDtoModel.t5_last_name + "</p><p> Your Password is " + password +
+                                    "<br> Don`t share the Password.</p><p><strong> Thanks & Regards,</strong><br><em> " +
+                                    " Leadwear Team </em></p><p><em> Powered by Leadwear </em></p></body></html>";
+                            mailUser.subject = "Yor Passward";
+                            emailService.SendMail(mailUser);
+                        
+                        return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+                    }
+                    else
+                    {
+                        await _CompanyRepo.DeleteAsync(parameters.Id);
+                        await _BranchRepo.DeleteAsync(parametersBranch.Id);
+                    }
+                }
+                else
+                {
+                    await _CompanyRepo.DeleteAsync(parameters.Id);
+                }
 
             }
             return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);

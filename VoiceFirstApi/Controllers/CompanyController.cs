@@ -42,6 +42,27 @@ namespace VoiceFirstApi.Controllers
             }
 
         }
+        [HttpPost("insert-company-admin")]
+        public async Task<IActionResult> AddAsync([FromBody] InsertCompanyDTOModel CompanyDto)
+        {
+            try
+            {
+                var (data, message, status_code) = await _CompanyService.InsertCompany(CompanyDto);
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it as needed
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
+
+        }
 
         [HttpPut]
         public async Task<IActionResult> UpdateAsync([FromBody] UpdateCompanyDtoModel CompanyDto)
