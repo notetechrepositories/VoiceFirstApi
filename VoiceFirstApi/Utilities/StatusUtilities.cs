@@ -30,6 +30,7 @@
         public const string INVALID_REFERAL_CODE = "INVALID_REFERAL_CODE";
         public const string ALREADY_EXIST = "ALREADY EXIST";
         public const string EMAIL_ALREADY_EXIST = "Email already exist";
+        public const string EMAIL_OR_MOBILE_ALREADY_EXIST = "Email or mobile number already exist";
         public const string EMAIL_NOT_EXIST = "Email not exist";
         public const string INVALID_EMAIL = "Invalid email";
         public const string INVALID_PASSWORD = "Invalid password";

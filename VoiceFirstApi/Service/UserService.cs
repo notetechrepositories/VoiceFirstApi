@@ -1,25 +1,19 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.Metrics;
-using System.Linq;
-using System.Security;
+﻿using System.Data;
 using VoiceFirstApi.DtoModels;
 using VoiceFirstApi.IRepository;
 using VoiceFirstApi.IService;
 using VoiceFirstApi.Models;
 using VoiceFirstApi.Repository;
 using VoiceFirstApi.Utilities;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace VoiceFirstApi.Service
 {
-    public class PermissionService : IPermissionService
+    public class UserService : IUserService
     {
-        private readonly IPermissionRepo _PermissionRepo;
-        private readonly IRoleRepo _RoleRepo;
+        private readonly IUserRepo _UserRepo;
 
-        public PermissionService(IPermissionRepo PermissionRepo, IRoleRepo RoleRepo)
+        public UserService(IUserRepo UserRepo)
         {
-            _PermissionRepo = PermissionRepo;
-            _RoleRepo = RoleRepo;
+            _UserRepo = UserRepo;
         }
 
         private string GetCurrentUserId()
@@ -33,34 +27,42 @@ namespace VoiceFirstApi.Service
             return userIdClaim.Value;*/
         }
 
-        public async Task<(Dictionary<string, object>, string,int)> AddAsync(PermissionDtoModel PermissionDtoModel)
+        public async Task<(Dictionary<string, object>, string, int)> AddAsync(UserDtoModel UserDtoModel)
         {
             var userId = GetCurrentUserId();
             var data = new Dictionary<string, object>();
+            var generatedId = Guid.NewGuid().ToString();
             var filter = new Dictionary<string, string>
             {
-                    { "id_t5_1_m_user_roles",PermissionDtoModel.id_t5_1_m_user_roles },
-                    {"permission",PermissionDtoModel.permission }
+                    { "t5_email",UserDtoModel.t5_email },
+                    { "t5_mobile_no",UserDtoModel.t5_mobile_no }
             };
-            var PermissionList = _PermissionRepo.GetAllAsync(filter).Result.FirstOrDefault();
+            var UserList = _UserRepo.GetAllAsync(filter).Result.FirstOrDefault();
 
-            if (PermissionList != null)
+            if (UserList != null )
             {
-                return (data, StatusUtilities.ALREADY_EXIST, StatusUtilities.ALREADY_EXIST_CODE);
+                return (data, StatusUtilities.EMAIL_OR_MOBILE_ALREADY_EXIST, StatusUtilities.ALREADY_EXIST_CODE);
             }
-            var generatedId = Guid.NewGuid().ToString();
-            
-
+            var password =  StringUtilities.GenerateRandomString(6);
             var parameters = new
             {
                 Id = generatedId.Trim(),
-                Name = PermissionDtoModel.permission.Trim(),
-                RoleId = PermissionDtoModel.id_t5_1_m_user_roles.Trim(),
+                FirstName = UserDtoModel.t5_first_name.Trim(),
+                LastName = UserDtoModel.t5_last_name.Trim(),
+                Address1 = UserDtoModel.t5_address_1.Trim(),
+                Address2 = UserDtoModel.t5_address_2.Trim(),
+                ZipCode = UserDtoModel.t5_zip_code.Trim(),
+                Mobile = UserDtoModel.t5_mobile_no.Trim(),
+                Email = UserDtoModel.t5_email.Trim(),
+                Password = SecurityUtilities.Encryption(password).Trim(),
+                BirthDate = UserDtoModel.t5_birth_year.Trim(),
+                Sex = UserDtoModel.t5_sex.Trim(),
+                Local = UserDtoModel.id_t2_1_local.Trim(),
                 InsertedBy = userId.Trim(),
                 InsertedDate = DateTime.UtcNow
             };
 
-            var status = await _PermissionRepo.AddAsync(parameters);
+            var status = await _UserRepo.AddAsync(parameters);
 
             if (status > 0)
             {
@@ -73,32 +75,40 @@ namespace VoiceFirstApi.Service
             }
         }
 
-        public async Task<(Dictionary<string, object>, string,int)> UpdateAsync(UpdatePermissionDtoModel Permission)
+        public async Task<(Dictionary<string, object>, string, int)> UpdateAsync(UpdateUserDtoModel User)
         {
             var userId = GetCurrentUserId();
             var data = new Dictionary<string, object>();
             var filter = new Dictionary<string, string>
             {
-                    { "id_t5_1_m_user_roles",Permission.id_t5_1_m_user_roles },
-                    {"permission",Permission.permission }
+                    { "t5_email",User.t5_email },
+                    { "t5_mobile_no",User.t5_mobile_no }
             };
-            var PermissionList = _PermissionRepo.GetAllAsync(filter).Result.FirstOrDefault();
+            var UserList = _UserRepo.GetAllAsync(filter).Result.FirstOrDefault();
 
-            if (PermissionList != null && PermissionList.id_t5_1_m_user_roles_permission!=Permission.id_t5_1_m_user_roles_permission)
+            if (UserList != null  && UserList.id_t5_users!= User.id_t5_users)
             {
-                return (data, StatusUtilities.ALREADY_EXIST, StatusUtilities.ALREADY_EXIST_CODE);
+                return (data, StatusUtilities.EMAIL_OR_MOBILE_ALREADY_EXIST, StatusUtilities.ALREADY_EXIST_CODE);
             }
+
             var parameters = new
             {
-                Id = Permission.id_t5_1_m_user_roles_permission,
-                Name = Permission.permission,
-                RoleId = Permission.id_t5_1_m_user_roles,
-                IsDelete = Permission.is_delete,
+                Id = User.id_t5_users,
+                FirstName = User.t5_first_name.Trim(),
+                LastName = User.t5_last_name.Trim(),
+                Address1 = User.t5_address_1.Trim(),
+                Address2 = User.t5_address_2.Trim(),
+                ZipCode = User.t5_zip_code.Trim(),
+                Mobile = User.t5_mobile_no.Trim(),
+                Email = User.t5_email.Trim(),
+                BirthDate = User.t5_birth_year.Trim(),
+                Sex = User.t5_sex.Trim(),
+                Local = User.id_t2_1_local.Trim(),
                 UpdatedBy = userId,
                 UpdatedDate = DateTime.UtcNow
             };
 
-            var status = await _PermissionRepo.UpdateAsync(parameters);
+            var status = await _UserRepo.UpdateAsync(parameters);
 
             if (status > 0)
             {
@@ -111,18 +121,18 @@ namespace VoiceFirstApi.Service
             }
         }
 
-        public async Task<(Dictionary<string, object>, string,int)> GetAllAsync(Dictionary<string, string> filters)
+        public async Task<(Dictionary<string, object>, string, int)> GetAllAsync(Dictionary<string, string> filters)
         {
             var data = new Dictionary<string, object>();
-            var list = await _PermissionRepo.GetAllAsync(filters);
+            var list = await _UserRepo.GetAllAsync(filters);
             data["Items"] = list;
             return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
         }
-        
+
         public async Task<(Dictionary<string, object>, string, int)> GetByIdAsync(string id, Dictionary<string, string> filters)
         {
             var data = new Dictionary<string, object>();
-            var list = await _PermissionRepo.GetByIdAsync(id, filters);
+            var list = await _UserRepo.GetByIdAsync(id, filters);
             data["Items"] = list;
             return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
         }
@@ -130,7 +140,7 @@ namespace VoiceFirstApi.Service
         public async Task<(Dictionary<string, object>, string, int)> DeleteAsync(string id)
         {
             var data = new Dictionary<string, object>();
-            var list = await _PermissionRepo.DeleteAsync(id);
+            var list = await _UserRepo.DeleteAsync(id);
             if (list > 0)
             {
                 return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
@@ -140,7 +150,5 @@ namespace VoiceFirstApi.Service
                 return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
             }
         }
-
-        
     }
 }

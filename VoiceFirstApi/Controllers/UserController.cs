@@ -10,23 +10,23 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace VoiceFirstApi.Controllers
 {
-    [Route("api/Permission")]
+    [Route("api/User")]
     [ApiController]
-    public class PermissionController : ControllerBase
+    public class UserController : ControllerBase
     {
-        private readonly IPermissionService _PermissionService;
+        private readonly IUserService _UserService;
 
-        public PermissionController(IPermissionService PermissionService)
+        public UserController(IUserService UserService)
         {
-            _PermissionService = PermissionService;
+            _UserService = UserService;
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddAsync([FromBody] PermissionDtoModel PermissionDto)
+        public async Task<IActionResult> AddAsync([FromBody] UserDtoModel UserDto)
         {
             try
             {
-                var (data, message, status_code) = await _PermissionService.AddAsync(PermissionDto);
+                var (data, message, status_code) = await _UserService.AddAsync(UserDto);
                 return Ok(new { data = data, message = message, status = status_code });
             }
             catch (Exception ex)
@@ -42,11 +42,11 @@ namespace VoiceFirstApi.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateAsync([FromBody] UpdatePermissionDtoModel PermissionDto)
+        public async Task<IActionResult> UpdateAsync([FromBody] UpdateUserDtoModel UserDto)
         {
             try
             {
-                var (data, message, status_code) = await _PermissionService.UpdateAsync(PermissionDto);
+                var (data, message, status_code) = await _UserService.UpdateAsync(UserDto);
                 return Ok(new { data = data, message = message, status = status_code });
             }
             catch (Exception ex)
@@ -66,7 +66,7 @@ namespace VoiceFirstApi.Controllers
         {
             try
             {
-                var (data, message, status_code) = await _PermissionService.GetAllAsync(filters);
+                var (data, message, status_code) = await _UserService.GetAllAsync(filters);
                 return Ok(new { data = data, message = message, status = status_code });
             }
             catch (Exception ex)
@@ -80,13 +80,13 @@ namespace VoiceFirstApi.Controllers
                 });
             }
         }
-        
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdAsync(string id, [FromQuery] Dictionary<string, string> filters)
         {
             try
             {
-                var (data, message, status_code) = await _PermissionService.GetByIdAsync(id, filters);
+                var (data, message, status_code) = await _UserService.GetByIdAsync(id, filters);
                 return Ok(new { data = data, message = message, status = status_code });
             }
             catch (Exception ex)
@@ -106,7 +106,7 @@ namespace VoiceFirstApi.Controllers
         {
             try
             {
-                var (data, message, status_code) = await _PermissionService.DeleteAsync(id);
+                var (data, message, status_code) = await _UserService.DeleteAsync(id);
                 return Ok(new { data = data, message = message, status = status_code });
             }
             catch (Exception ex)

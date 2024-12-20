@@ -250,7 +250,37 @@ namespace VoiceFirstApi.Service
                 return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
             }
         }
+        public async Task<(Dictionary<string, object>, string, int)> GetBtRoleIdAsync(string id)
+        {
+            var data = new Dictionary<string, object>();
+            var filterRole = new Dictionary<string, string>
+            {
+            };
+            var Role = _RoleRepo.GetByIdAsync(id, filterRole).Result;
 
+            data["Role"] = Role;
+            var filter = new Dictionary<string, string>
+            {
+                { "id_t5_1_m_user_roles", id },
+                { "is_delete", "0" }
+            };
+            var PermissionList = _PermissionRepo.GetAllAsync(filter);
+            if (PermissionList?.Result != null && PermissionList.Result.Any())
+            {
+                // Create a list to hold the permissions
+                var permissionList = PermissionList.Result.Select(permission => permission.permission).ToList();
+
+                // Add the list to the data dictionary
+                data["Items"] = permissionList;
+            }
+            else
+            {
+                // Assign an empty list if no permissions are found
+                data["Items"] = new List<string>();
+            }
+
+            return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+        }
         public async Task<(Dictionary<string, object>, string,int)> GetAllAsync(Dictionary<string, string> filters)
         {
             var data = new Dictionary<string, object>();
