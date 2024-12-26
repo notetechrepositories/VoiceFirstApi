@@ -80,7 +80,25 @@ namespace VoiceFirstApi.Controllers
                 });
             }
         }
-
+        [HttpGet("get-all-role-type")]
+        public async Task<IActionResult> GetRoleType()
+        {
+            try
+            {
+                var (data, message, status_code) = await _SelectionValuesService.GetRoleType();
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
+        }
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdAsync(string id, [FromQuery] Dictionary<string, string> filters)
         {

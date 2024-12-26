@@ -14,13 +14,15 @@ namespace VoiceFirstApi.Service
         private readonly IBranchRepo _BranchRepo;
         private readonly IUserRepo _UserRepo;
         private readonly ILocalRepo _LocalRepo;
+        private readonly IUserCompanyLinkRepo _UserCompanyLinkRepo;
 
-        public CompanyService(ICompanyRepo CompanyRepo, IBranchRepo BranchRepo, IUserRepo UserRepo, ILocalRepo localRepo)
+        public CompanyService(ICompanyRepo CompanyRepo, IBranchRepo BranchRepo, IUserRepo UserRepo, ILocalRepo localRepo, IUserCompanyLinkRepo userCompanyLinkRepo)
         {
             _CompanyRepo = CompanyRepo;
             _BranchRepo = BranchRepo;
             _UserRepo = UserRepo;
             _LocalRepo = localRepo;
+            _UserCompanyLinkRepo = userCompanyLinkRepo;
         }
 
         private string GetCurrentUserId()
@@ -134,6 +136,7 @@ namespace VoiceFirstApi.Service
 
                 if (statusLocal == 0)
                 {
+                    await _CompanyRepo.DeleteAsync(parameters.Id);
                     return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
                 }
                 var parametersBranch = new
@@ -156,15 +159,7 @@ namespace VoiceFirstApi.Service
                 var branchStatus= await _BranchRepo.AddAsync(parametersBranch);
                 if (branchStatus > 0)
                 {
-                    EmailModel mail = new EmailModel();
-                    mail.from_email_password = "frsj ucpw vaww xzmv";
-                    mail.from_email = "anil.p@notetech.com";
-                    mail.to_email = Company.insertBranchDTOModel.t2_email;
-                    mail.email_html_body = "<html><body><p> Hi " + Company.insertBranchDTOModel.t2_company_branch_name  + ",</p><p> Thank you for register your company  "  +
-                        "<p><strong> Thanks & Regards,</strong><br><em> " +
-                        " Notetech Team </em></p><p><em> Powered by Notetech software </em></p></body></html>";
-                    mail.subject = "Company successfully register";
-                    emailService.SendMail(mail);
+                   
 
                     var generatedUserId = Guid.NewGuid().ToString();
                     var filterUser = new Dictionary<string, string>
@@ -176,6 +171,8 @@ namespace VoiceFirstApi.Service
 
                     if (UserList != null)
                     {
+                        await _CompanyRepo.DeleteAsync(parameters.Id);
+                        await _BranchRepo.DeleteAsync(parametersBranch.Id);
                         return (data, StatusUtilities.EMAIL_OR_MOBILE_ALREADY_EXIST_IN_USER, StatusUtilities.ALREADY_EXIST_CODE);
                     }
                     var generatedUserLocalId = Guid.NewGuid().ToString();
@@ -224,17 +221,67 @@ namespace VoiceFirstApi.Service
 
                     if (statusUser > 0)
                     {
+                        var UserLinkFilters = new Dictionary<string, string>
+                        {
+                            { "id_t5_users",parametersUser.Id }
+
+                        };
+                        var UserCopmanyList = _UserCompanyLinkRepo.GetAllAsync(UserLinkFilters).Result.FirstOrDefault();
+
+                        if (UserCopmanyList != null)
+                        {
+                            await _CompanyRepo.DeleteAsync(parameters.Id);
+                            await _BranchRepo.DeleteAsync(parametersBranch.Id);
+                            await _UserRepo.DeleteAsync(parametersUser.Id);
+                            return (data, StatusUtilities.ALREADY_EXIST, StatusUtilities.ALREADY_EXIST_CODE);
+                        }
+                        var generateUserCompanyLinkId = Guid.NewGuid().ToString();
+
+
+                        var parametersOfUserCompanyLink = new
+                        {
+                            Id = generateUserCompanyLinkId.Trim(),
+                            UserId = parametersUser.Id,
+                            TypeId = parameters.Id,
+                            SelectionValueId = "35c0c4e0-1a33-4a7f-9705-636cd5f9403f",
+                            InsertedBy = userId.Trim(),
+                            InsertedDate = DateTime.UtcNow
+                        };
+
+                        var UserLinkStatus = await _UserCompanyLinkRepo.AddAsync(parametersOfUserCompanyLink);
+                        if (UserLinkStatus > 0)
+                        {
                             EmailModel mailUser = new EmailModel();
                             mailUser.from_email_password = "frsj ucpw vaww xzmv";
                             mailUser.from_email = "anil.p@notetech.com";
                             mailUser.to_email = Company.userDtoModel.t5_email;
-                            mailUser.email_html_body = "<html><body><p> Hi " + Company.userDtoModel.t5_first_name +" " +Company.userDtoModel.t5_last_name + "</p><p> Your Password is " + password +
+                            mailUser.email_html_body = "<html><body><p> Hi " + Company.userDtoModel.t5_first_name + " " + Company.userDtoModel.t5_last_name + "</p><p> Your Password is " + password +
                                     "<br> Don`t share the Password.</p><p><strong> Thanks & Regards,</strong><br><em> " +
                                     " Leadwear Team </em></p><p><em> Powered by Leadwear </em></p></body></html>";
                             mailUser.subject = "Yor Passward";
+
                             emailService.SendMail(mailUser);
+
+                            EmailModel mail = new EmailModel();
+                            mail.from_email_password = "frsj ucpw vaww xzmv";
+                            mail.from_email = "anil.p@notetech.com";
+                            mail.to_email = Company.insertBranchDTOModel.t2_email;
+                            mail.email_html_body = "<html><body><p> Hi " + Company.insertBranchDTOModel.t2_company_branch_name + ",</p><p> Thank you for register your company  " +
+                                "<p><strong> Thanks & Regards,</strong><br><em> " +
+                                " Notetech Team </em></p><p><em> Powered by Notetech software </em></p></body></html>";
+                            mail.subject = "Company successfully register";
+                            emailService.SendMail(mail);
+                            return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+                        }
+                        else
+                        {
+                            await _CompanyRepo.DeleteAsync(parameters.Id);
+                            await _BranchRepo.DeleteAsync(parametersBranch.Id);
+                            await _UserRepo.DeleteAsync(parametersUser.Id);
+                        }
                         
-                        return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+
+
                     }
                     else
                     {
