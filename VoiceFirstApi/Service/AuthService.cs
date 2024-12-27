@@ -22,7 +22,7 @@ namespace VoiceFirstApi.Service
         {
             var data = new Dictionary<string, object>();
             var userDetails = await _UserRepo.GetUserDetailsByEmailOrPhone(authDtoModel.username);
-            +if(userDetails != null)
+            if(userDetails != null)
             {
                 var decryptPassword = SecurityUtilities.Decryption(userDetails.t5_password);
                 if(decryptPassword != null && decryptPassword ==authDtoModel.password) 
