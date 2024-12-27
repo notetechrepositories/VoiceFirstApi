@@ -41,6 +41,7 @@ builder.Services.AddScoped<IUserCompanyLinkRepo, UserCompanyLinkRepo>();
 builder.Services.AddScoped<IUserCompanyLinkService, UserCompanyLinkService>();
 builder.Services.AddScoped<IDivisionThreeRepo, DivisionThreeRepo>();
 builder.Services.AddScoped<IDivisionThreeService, DivisionThreeService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ICommonService, CommonService>();
 
 builder.Services.AddScoped<ICountryService, CountryService>();
@@ -66,6 +67,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
     };
 });
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Voice First Api", Version = "v1" });

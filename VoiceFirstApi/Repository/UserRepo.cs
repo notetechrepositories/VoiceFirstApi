@@ -86,12 +86,23 @@ namespace VoiceFirstApi.Repository
               query +=  whereClauses + ";";
             }
 
-            var parameters = new DynamicParameters();
+            var parameters = new DynamicParameters();  //for multiple parameter pass on the function 
             parameters.Add("id", id);
 
             using (var connection = _dapperContext.CreateConnection())
             {
                 return await connection.QuerySingleOrDefaultAsync<UserModel>(query, parameters);
+            }
+        }
+
+        public async Task<UserDetailsModel> GetUserDetailsByEmailOrPhone(string username)
+        {
+            var query = "select * from t5_users where t5_mobile_no = @name OR t5_email = @name";
+            
+
+            using (var connection = _dapperContext.CreateConnection())
+            {
+                return await connection.QuerySingleOrDefaultAsync<UserDetailsModel>(query, new { name=username });// for passing a single parameter
             }
         }
 

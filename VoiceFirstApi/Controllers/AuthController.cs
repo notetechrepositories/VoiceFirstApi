@@ -1,34 +1,32 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using VoiceFirstApi.DtoModels;
 using VoiceFirstApi.IService;
-using VoiceFirstApi.Models;
 using VoiceFirstApi.Service;
 
 namespace VoiceFirstApi.Controllers
 {
-    [Route("api/common")]
+    [Route("api/Auth")]
     [ApiController]
-    public class CommonController : ControllerBase
+    public class AuthController : ControllerBase
     {
-        private readonly ICommonService _CommonService;
+        private readonly IAuthService _AuthService;
 
-        public CommonController(ICommonService CommonService)
+        public AuthController(IAuthService AuthService)
         {
-            _CommonService = CommonService;
+            _AuthService = AuthService;
         }
-        [Authorize]
-        [HttpPost("import-divisions")]
-        public async Task<IActionResult> importDivisions(List<ImportDivisionThreeModel> model)
+
+        [HttpPost("login")]
+        public async Task<IActionResult> AuthLogin([FromBody] AuthDtoModel AuthDto)
         {
             try
             {
-                var (data, message, status_code) = await _CommonService.importDivisions(model);
+                var (data, message, status_code) = await _AuthService.AuthLogin(AuthDto);
                 return Ok(new { data = data, message = message, status = status_code });
             }
             catch (Exception ex)
             {
-                // Log the exception or handle it as needed
                 return StatusCode(500, new
                 {
                     data = (object)null,
@@ -37,8 +35,6 @@ namespace VoiceFirstApi.Controllers
                     error = ex.Message
                 });
             }
-
-
         }
     }
 }

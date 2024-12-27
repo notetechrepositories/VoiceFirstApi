@@ -18,4 +18,8 @@
         public string updated_by { get; set; }
         public DateTime updated_date { get; set; }
     }
+    public class UserDetailsModel:UserModel
+    {
+        public string t5_password { get; set; }
+    }
 }
