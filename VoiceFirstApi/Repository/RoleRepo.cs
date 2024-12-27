@@ -21,8 +21,8 @@ namespace VoiceFirstApi.Repository
         {
             var query = @"
                 INSERT INTO t5_1_m_user_roles(id_t5_1_m_user_roles,t5_1_m_user_roles_name,t5_1_m_all_location_access,
-                t5_1_m_all_location_type,t5_1_m_only_assigned_location,t5_1_m_type,t5_1_m_type_id,inserted_by,inserted_date) 
-                VALUES (@Id,@Name,@AllLocationAccess,@AllLocationType,@OnlyAssignedLocation,@Type,@TypeId,@InsertedBy,@InsertedDate);";
+                t5_1_m_all_location_type,t5_1_m_only_assigned_location,id_t4_1_selection_values,t5_1_m_type_id,inserted_by,inserted_date) 
+                VALUES (@Id,@Name,@AllLocationAccess,@AllLocationType,@OnlyAssignedLocation,@SelectionValue,@TypeId,@InsertedBy,@InsertedDate);";
             using (var connection = _dapperContext.CreateConnection())
             {
                 return await connection.ExecuteAsync(query, parameters);
@@ -103,8 +103,8 @@ namespace VoiceFirstApi.Repository
                     t5_1_m_all_location_access=@AllLocationAccess,
                     t5_1_m_all_location_type=@AllLocationType,
                     t5_1_m_only_assigned_location=@OnlyAssignedLocation,
-                    t5_1_m_type_id=@Type,
-                    t5_1_m_type=@TypeId,
+                    t5_1_m_type_id=@TypeId,
+                    id_t4_1_selection_values=@SelectionValue,
                     updated_by = @UpdatedBy, 
                     updated_date = @UpdatedDate
                 WHERE id_t5_1_m_user_roles = @Id";

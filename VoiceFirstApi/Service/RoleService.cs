@@ -49,7 +49,7 @@ namespace VoiceFirstApi.Service
                 AllLocationAccess = Role.t5_1_m_all_location_access,
                 AllLocationType = Role.t5_1_m_all_location_type,
                 OnlyAssignedLocation = Role.t5_1_m_only_assigned_location,
-                Type = Role.t5_1_m_type,
+                SelectionValue = Role.id_t4_1_selection_values,
                 TypeId = Role.t5_1_m_type_id,
                 UpdatedBy = userId,
                 UpdatedDate = DateTime.UtcNow
@@ -126,7 +126,7 @@ namespace VoiceFirstApi.Service
                 AllLocationAccess = Role.t5_1_m_all_location_access,
                 AllLocationType = Role.t5_1_m_all_location_type,
                 OnlyAssignedLocation = Role.t5_1_m_only_assigned_location,
-                Type = Role.t5_1_m_type,
+                SelectionValue = Role.id_t4_1_selection_values,
                 TypeId = Role.t5_1_m_type_id,
                 InsertedBy = userId.Trim(),
                 InsertedDate = DateTime.UtcNow
@@ -201,7 +201,7 @@ namespace VoiceFirstApi.Service
                 AllLocationAccess=RoleDtoModel.t5_1_m_all_location_access,
                 AllLocationType=RoleDtoModel.t5_1_m_all_location_type,
                 OnlyAssignedLocation=RoleDtoModel.t5_1_m_only_assigned_location,
-                Type = RoleDtoModel.t5_1_m_type,
+                SelectionValue = RoleDtoModel.id_t4_1_selection_values,
                 TypeId = RoleDtoModel.t5_1_m_type_id,
                 InsertedBy = userId.Trim(),
                 InsertedDate = DateTime.UtcNow
@@ -241,7 +241,7 @@ namespace VoiceFirstApi.Service
                 AllLocationAccess = Role.t5_1_m_all_location_access,
                 AllLocationType = Role.t5_1_m_all_location_type,
                 OnlyAssignedLocation = Role.t5_1_m_only_assigned_location,
-                Type = Role.t5_1_m_type,
+                SelectionValue = Role.id_t4_1_selection_values,
                 TypeId = Role.t5_1_m_type_id,
                 UpdatedBy = userId,
                 UpdatedDate = DateTime.UtcNow
