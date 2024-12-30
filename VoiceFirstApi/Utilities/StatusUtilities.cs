@@ -40,7 +40,7 @@
         public const string PHONE_NUMBER_ALREADY_EXIST = "Phone number already exist";
         public const string ALREADY_USING = "ALREADY_USING";
         public const string USERNAME_ALREADY_TAKEN = "Username already taken";
-        public const string OPT_EXPIRED = "OTP Expired";
+        public const string OTP_EXPIRED = "OTP Expired";
         public const string REGISTRATION_SUCCESS = "Registration Success";
         public const string NIL = "NIL";
         public const string ALREADY_REGISTERED = "ALREADY REGISTERED";

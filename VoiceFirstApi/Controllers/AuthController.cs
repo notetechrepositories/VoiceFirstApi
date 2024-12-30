@@ -36,5 +36,65 @@ namespace VoiceFirstApi.Controllers
                 });
             }
         }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword(string userName)
+        {
+            try
+            {
+                var (data, message, status_code) = await _AuthService.ForgotPassword(userName);
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
+        }
+
+        [HttpPost("verification-otp")]
+        public async Task<IActionResult> VerificationOtp(VerificationOtpDtoModel verificationOtpDtoModel)
+        {
+            try
+            {
+                var (data, message, status_code) = await _AuthService.VerificationOTP(verificationOtpDtoModel);
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
+        }
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordDtoModel resetPasswordDtoModel)
+        {
+            try
+            {
+                var (data, message, status_code) = await _AuthService.ResetPassword(resetPasswordDtoModel);
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
+        }
+
     }
 }

@@ -209,7 +209,7 @@ namespace VoiceFirstApi.Service
                         Mobile = Company.userDtoModel.t5_mobile_no.Trim(),
                         Email = Company.userDtoModel.t5_email.Trim(),
                         Password = SecurityUtilities.Encryption(password).Trim(),
-                        RoleId = "4b870b07-54c5-43e7-88d8-c4a03badeedb",
+                        RoleId = "da65e845-e201-4b24-8664-a78a82284212",
                         BirthDate = Company.userDtoModel.t5_birth_year.Trim(),
                         Sex = Company.userDtoModel.t5_sex.Trim(),
                         Local = parametersUserLocal.Id.Trim(),

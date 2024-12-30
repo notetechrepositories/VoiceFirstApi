@@ -13,6 +13,7 @@
         public string t5_birth_year { get; set; }
         public string t5_sex { get; set; }
         public string id_t2_1_local { get; set; }
+        public string id_t5_1_m_user_roles { get; set; }
         public string inserted_by { get; set; }
         public DateTime inserted_date { get; set; }
         public string updated_by { get; set; }

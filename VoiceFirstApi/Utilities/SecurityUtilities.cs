@@ -1,4 +1,5 @@
 ﻿using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -129,6 +130,51 @@ namespace VoiceFirstApi.Utilities
                     return Convert.ToBase64String(encryptedBytes);
                 }
             }
+        }
+
+        public static string EncryptModel(string value, string userDeatils)
+        {
+            string res = string.Empty;
+            try
+            {
+                EncryptvalueModel model = new EncryptvalueModel
+                {
+                    CurrentDate = DateTime.Now,
+                    value = value,
+                    userDeatils = userDeatils,
+
+                };
+                res = Encryption(JsonConvert.SerializeObject(model));
+            }
+            catch (Exception)
+            {
+
+            }
+            return res;
+        }
+
+
+
+        public static EncryptvalueModel DecryptModel(string valueModel)
+        {
+            EncryptvalueModel res = null;
+            try
+            {
+                res = JsonConvert.DeserializeObject<EncryptvalueModel>(Decryption(valueModel));
+            }
+            catch (Exception)
+            {
+
+            }
+            return res;
+        }
+
+        public class EncryptvalueModel
+        {
+            public DateTime CurrentDate { get; set; }
+
+            public string value { get; set; }
+            public string? userDeatils { get; set; }
         }
 
     }
