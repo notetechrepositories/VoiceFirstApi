@@ -155,6 +155,7 @@ namespace VoiceFirstApi.Service
                 var otp = StringUtilities.GenerateRandomOTP(6);
                 var encrycryptedOtp = SecurityUtilities.Encryption(otp);
                 var encrycryptedUserId = SecurityUtilities.Encryption(userDetails.id_t5_users);
+                DateTime currentData = DateTime.Now;
                 var encryptModel = SecurityUtilities.EncryptModel(encrycryptedOtp, encrycryptedUserId.ToString());
                 var emailService = new CommunicationUtilities();
                 
@@ -176,6 +177,7 @@ namespace VoiceFirstApi.Service
                 mail.subject = "Your OTP Code to Verify Your Account";
                 emailService.SendMail(mail);
                 data["encryptedOtp"] = encryptModel;
+                data["otpGeneratedTime"] = currentData;
                 return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
             }
             else
@@ -238,7 +240,7 @@ namespace VoiceFirstApi.Service
                 var currentDate = DateTime.Now;
                 var diffTime = currentDate - decryptedData.CurrentDate;
 
-                if (diffTime.TotalMinutes > 1)
+                if (diffTime.TotalMinutes > 2)
                 {
 
                     return (data, StatusUtilities.OTP_EXPIRED, StatusUtilities.FAILED_CODE);
