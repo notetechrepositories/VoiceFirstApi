@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.NetworkInformation;
@@ -6,11 +7,10 @@ using VoiceFirstApi.Context;
 using VoiceFirstApi.DtoModels;
 using VoiceFirstApi.IService;
 using VoiceFirstApi.Service;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace VoiceFirstApi.Controllers
 {
-    [Route("api/Selection")]
+    [Route("api/selection")]
     [ApiController]
     public class SelectionController : ControllerBase
     {
@@ -62,6 +62,7 @@ namespace VoiceFirstApi.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetAllAsync([FromQuery] Dictionary<string, string> filters)
         {
             try

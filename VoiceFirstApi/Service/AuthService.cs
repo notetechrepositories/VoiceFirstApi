@@ -1,12 +1,12 @@
 ﻿using VoiceFirstApi.DtoModels;
 using VoiceFirstApi.IService;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using VoiceFirstApi.Utilities;
 using VoiceFirstApi.IRepository;
 using VoiceFirstApi.Repository;
 using Microsoft.Extensions.Configuration;
 using VoiceFirstApi.Models;
 using VoiceFirstApi.Utilits;
+using System.Security.Claims;
 
 namespace VoiceFirstApi.Service
 {
@@ -14,13 +14,41 @@ namespace VoiceFirstApi.Service
     {
         public readonly IUserRepo _UserRepo;
         public readonly IRoleRepo _RoleRepo;
-
+        private readonly IHttpContextAccessor _HttpContextAccessor;
         private readonly IConfiguration _Configuration;
-        public AuthService(IUserRepo UserRepo, IConfiguration Configuration, IRoleRepo roleRepo)
+        public AuthService(IUserRepo UserRepo, IConfiguration Configuration, IRoleRepo roleRepo, IHttpContextAccessor httpContextAccessor)
         {
             _UserRepo = UserRepo;
             _Configuration = Configuration;
             _RoleRepo = roleRepo;
+            _HttpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+        }
+        private string GetCurrentUserId()
+        {
+            if (_HttpContextAccessor == null)
+            {
+                throw new InvalidOperationException("HTTP Context Accessor is not initialized.");
+            }
+
+            // Validate that the HTTP context and user claims are available
+            var userClaims = _HttpContextAccessor.HttpContext?.User;
+            if (userClaims == null || !userClaims.Identity.IsAuthenticated)
+            {
+                throw new UnauthorizedAccessException("User is not authenticated.");
+            }
+
+            // Find the user_id claim
+            var userIdClaim = userClaims.FindFirst("user_id");
+            if (userIdClaim == null)
+            {
+                throw new UnauthorizedAccessException("User ID not found in the token.");
+            }
+            var decryUserId = SecurityUtilities.Decryption(userIdClaim.Value);
+            if (decryUserId == null)
+            {
+                throw new UnauthorizedAccessException("User ID not found in the token.");
+            }
+            return decryUserId;
         }
         public async Task<(Dictionary<string, object>, string, int)> AuthLogin(AuthDtoModel authDtoModel)
         {
@@ -75,6 +103,47 @@ namespace VoiceFirstApi.Service
             }
             
             
+        }
+
+        public async Task<(Dictionary<string, object>, string, int)> ChangePassword(ChangePasswordDtoModel changePasswordDtoModel)
+        {
+            var data = new Dictionary<string, object>();
+            var userId = GetCurrentUserId();
+            
+            var userDeatils = _UserRepo.GetAllUserDetailsByUserId(userId).Result;
+            if (userDeatils == null)
+            {
+                return (data, StatusUtilities.USER_NOT_FOUND, StatusUtilities.NOT_FOUND_CODE);
+            }
+
+            var decryPassword = SecurityUtilities.Decryption(userDeatils.t5_password);
+            if (decryPassword == null)
+            {
+                return (data, StatusUtilities.CONTACT_ADMIN, StatusUtilities.FAILED_CODE);
+            }
+            if (decryPassword != changePasswordDtoModel.current_password)
+            {
+                return (data, StatusUtilities.INVALID_PASSWORD, StatusUtilities.FAILED_CODE);
+            }
+            var EncryptPassword = SecurityUtilities.Encryption(changePasswordDtoModel.password);
+            var parameters = new
+            {
+                Id = userId.Trim(),
+                Password = EncryptPassword,
+                UpdatedBy = userId,
+                UpdatedDate = DateTime.UtcNow,
+            };
+            var status = await _UserRepo.UpdatePasswordAsync(parameters);
+
+            if (status > 0)
+            {
+                data["Items"] = parameters;
+                return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+            }
+            else
+            {
+                return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+            }
         }
 
         public async Task<(Dictionary<string, object>, string, int)> ForgotPassword(string userName)

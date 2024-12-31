@@ -8,6 +8,7 @@ namespace VoiceFirstApi.IRepository
     {
         Task<IEnumerable<UserModel>> GetAllAsync(Dictionary<string, string> filters);
         Task<UserDetailsModel> GetUserDetailsByEmailOrPhone(string username);
+        Task<UserDetailsModel> GetAllUserDetailsByUserId(string userId);
         Task<UserModel> GetByIdAsync(string id, Dictionary<string, string> filters);
         Task<int> AddAsync(object parameters);
         Task<int> UpdateAsync(object parameters);

@@ -170,6 +170,7 @@ namespace VoiceFirstApi.Controllers
                 $"    }}\r\n" +
                 $"}}";
             var serviceContent =
+                $"using System.Security.Claims;\r\n" +
                 $"using VoiceFirstApi.DtoModels;\r\n" +
                 $"using VoiceFirstApi.IRepository;\r\n" +
                 $"using VoiceFirstApi.IService;\r\n" +
@@ -180,19 +181,20 @@ namespace VoiceFirstApi.Controllers
                 $"    public class {formattedName}Service : I{formattedName}Service\r\n" +
                 $"    {{\r\n" +
                 $"        private readonly I{formattedName}Repo _{formattedName}Repo;\r\n\r\n" +
-                $"        public {formattedName}Service(I{formattedName}Repo {formattedName}Repo)\r\n" +
+                $"        private readonly IHttpContextAccessor _HttpContextAccessor;\r\n\r\n\r\n" +
+                $"        public {formattedName}Service(I{formattedName}Repo {formattedName}Repo, IHttpContextAccessor httpContextAccessor)\r\n" +
                 $"        {{\r\n" +
                 $"            _{formattedName}Repo = {formattedName}Repo;\r\n" +
+                $"            _HttpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));\r\n" +
                 $"        }}\r\n\r\n" +
                 $"        private string GetCurrentUserId()\r\n" +
                 $"        {{\r\n" +
-                $"            return \"abc1\";\r\n" +
-                $"            /*var userIdClaim = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier);\r\n" +
+                $"            var userIdClaim = _HttpContextAccessor.HttpContext?.user?.FindFirst(ClaimTypes.NameIdentifier)\r\n" +
                 $"            if (userIdClaim == null)\r\n" +
                 $"            {{\r\n" +
                 $"                throw new UnauthorizedAccessException(\"User ID not found in the token.\");\r\n" +
                 $"            }}\r\n" +
-                $"            return userIdClaim.Value;*/\r\n" +
+                $"            return userIdClaim.Value*/\r\n" +
                 $"        }}\r\n\r\n" +
                 $"        public async Task<(Dictionary<string, object>, string)> AddAsync({formattedName}DtoModel {formattedName}DtoModel)\r\n" +
                 $"        {{\r\n" +
@@ -279,7 +281,6 @@ namespace VoiceFirstApi.Controllers
                   $"using VoiceFirstApi.DtoModels;\r\n" +
                   $"using VoiceFirstApi.IService;\r\n" +
                   $"using VoiceFirstApi.Service;\r\n" +
-                  $"using static System.Runtime.InteropServices.JavaScript.JSType;\r\n\r\n" +
                   $"namespace VoiceFirstApi.Controllers\r\n" +
                   $"{{\r\n" +
                   $"    [Route(\"api/{formattedName}\")]\r\n" +

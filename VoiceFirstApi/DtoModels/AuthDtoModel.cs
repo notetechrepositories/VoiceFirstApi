@@ -28,4 +28,12 @@ namespace VoiceFirstApi.DtoModels
         [MinLength(6, ErrorMessage = "password must be at least 6 characters long.")]
         public string password { get; set; }
     }
+    public class ChangePasswordDtoModel
+    {
+        [Required(ErrorMessage = "current password is required.")]
+        public string current_password { get; set; }
+        [Required(ErrorMessage = "new password is required.")]
+        [MinLength(6, ErrorMessage = "password must be at least 6 characters long.")]
+        public string password { get; set; }
+    }
 }

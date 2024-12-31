@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Security.Claims;
 using VoiceFirstApi.DtoModels;
 using VoiceFirstApi.IRepository;
 using VoiceFirstApi.IService;
@@ -11,22 +12,41 @@ namespace VoiceFirstApi.Service
     {
         private readonly IUserRepo _UserRepo;
         private readonly ILocalRepo _LocalRepo;
+        private readonly IHttpContextAccessor _HttpContextAccessor;
 
-        public UserService(IUserRepo UserRepo, ILocalRepo LocalRepo)
+        public UserService(IUserRepo UserRepo, ILocalRepo LocalRepo, IHttpContextAccessor httpContextAccessor)
         {
             _UserRepo = UserRepo;
             _LocalRepo = LocalRepo;
+            _HttpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
         }
 
         private string GetCurrentUserId()
         {
-            return "abc1";
-            /*var userIdClaim = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier);
+            if (_HttpContextAccessor == null)
+            {
+                throw new InvalidOperationException("HTTP Context Accessor is not initialized.");
+            }
+
+            // Validate that the HTTP context and user claims are available
+            var userClaims = _HttpContextAccessor.HttpContext?.User;
+            if (userClaims == null || !userClaims.Identity.IsAuthenticated)
+            {
+                throw new UnauthorizedAccessException("User is not authenticated.");
+            }
+
+            // Find the user_id claim
+            var userIdClaim = userClaims.FindFirst("user_id");
             if (userIdClaim == null)
             {
                 throw new UnauthorizedAccessException("User ID not found in the token.");
             }
-            return userIdClaim.Value;*/
+            var decryUserId = SecurityUtilities.Decryption(userIdClaim.Value);
+            if (decryUserId == null)
+            {
+                throw new UnauthorizedAccessException("User ID not found in the token.");
+            }
+            return decryUserId;
         }
 
         public async Task<(Dictionary<string, object>, string, int)> AddAsync(UserDtoModel UserDtoModel)

@@ -9,7 +9,6 @@ using VoiceFirstApi.DtoModels;
 using VoiceFirstApi.IService;
 using VoiceFirstApi.Models;
 using VoiceFirstApi.Service;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace VoiceFirstApi.Controllers
 {

@@ -48,8 +48,9 @@ builder.Services.AddScoped<ICountryService, CountryService>();
 builder.Services.AddScoped<ICountryRepo, CountryRepo>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options => {
     options.AddPolicy("CORSPolicy", builder => builder.AllowAnyMethod().AllowAnyHeader().AllowCredentials().SetIsOriginAllowed((hosts) => true));
 });
@@ -107,9 +108,9 @@ if (app.Environment.IsDevelopment())
 app.UseCors("CORSPolicy");
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
-app.UseAuthentication();
 
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 

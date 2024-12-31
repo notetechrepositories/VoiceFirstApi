@@ -1,4 +1,5 @@
-﻿using VoiceFirstApi.DtoModels;
+﻿using System.Security.Claims;
+using VoiceFirstApi.DtoModels;
 using VoiceFirstApi.IRepository;
 using VoiceFirstApi.IService;
 using VoiceFirstApi.Models;
@@ -12,26 +13,45 @@ namespace VoiceFirstApi.Service
         private readonly IDivisionTwoRepo _DivisionTwoRepo;
         private readonly IDivisionOneRepo _DivisionOneRepo;
         private readonly ICountryRepo _CountryRepo;
+        private readonly IHttpContextAccessor _HttpContextAccessor;
 
-        public DivisionThreeService(IDivisionThreeRepo DivisionThreeRepo,IDivisionTwoRepo DivisionTwoRepo, IDivisionOneRepo DivisionOneRepo, ICountryRepo CountryRepo)
+        public DivisionThreeService(IDivisionThreeRepo DivisionThreeRepo,IDivisionTwoRepo DivisionTwoRepo,
+            IDivisionOneRepo DivisionOneRepo, ICountryRepo CountryRepo, IHttpContextAccessor httpContextAccessor)
         {
             _DivisionThreeRepo = DivisionThreeRepo;
             _CountryRepo = CountryRepo;
             _DivisionTwoRepo = DivisionTwoRepo;
             _DivisionOneRepo = DivisionOneRepo;
+            _HttpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
         }
 
         private string GetCurrentUserId()
         {
-            return "abc1";
-            /*var userIdClaim = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier);
+            if (_HttpContextAccessor == null)
+            {
+                throw new InvalidOperationException("HTTP Context Accessor is not initialized.");
+            }
+
+            // Validate that the HTTP context and user claims are available
+            var userClaims = _HttpContextAccessor.HttpContext?.User;
+            if (userClaims == null || !userClaims.Identity.IsAuthenticated)
+            {
+                throw new UnauthorizedAccessException("User is not authenticated.");
+            }
+
+            // Find the user_id claim
+            var userIdClaim = userClaims.FindFirst("user_id");
             if (userIdClaim == null)
             {
                 throw new UnauthorizedAccessException("User ID not found in the token.");
             }
-            return userIdClaim.Value;*/
+            var decryUserId = SecurityUtilities.Decryption(userIdClaim.Value);
+            if (decryUserId == null)
+            {
+                throw new UnauthorizedAccessException("User ID not found in the token.");
+            }
+            return decryUserId;
         }
-
         public async Task<(Dictionary<string, object>, string, int)> AddAsync(DivisionThreeDtoModel DivisionThreeDtoModel)
         {
             var userId = GetCurrentUserId();

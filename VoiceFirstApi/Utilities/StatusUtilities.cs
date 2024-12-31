@@ -25,6 +25,7 @@
         public const string DIVISION_TWO_NOT_EXSISTS = "Division two not exists";
         public const string UPDATION_FAILED = "Updation Failed";
         public const string CREATED = "CREATED";
+        public const string CONTACT_ADMIN = "Contact admin";
         public const string USER_NOT_FOUND = "USER NOT FOUND";
         public const string COMPANY_NOT_FOUND = "COMPANY NOT FOUND";
         public const string INVALID_REFERAL_CODE = "INVALID REFERAL CODE";

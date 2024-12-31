@@ -20,34 +20,45 @@ namespace VoiceFirstApi.Utilities
 
         public string GetToken(Dictionary<string, string> userClaims)
         {
+            // Validate configuration keys
+            if (string.IsNullOrWhiteSpace(_iconfiguration["Jwt:Key"]) ||
+                string.IsNullOrWhiteSpace(_iconfiguration["Jwt:Issuer"]) ||
+                string.IsNullOrWhiteSpace(_iconfiguration["Jwt:Audience"]))
+            {
+                throw new InvalidOperationException("JWT configuration is missing or invalid.");
+            }
+
             // Initialize a list for the claims
-                var claims = new List<Claim>
-                {
-                    new Claim(JwtRegisteredClaimNames.Sub, _iconfiguration["Jwt:Subject"]),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString())
-                };
+            var claims = new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, _iconfiguration["Jwt:Subject"]),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
+            };
 
-                // Add user-specific claims from the dictionary
-                foreach (var claim in userClaims)
-                {
-                    claims.Add(new Claim(claim.Key, claim.Value));
-                }
+            // Add user-specific claims from the dictionary
+            foreach (var claim in userClaims)
+            {
+                claims.Add(new Claim(claim.Key, claim.Value));
+            }
 
-                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_iconfiguration["Jwt:Key"]));
-                var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            // Signing key
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_iconfiguration["Jwt:Key"]));
+            var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-                var token = new JwtSecurityToken(
-                    _iconfiguration["Jwt:Issuer"],
-                    _iconfiguration["Jwt:Audience"],
-                    claims,
-                    expires: DateTime.UtcNow.AddDays(40),
-                    signingCredentials: signIn
-                );
+            // Create token
+            var token = new JwtSecurityToken(
+                issuer: _iconfiguration["Jwt:Issuer"],
+                audience: _iconfiguration["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.UtcNow.AddHours(1), // Adjust token expiration
+                signingCredentials: signIn
+            );
 
-                var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
-                return accessToken;
+            // Generate token string
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
         public static string Encryption(string encryptString)
         {
             string EncryptionKey = "Iu2TXhw0hqwfuRcpjUuMlWKPWA7P4jnX";
@@ -176,6 +187,6 @@ namespace VoiceFirstApi.Utilities
             public string value { get; set; }
             public string? userDeatils { get; set; }
         }
-
+        
     }
 }
