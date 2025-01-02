@@ -184,6 +184,7 @@ namespace VoiceFirstApi.Service
             {
                 return (data, StatusUtilities.USER_NOT_FOUND, StatusUtilities.NOT_FOUND_CODE);
             }
+
         }
 
         public async Task<(Dictionary<string, object>, string, int)> ResetPassword(ResetPasswordDtoModel resetPasswordDtoModel)

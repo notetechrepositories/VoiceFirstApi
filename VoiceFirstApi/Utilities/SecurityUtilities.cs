@@ -51,7 +51,7 @@ namespace VoiceFirstApi.Utilities
                 issuer: _iconfiguration["Jwt:Issuer"],
                 audience: _iconfiguration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddHours(1), // Adjust token expiration
+                expires: DateTime.UtcNow.AddHours(28), // Adjust token expiration
                 signingCredentials: signIn
             );
 
