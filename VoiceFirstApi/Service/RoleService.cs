@@ -1,4 +1,7 @@
-﻿using System.Data;
+﻿using Newtonsoft.Json.Linq;
+using Org.BouncyCastle.Utilities;
+using System.Collections.Generic;
+using System.Data;
 using System.Security.Claims;
 using VoiceFirstApi.DtoModels;
 using VoiceFirstApi.IRepository;
@@ -13,12 +16,14 @@ namespace VoiceFirstApi.Service
         private readonly IRoleRepo _RoleRepo;
         private readonly IPermissionRepo _PermissionRepo;
         private readonly IHttpContextAccessor _HttpContextAccessor;
+        private readonly IProgramRepo _ProgramRepo;
 
-        public RoleService(IRoleRepo RoleRepo, IPermissionRepo PermissionRepo, IHttpContextAccessor httpContextAccessor)
+        public RoleService(IRoleRepo RoleRepo, IPermissionRepo PermissionRepo, IHttpContextAccessor httpContextAccessor, IProgramRepo programRepo)
         {
             _RoleRepo = RoleRepo;
             _PermissionRepo = PermissionRepo;
             _HttpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+            _ProgramRepo = programRepo;
         }
 
         private string GetCurrentUserId()
@@ -54,7 +59,8 @@ namespace VoiceFirstApi.Service
             var data = new Dictionary<string, object>();
             var filter = new Dictionary<string, string>
             {
-                    { "t5_1_m_user_roles_name",Role.t5_1_m_user_roles_name }
+                    { "t5_1_m_user_roles_name",Role.t5_1_m_user_roles_name },
+                    { "is_delete", "0" }
             };
             var RoleList = _RoleRepo.GetAllAsync(filter).Result.FirstOrDefault();
 
@@ -85,7 +91,8 @@ namespace VoiceFirstApi.Service
                     var filterPermissions = new Dictionary<string, string>
                     {
                             { "id_t5_1_m_user_roles",Role.id_t5_1_m_user_roles },
-                            {"permission",item }
+                            {"permission",item },
+                            { "is_delete", "0" }
                     };
                     var PermissionList = _PermissionRepo.GetAllAsync(filterPermissions).Result.FirstOrDefault();
                     if (PermissionList != null)
@@ -129,7 +136,8 @@ namespace VoiceFirstApi.Service
             var data = new Dictionary<string, object>();
             var filter = new Dictionary<string, string>
             {
-                    { "t5_1_m_user_roles_name",Role.t5_1_m_user_roles_name }
+                    { "t5_1_m_user_roles_name",Role.t5_1_m_user_roles_name },
+                { "is_delete", "0" }
             };
             var RoleList = _RoleRepo.GetAllAsync(filter).Result.FirstOrDefault();
 
@@ -161,7 +169,8 @@ namespace VoiceFirstApi.Service
                     var Permissionsfilters = new Dictionary<string, string>
                     {
                             { "id_t5_1_m_user_roles",generatedId },
-                            {"permission",item }
+                            {"permission",item },
+                            { "is_delete", "0" }
                     };
                     var PermissionList = _PermissionRepo.GetAllAsync(Permissionsfilters).Result.FirstOrDefault();
                     if (PermissionList != null)
@@ -204,7 +213,8 @@ namespace VoiceFirstApi.Service
             var data = new Dictionary<string, object>();
             var filter = new Dictionary<string, string>
             {
-                    { "t5_1_m_user_roles_name",RoleDtoModel.t5_1_m_user_roles_name }
+                    { "t5_1_m_user_roles_name",RoleDtoModel.t5_1_m_user_roles_name },
+                    { "is_delete", "0" }
             };
             var RoleList = _RoleRepo.GetAllAsync(filter).Result.FirstOrDefault();
 
@@ -284,6 +294,7 @@ namespace VoiceFirstApi.Service
             var data = new Dictionary<string, object>();
             var filterRole = new Dictionary<string, string>
             {
+                { "is_delete", "0" }
             };
             var Role = _RoleRepo.GetByIdAsync(id, filterRole).Result;
 
@@ -339,7 +350,70 @@ namespace VoiceFirstApi.Service
                 return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
             }
         }
+        public async Task<(Dictionary<string, object>, string, int)> UpdateStatus(UpdateStatusDtoModel updateStatusDtoModel)
+        {
+            var data = new Dictionary<string, object>();
+            var list = await _RoleRepo.UpdateStatus(updateStatusDtoModel.id, updateStatusDtoModel.status);
+            if (list > 0)
+            {
+                return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+            }
+            else
+            {
+                return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+            }
+        }
 
-        
+        public async Task<(Dictionary<string, object>, string, int)> GetAllProgramWithActions()
+        {
+            var data = new Dictionary<string, object>();
+            List<GetAllProgramWithActions> getAllProgramWithActions = new List<GetAllProgramWithActions>();
+            var filter= new Dictionary<string, string>
+            {
+                
+            };
+            var list = await _ProgramRepo.GetAllPrograms(filter);
+            if (list != null)
+            {
+                foreach (var value in list)
+                {
+                    GetAllProgramWithActions obj = new GetAllProgramWithActions();
+                    obj.t6_program_name = value.t6_program_name;
+                    var id = new Dictionary<string, string>
+                    {
+                        { "id_t6_program",value.id_t6_program}
+                    };
+                    var actions = await _ProgramRepo.GetAllProgramLinkWithAction(id);
+                    
+                    if (actions != null)
+                    {
+                        List<ProgramActions> actionsList = new List<ProgramActions>();
+                        foreach(var action in actions)
+                        {
+                            ProgramActions objects= new ProgramActions();
+                            objects.t6_action = action.t6_action;
+                            objects.id_t6_link_program_with_program_action = action.id_t6_link_program_with_program_action;
+                            actionsList.Add(objects);
+                        }
+                        obj.programActions = actionsList;
+                        getAllProgramWithActions.Add(obj);
+                    }
+                    else
+                    {
+                        return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+                    }
+
+                }
+                data["Items"] = getAllProgramWithActions;
+                return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+
+            }
+            else
+            {
+                return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+            }
+
+            
+        }
     }
 }

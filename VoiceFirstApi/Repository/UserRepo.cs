@@ -32,7 +32,7 @@ namespace VoiceFirstApi.Repository
 
         public async Task<int> DeleteAsync(string id)
         {
-            var query = "DELETE FROM t5_users WHERE id_t5_users = @id";
+            var query = "UPDATE t5_users set is_delete=0,is_active=1 WHERE id_t5_users = @id";
             using (var connection = _dapperContext.CreateConnection())
             {
                 return await connection.ExecuteAsync(query, new { id = id });
@@ -156,6 +156,15 @@ namespace VoiceFirstApi.Repository
             using (var connection = _dapperContext.CreateConnection())
             {
                 return await connection.ExecuteAsync(query, parameters);
+            }
+        }
+
+        public async Task<int> UpdateStatus(string id, int status)
+        {
+            var query = "UPDATE t5_users set is_active=@status  WHERE id_t5_users = @id";
+            using (var connection = _dapperContext.CreateConnection())
+            {
+                return await connection.ExecuteAsync(query, new { id = id, status = status });
             }
         }
     }

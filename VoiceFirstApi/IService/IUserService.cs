@@ -10,5 +10,6 @@ namespace VoiceFirstApi.IService
         Task<(Dictionary<string, object>, string, int)> GetAllAsync(Dictionary<string, string> filters);
         Task<(Dictionary<string, object>, string, int)> GetByIdAsync(string id, Dictionary<string, string> filters);
         Task<(Dictionary<string, object>, string, int)> DeleteAsync(string id);
+        Task<(Dictionary<string, object>, string, int)> UpdateStatus(UpdateStatusDtoModel updateStatusDtoModel);
     }
 }

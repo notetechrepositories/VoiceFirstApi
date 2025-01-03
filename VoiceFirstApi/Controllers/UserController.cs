@@ -60,12 +60,12 @@ namespace VoiceFirstApi.Controllers
             }
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAllAsync([FromQuery] Dictionary<string, string> filters)
+        [HttpPost("get-all")]
+        public async Task<IActionResult> GetAllAsync([FromBody] FilterDtoModel filters)
         {
             try
             {
-                var (data, message, status_code) = await _UserService.GetAllAsync(filters);
+                var (data, message, status_code) = await _UserService.GetAllAsync(filters.filters);
                 return Ok(new { data = data, message = message, status = status_code });
             }
             catch (Exception ex)
@@ -80,12 +80,12 @@ namespace VoiceFirstApi.Controllers
             }
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetByIdAsync(string id, [FromQuery] Dictionary<string, string> filters)
+        [HttpPost("get-by-id")]
+        public async Task<IActionResult> GetByIdAsync([FromBody] FiltersAndIdDtoModel filters)
         {
             try
             {
-                var (data, message, status_code) = await _UserService.GetByIdAsync(id, filters);
+                var (data, message, status_code) = await _UserService.GetByIdAsync(filters.id, filters.filters);
                 return Ok(new { data = data, message = message, status = status_code });
             }
             catch (Exception ex)
@@ -107,6 +107,25 @@ namespace VoiceFirstApi.Controllers
             try
             {
                 var (data, message, status_code) = await _UserService.DeleteAsync(id);
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
+        }
+        [HttpPut("update-status")]
+        public async Task<IActionResult> UpdateStatus(UpdateStatusDtoModel updateStatusDtoModel)
+        {
+            try
+            {
+                var (data, message, status_code) = await _UserService.UpdateStatus(updateStatusDtoModel);
                 return Ok(new { data = data, message = message, status = status_code });
             }
             catch (Exception ex)

@@ -26,7 +26,7 @@ namespace VoiceFirstApi.Controllers
         {
             try
             {
-                var (data,message,status) = await _SelectionService.AddAsync(SelectionDto);
+                var (data, message, status) = await _SelectionService.AddAsync(SelectionDto);
                 return Ok(new { data = data, message = message, status = status });
             }
             catch (Exception ex)
@@ -61,13 +61,12 @@ namespace VoiceFirstApi.Controllers
             }
         }
 
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> GetAllAsync([FromQuery] Dictionary<string, string> filters)
+        [HttpPost("get-all")]
+        public async Task<IActionResult> GetAllAsync([FromBody] FilterDtoModel filters)
         {
             try
             {
-                var (data, message, status_code) = await _SelectionService.GetAllAsync(filters);
+                var (data, message, status_code) = await _SelectionService.GetAllAsync(filters.filters);
                 return Ok(new { data = data, message = message, status = status_code });
             }
             catch (Exception ex)
@@ -82,12 +81,12 @@ namespace VoiceFirstApi.Controllers
             }
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetByIdAsync(string id, [FromQuery] Dictionary<string, string> filters)
+        [HttpPost("get-by-id")]
+        public async Task<IActionResult> GetByIdAsync([FromBody] FiltersAndIdDtoModel filters)
         {
             try
             {
-                var (data, message, status) = await _SelectionService.GetByIdAsync(id, filters);
+                var (data, message, status) = await _SelectionService.GetByIdAsync(filters.id, filters.filters);
                 return Ok(new { data = data, message = message, status = status });
             }
             catch (Exception ex)

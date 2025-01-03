@@ -30,7 +30,7 @@ namespace VoiceFirstApi.Repository
 
         public async Task<int> DeleteAsync(string id)
         {
-            var query = "DELETE FROM t2_1_div3 WHERE id_t2_1_div3 = @id";
+            var query = "delete FROM t2_1_div3  WHERE id_t2_1_div3 = @id";
             using (var connection = _dapperContext.CreateConnection())
             {
                 return await connection.ExecuteAsync(query, new { id = id });
@@ -65,7 +65,7 @@ namespace VoiceFirstApi.Repository
           using (var connection = _dapperContext.CreateConnection())
           {
                   return await connection.QueryAsync<DivisionThreeModel>(query);
-            }
+          }
         }
 
         public async Task<DivisionThreeModel> GetByIdAsync(string id, Dictionary<string, string> filters)
@@ -108,6 +108,15 @@ namespace VoiceFirstApi.Repository
             using (var connection = _dapperContext.CreateConnection())
             {
                 return await connection.ExecuteAsync(query, parameters);
+            }
+        }
+
+        public async Task<int> UpdateStatus(string id, int status)
+        {
+            var query = "UPDATE t2_1_div3 set is_active=@status  WHERE id_t2_1_div3 = @id";
+            using (var connection = _dapperContext.CreateConnection())
+            {
+                return await connection.ExecuteAsync(query, new { id = id, status = status });
             }
         }
     }

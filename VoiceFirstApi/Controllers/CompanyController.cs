@@ -85,12 +85,12 @@ namespace VoiceFirstApi.Controllers
             
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAllAsync([FromQuery] Dictionary<string, string> filters)
+        [HttpPost("get-all")]
+        public async Task<IActionResult> GetAllAsync([FromBody] FilterDtoModel filters)
         {
             try
             {
-                var (data, message, status_code) = await _CompanyService.GetAllAsync(filters);
+                var (data, message, status_code) = await _CompanyService.GetAllAsync(filters.filters);
                 return Ok(new { data = data, message = message, status = status_code });
             }
             catch (Exception ex)
@@ -107,12 +107,12 @@ namespace VoiceFirstApi.Controllers
             
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetByIdAsync(string id, [FromQuery] Dictionary<string, string> filters)
+        [HttpPost("get-by-id")]
+        public async Task<IActionResult> GetByIdAsync([FromBody] FiltersAndIdDtoModel filters)
         {
             try
             {
-                var (data, message, status_code) = await _CompanyService.GetByIdAsync(id, filters);
+                var (data, message, status_code) = await _CompanyService.GetByIdAsync(filters.id, filters.filters);
                 return Ok(new { data = data, message = message, status = status_code });
             }
             catch (Exception ex)
@@ -149,6 +149,25 @@ namespace VoiceFirstApi.Controllers
                 });
             }
             
+        }
+        [HttpPut("update-status")]
+        public async Task<IActionResult> UpdateStatus(UpdateStatusDtoModel updateStatusDtoModel)
+        {
+            try
+            {
+                var (data, message, status_code) = await _CompanyService.UpdateStatus(updateStatusDtoModel);
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
         }
     }
 }

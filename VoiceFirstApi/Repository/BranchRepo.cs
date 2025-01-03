@@ -31,16 +31,24 @@ namespace VoiceFirstApi.Repository
 
         public async Task<int> DeleteAsync(string id)
         {
-            var query = "DELETE FROM t2_company_branch WHERE id_t2_company_branch = @id";
+            var query = "UPDATE t2_company_branch set is_delete=1,is_active=0  WHERE id_t2_company_branch = @id";
             using (var connection = _dapperContext.CreateConnection())
             {
                 return await connection.ExecuteAsync(query, new { id = id });
             }
         }
+        public async Task<int> UpdateStatus(string id,int status)
+        {
+            var query = "UPDATE t2_company_branch set is_active=@status  WHERE id_t2_company_branch = @id";
+            using (var connection = _dapperContext.CreateConnection())
+            {
+                return await connection.ExecuteAsync(query, new { id = id, status = status });
+            }
+        }
 
         public async Task<IEnumerable<BranchModel>> GetAllAsync(Dictionary<string, string> filters)
         {
-          var query = "SELECT * FROM t2_company_branch ";
+          var query = "SELECT * FROM t2_company_branch";
 
           if (filters != null && filters.Any())
           {

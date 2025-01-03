@@ -102,7 +102,8 @@ namespace VoiceFirstApi.Service
             var repoStatus = 0;
             var filter = new Dictionary<string, string>
             {
-                    { "t1_company_name", Company.t1_company_name }
+                    { "t1_company_name", Company.t1_company_name },
+                    { "is_delete", "0" }
             };
             var companyList = _CompanyRepo.GetAllAsync(filter).Result.FirstOrDefault();
             if (companyList != null)
@@ -128,7 +129,8 @@ namespace VoiceFirstApi.Service
 
                 var filterBranch = new Dictionary<string, string>
                 {
-                        { "t2_email", Company.insertBranchDTOModel.t2_email }
+                        { "t2_email", Company.insertBranchDTOModel.t2_email },
+                        { "is_delete", "0" }
 
                 };
                 var BranchList = _BranchRepo.GetAllAsync(filterBranch).Result.FirstOrDefault();
@@ -185,6 +187,7 @@ namespace VoiceFirstApi.Service
                     var filterUser = new Dictionary<string, string>
                     {
                             { "t5_email",Company.userDtoModel.t5_email },
+                            { "t5_mobile_no",Company.userDtoModel.t5_mobile_no },
                             { "t5_mobile_no",Company.userDtoModel.t5_mobile_no }
                     };
                     var UserList = _UserRepo.GetAllAsync(filterUser).Result.FirstOrDefault();
@@ -243,8 +246,8 @@ namespace VoiceFirstApi.Service
                     {
                         var UserLinkFilters = new Dictionary<string, string>
                         {
-                            { "id_t5_users",parametersUser.Id }
-
+                            { "id_t5_users",parametersUser.Id },
+                            { "is_delete", "0" }
                         };
                         var UserCopmanyList = _UserCompanyLinkRepo.GetAllAsync(UserLinkFilters).Result.FirstOrDefault();
 
@@ -376,6 +379,19 @@ namespace VoiceFirstApi.Service
             }
         }
 
-        
+        public async Task<(Dictionary<string, object>, string, int)> UpdateStatus(UpdateStatusDtoModel updateStatusDtoModel)
+        {
+            var data = new Dictionary<string, object>();
+            var list = await _BranchRepo.UpdateStatus(updateStatusDtoModel.id, updateStatusDtoModel.status);
+            if (list > 0)
+            {
+                return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+            }
+            else
+            {
+                return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+            }
+        }
+
     }
 }

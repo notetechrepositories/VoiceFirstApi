@@ -154,5 +154,18 @@ namespace VoiceFirstApi.Service
                 return (data, StatusUtilities.FAILED,StatusUtilities.FAILED_CODE);
             }
         }
+        public async Task<(Dictionary<string, object>, string, int)> UpdateStatus(UpdateStatusDtoModel updateStatusDtoModel)
+        {
+            var data = new Dictionary<string, object>();
+            var list = await _BranchRepo.UpdateStatus(updateStatusDtoModel.id, updateStatusDtoModel.status);
+            if (list > 0)
+            {
+                return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+            }
+            else
+            {
+                return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+            }
+        }
     }
 }

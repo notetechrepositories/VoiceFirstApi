@@ -80,7 +80,7 @@ namespace VoiceFirstApi.Controllers
                 });
             }
         }
-        
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdAsync(string id, [FromQuery] Dictionary<string, string> filters)
         {
@@ -107,6 +107,25 @@ namespace VoiceFirstApi.Controllers
             try
             {
                 var (data, message, status_code) = await _PermissionService.DeleteAsync(id);
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
+        }
+        [HttpPut("update-status")]
+        public async Task<IActionResult> UpdateStatus(UpdateStatusDtoModel updateStatusDtoModel)
+        {
+            try
+            {
+                var (data, message, status_code) = await _PermissionService.UpdateStatus(updateStatusDtoModel);
                 return Ok(new { data = data, message = message, status = status_code });
             }
             catch (Exception ex)

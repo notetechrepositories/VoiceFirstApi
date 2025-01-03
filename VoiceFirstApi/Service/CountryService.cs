@@ -5,6 +5,7 @@ using VoiceFirstApi.DtoModels;
 using VoiceFirstApi.IRepository;
 using VoiceFirstApi.IService;
 using VoiceFirstApi.Models;
+using VoiceFirstApi.Repository;
 using VoiceFirstApi.Utilities;
 namespace VoiceFirstApi.Service
 {
@@ -214,6 +215,18 @@ namespace VoiceFirstApi.Service
             }
         }
 
-        
+        public async Task<(Dictionary<string, object>, string, int)> UpdateStatus(UpdateStatusDtoModel updateStatusDtoModel)
+        {
+            var data = new Dictionary<string, object>();
+            var list = await _CountryRepo.UpdateStatus(updateStatusDtoModel.id, updateStatusDtoModel.status);
+            if (list > 0)
+            {
+                return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+            }
+            else
+            {
+                return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+            }
+        }
     }
 }
