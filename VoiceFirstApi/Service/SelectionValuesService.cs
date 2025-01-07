@@ -183,21 +183,21 @@ namespace VoiceFirstApi.Service
                     obj.id_t4_1_selection_values = value.id_t4_1_selection_values;
                     obj.t4_1_selection_values_name = value.t4_1_selection_values_name;
                     var filters = new Dictionary<string, string>
-                {
-                            { "id_t5_users",userId},
-                };
+                    {
+                                { "id_t5_users",userId},
+                    };
                     var userCompanyLinkList = _UserCompanyLinkRepo.GetAllAsync(filters).Result.FirstOrDefault();
                     if (userCompanyLinkList != null)
                     {
 
-                        if (value.id_t4_1_selection_values == "35c0c4e0-1a33-4a7f-9705-636cd5f9403f")
+                        if (value.id_t4_1_selection_values == "35c0c4e0-1a33-4a7f-9705-636cd5f9403f" || value.id_t4_1_selection_values == "6d5b7f76-bae0-44d6-ac6b-52a66ebe786b")
                         {
-                            if (userCompanyLinkList.id_t4_1_selection_values == "35c0c4e0-1a33-4a7f-9705-636cd5f9403f")
+                            if (userCompanyLinkList.id_t4_1_selection_values == "35c0c4e0-1a33-4a7f-9705-636cd5f9403f" || value.id_t4_1_selection_values == "6d5b7f76-bae0-44d6-ac6b-52a66ebe786b")
                             {
                                 var ComapnyFilter = new Dictionary<string, string>
-                            {
-                                        { "id_t1_company",userCompanyLinkList.t5_1_m_type_id},
-                            };
+                                {
+                                            { "id_t1_company",userCompanyLinkList.t5_1_m_type_id},
+                                };
                                 var CompanyData = _CompanyRepo.GetAllAsync(ComapnyFilter).Result.FirstOrDefault();
                                 if (CompanyData != null)
                                 {
@@ -244,7 +244,7 @@ namespace VoiceFirstApi.Service
                         }
                         if (value.id_t4_1_selection_values == "5efb48b2-c6c5-40e7-bafd-94f59bc6cd3f")
                         {
-                            if (userCompanyLinkList.id_t4_1_selection_values == "35c0c4e0-1a33-4a7f-9705-636cd5f9403f")
+                            if (userCompanyLinkList.id_t4_1_selection_values == "35c0c4e0-1a33-4a7f-9705-636cd5f9403f" || value.id_t4_1_selection_values == "6d5b7f76-bae0-44d6-ac6b-52a66ebe786b")
                             {
                                 var ComapnyFilter = new Dictionary<string, string>
                             {
