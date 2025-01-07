@@ -9,7 +9,7 @@ using VoiceFirstApi.Service;
 
 namespace VoiceFirstApi.Controllers
 {
-    [Route("api/User")]
+    [Route("api/user")]
     [ApiController]
     public class UserController : ControllerBase
     {

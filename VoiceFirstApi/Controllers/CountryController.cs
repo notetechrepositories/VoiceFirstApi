@@ -12,7 +12,7 @@ using VoiceFirstApi.Service;
 
 namespace VoiceFirstApi.Controllers
 {
-    [Route("api/Country")]
+    [Route("api/country")]
     [ApiController]
     public class CountryController : ControllerBase
     {

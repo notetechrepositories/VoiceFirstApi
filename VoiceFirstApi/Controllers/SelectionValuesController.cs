@@ -9,7 +9,7 @@ using VoiceFirstApi.Service;
 
 namespace VoiceFirstApi.Controllers
 {
-    [Route("api/SelectionValues")]
+    [Route("api/selection_values")]
     [ApiController]
     public class SelectionValuesController : ControllerBase
     {

@@ -9,7 +9,7 @@ using VoiceFirstApi.Service;
 
 namespace VoiceFirstApi.Controllers
 {
-    [Route("api/Branch")]
+    [Route("api/branch")]
     [ApiController]
     public class BranchController : ControllerBase
     {

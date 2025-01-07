@@ -12,7 +12,7 @@ using VoiceFirstApi.Service;
 
 namespace VoiceFirstApi.Controllers
 {
-    [Route("api/DivisionTwo")]
+    [Route("api/division-two")]
     [ApiController]
     public class DivisionTwoController : ControllerBase
     {
