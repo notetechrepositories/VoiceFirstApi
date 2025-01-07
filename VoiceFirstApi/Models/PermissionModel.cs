@@ -4,7 +4,7 @@
     {
         public string id_t5_1_m_user_roles_permission { get; set; }
         public string id_t5_1_m_user_roles { get; set; }
-        public string permission { get; set; }
+        public string id_t6_link_program_with_program_action { get; set; }
         public string inserted_by { get; set; }
         public DateTime inserted_date { get; set; }
         public string updated_by { get; set; }

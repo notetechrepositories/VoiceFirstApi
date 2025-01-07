@@ -91,7 +91,7 @@ namespace VoiceFirstApi.Service
                     var filterPermissions = new Dictionary<string, string>
                     {
                             { "id_t5_1_m_user_roles",Role.id_t5_1_m_user_roles },
-                            {"permission",item },
+                            {"id_t6_link_program_with_program_action",item },
                             { "is_delete", "0" }
                     };
                     var PermissionList = _PermissionRepo.GetAllAsync(filterPermissions).Result.FirstOrDefault();
@@ -169,7 +169,7 @@ namespace VoiceFirstApi.Service
                     var Permissionsfilters = new Dictionary<string, string>
                     {
                             { "id_t5_1_m_user_roles",generatedId },
-                            {"permission",item },
+                            {"id_t6_link_program_with_program_action",item },
                             { "is_delete", "0" }
                     };
                     var PermissionList = _PermissionRepo.GetAllAsync(Permissionsfilters).Result.FirstOrDefault();
@@ -308,7 +308,7 @@ namespace VoiceFirstApi.Service
             if (PermissionList?.Result != null && PermissionList.Result.Any())
             {
                 // Create a list to hold the permissions
-                var permissionList = PermissionList.Result.Select(permission => permission.permission).ToList();
+                var permissionList = PermissionList.Result.Select(permission => permission.id_t6_link_program_with_program_action).ToList();
 
                 // Add the list to the data dictionary
                 data["Items"] = permissionList;

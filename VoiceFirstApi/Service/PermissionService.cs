@@ -59,7 +59,7 @@ namespace VoiceFirstApi.Service
             var filter = new Dictionary<string, string>
             {
                     { "id_t5_1_m_user_roles",PermissionDtoModel.id_t5_1_m_user_roles },
-                    {"permission",PermissionDtoModel.permission }
+                    {"id_t6_link_program_with_program_action",PermissionDtoModel.permission }
             };
             var PermissionList = _PermissionRepo.GetAllAsync(filter).Result.FirstOrDefault();
 
@@ -99,7 +99,7 @@ namespace VoiceFirstApi.Service
             var filter = new Dictionary<string, string>
             {
                     { "id_t5_1_m_user_roles",Permission.id_t5_1_m_user_roles },
-                    {"permission",Permission.permission }
+                    {"id_t6_link_program_with_program_action",Permission.permission }
             };
             var PermissionList = _PermissionRepo.GetAllAsync(filter).Result.FirstOrDefault();
 

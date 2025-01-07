@@ -115,6 +115,7 @@ namespace VoiceFirstApi.Controllers
                 });
             }
         }
+
         [HttpPost("get-all")]
         public async Task<IActionResult> GetAllAsync([FromBody] FilterDtoModel filters)
         {
@@ -134,6 +135,9 @@ namespace VoiceFirstApi.Controllers
                 });
             }
         }
+
+
+
 
         [HttpPost("get-by-id")]
         public async Task<IActionResult> GetByIdAsync([FromBody] FiltersAndIdDtoModel filters)

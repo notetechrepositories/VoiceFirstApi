@@ -20,7 +20,7 @@ namespace VoiceFirstApi.Repository
         public async Task<int> AddAsync(object parameters)
         {
             var query = @"
-                INSERT INTO t5_1_m_user_roles_permissions(id_t5_1_m_user_roles_permission,permission,id_t5_1_m_user_roles,inserted_by,inserted_date) 
+                INSERT INTO t5_1_m_user_roles_permissions(id_t5_1_m_user_roles_permission,id_t6_link_program_with_program_action,id_t5_1_m_user_roles,inserted_by,inserted_date) 
                 VALUES (@Id,@Name,@RoleId,@InsertedBy,@InsertedDate);";
             using (var connection = _dapperContext.CreateConnection())
             {
@@ -106,7 +106,7 @@ namespace VoiceFirstApi.Repository
             var query = @"
                 UPDATE t5_1_m_user_roles_permissions
                 SET 
-                    permission = @Name, 
+                    id_t6_link_program_with_program_action = @Name, 
                     id_t5_1_m_user_roles = @RoleId, 
                     is_delete = @IsDelete, 
                     updated_by = @UpdatedBy, 
