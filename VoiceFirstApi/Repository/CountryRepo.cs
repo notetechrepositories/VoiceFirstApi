@@ -78,7 +78,7 @@ namespace VoiceFirstApi.Repository
         }
         public async Task<IEnumerable<CountryModel>> GetAscAll(Dictionary<string, string> filters)
         {
-            var query = "SELECT * FROM t2_1_country order by t2_1_country_name ASC";
+            var query = "SELECT * FROM t2_1_country ";
 
             if (filters != null && filters.Any())
             {
@@ -98,7 +98,7 @@ namespace VoiceFirstApi.Repository
                     }
 
                 }
-                query += " WHERE " + whereClauses + ";";
+                query += " WHERE " + whereClauses + " order by t2_1_country_name ASC;";
             }
 
             using (var connection = _dapperContext.CreateConnection())
