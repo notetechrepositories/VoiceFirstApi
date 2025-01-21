@@ -48,7 +48,12 @@ namespace VoiceFirstApi.Repository
 
         public async Task<IEnumerable<BranchModel>> GetAllAsync(Dictionary<string, string> filters)
         {
-          var query = "SELECT * FROM t2_company_branch";
+            var query = "SELECT t2_company_branch.id_t2_company_branch,t2_company_branch.id_t1_company,t2_company_branch.t2_company_branch_name,t2_company_branch.t2_id_branch_type,t2_company_branch.t2_address_1,t2_company_branch.t2_address_2,t2_company_branch.t2_zip_code,t2_company_branch.t2_mobile_no,t2_company_branch.t2_phone_no,t2_company_branch.t2_email,t2_1_local.t2_1_local_name,t2_1_country.t2_1_country_name,t2_1_div1.t2_1_div1_name,t2_1_div2.t2_1_div2_name,t2_1_div3.t2_1_div3_name,t2_1_local.id_t2_1_div1" +
+                  " FROM t2_company_branch" +
+                  " INNER JOIN t2_1_local ON t2_1_local.id_t2_1_local = t2_company_branch.id_t2_1_local LEFT JOIN t2_1_country ON t2_1_country.id_t2_1_country = t2_1_local.id_t2_1_country" +
+                  " LEFT JOIN t2_1_div1 ON t2_1_div1.id_t2_1_div1 = t2_1_local.id_t2_1_div1" +
+                  " LEFT JOIN t2_1_div2 ON t2_1_div2.id_t2_1_div2 = t2_1_local.id_t2_1_div2" +
+                  " LEFT JOIN t2_1_div3 ON t2_1_div3.id_t2_1_div3 = t2_1_local.id_t2_1_div3";
 
           if (filters != null && filters.Any())
           {
@@ -60,14 +65,14 @@ namespace VoiceFirstApi.Repository
                   string value = filters[key];
                   if (i == 0)
                   {
-                      whereClauses = " " + key + "='" + value + "'";
+                      whereClauses = " t2_company_branch." + key + "='" + value + "'";
                   }
                   else
                   {
-                      whereClauses += " AND " + key + "='" + value + "'";
+                      whereClauses += " AND t2_company_branch." + key + "='" + value + "'";
                   }
               }
-              query += " WHERE " + whereClauses + ";";
+              query += " WHERE " + whereClauses + ";"; 
           }
 
           using (var connection = _dapperContext.CreateConnection())

@@ -169,5 +169,26 @@ namespace VoiceFirstApi.Controllers
                 });
             }
         }
+        [HttpPost("get-all-company-branch-details")]
+        public async Task<IActionResult> GetAllCompanyWithBranchDetails([FromBody] FilterDtoModel filters)
+        {
+            try
+            {
+                var (data, message, status_code) = await _CompanyService.GetAllCompanyDetails(filters.filters);
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it as needed
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
+
+        }
     }
 }

@@ -1,6 +1,11 @@
 ﻿namespace VoiceFirstApi.Models
 {
-    public class BranchModel:LocalModel
+    public class CompanyWithBranchAndUserDetailsModel: CompanyModel
+    {
+        public List<BranchModel> branchDetailsModel { get; set; } = new List<BranchModel>();
+        
+    }
+    public class BranchDetailsModel:LocalModel 
     {
         public string id_t2_company_branch { get; set; }
         public string id_t1_company { get; set; }
@@ -12,10 +17,7 @@
         public string? t2_mobile_no { get; set; }
         public string? t2_phone_no { get; set; }
         public string t2_email { get; set; }
-        
-        public string inserted_by { get; set; }
-        public DateTime inserted_date { get; set; }
-        public string updated_by { get; set; }
-        public DateTime updated_date { get; set; }
+        public long user_count { get; set; }
+       
     }
 }
