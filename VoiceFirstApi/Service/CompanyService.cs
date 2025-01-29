@@ -410,6 +410,7 @@ namespace VoiceFirstApi.Service
                     obj.currency_name = company.currency_name;
                     obj.id_currency = company.id_currency;
                     obj.is_active_till_date = company.is_active_till_date;
+                    obj.is_active = company.is_active;
                     var branchFilter = new Dictionary<string, string>
                     {
                         { "id_t1_company",company.id_t1_company }

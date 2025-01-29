@@ -12,5 +12,6 @@ namespace VoiceFirstApi.IService
         Task<(Dictionary<string, object>, string, int)> DeleteAsync(string id);
         Task<(Dictionary<string, object>, string, int)> ImportCountry(List<ImportCountryModel> import);
         Task<(Dictionary<string, object>, string, int)> UpdateStatus(UpdateStatusDtoModel updateStatusDtoModel);
+        //Task<(Dictionary<string, object>, string, int)> ImportTest(List<ImportCountryModel> import);
     }
 }

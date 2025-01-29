@@ -8,6 +8,7 @@
         public string company_type { get; set; }
         public string id_currency { get; set; }
         public string currency_name { get; set; }
+        public int is_active { get; set; }
         public DateTime is_active_till_date { get; set; }
         public string is_delete { get; set; }
         public string inserted_by { get; set; }
