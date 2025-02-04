@@ -56,6 +56,27 @@ namespace VoiceFirstApi.Controllers
                 });
             }
         }
+        [HttpPost("forgot-password-link")]
+        public async Task<IActionResult> ForgotPasswordLink(string userName)
+        {
+            try
+            {
+                var (data, message, status_code) = await _AuthService.ForgotPasswordLink(userName);
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
+        }
+
+
 
         [HttpPost("verification-otp")]
         public async Task<IActionResult> VerificationOtp(VerificationOtpDtoModel verificationOtpDtoModel)
@@ -114,5 +135,6 @@ namespace VoiceFirstApi.Controllers
                 });
             }
         }
+
     }
 }

@@ -56,8 +56,8 @@ namespace VoiceFirstApi.Service
             var userDetails = await _UserRepo.GetUserDetailsByEmailOrPhone(authDtoModel.username);
             if(userDetails != null)
             {
-                var decryptPassword = SecurityUtilities.Decryption(userDetails.t5_password);
-                if(decryptPassword != null && decryptPassword ==authDtoModel.password) 
+                bool status =  SecurityUtilities.VerifyPassword(authDtoModel.password, userDetails.t5_password, userDetails.t5_salt_key);
+                if (status) 
                 {
                     var encryptUserId = SecurityUtilities.Encryption(userDetails.id_t5_users);
                     var claimDetails = new Dictionary<string, string>();
@@ -116,20 +116,18 @@ namespace VoiceFirstApi.Service
                 return (data, StatusUtilities.USER_NOT_FOUND, StatusUtilities.NOT_FOUND_CODE);
             }
 
-            var decryPassword = SecurityUtilities.Decryption(userDeatils.t5_password);
-            if (decryPassword == null)
-            {
-                return (data, StatusUtilities.CONTACT_ADMIN, StatusUtilities.FAILED_CODE);
-            }
-            if (decryPassword != changePasswordDtoModel.current_password)
+            bool passwordStatus = SecurityUtilities.VerifyPassword(changePasswordDtoModel.password, userDeatils.t5_password, userDeatils.t5_salt_key);
+            if (!passwordStatus)
             {
                 return (data, StatusUtilities.INVALID_PASSWORD, StatusUtilities.FAILED_CODE);
             }
-            var EncryptPassword = SecurityUtilities.Encryption(changePasswordDtoModel.password);
+            string salt = SecurityUtilities.GenerateSalt();
+            string hashPassword = SecurityUtilities.HashPassword(changePasswordDtoModel.password, salt);
             var parameters = new
             {
                 Id = userId.Trim(),
-                Password = EncryptPassword,
+                Password = hashPassword,
+                saltKey = salt,
                 UpdatedBy = userId,
                 UpdatedDate = DateTime.UtcNow,
             };
@@ -137,7 +135,7 @@ namespace VoiceFirstApi.Service
 
             if (status > 0)
             {
-                data["Items"] = parameters;
+                
                 return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
             }
             else
@@ -204,11 +202,13 @@ namespace VoiceFirstApi.Service
             {
                 return (data, StatusUtilities.USER_NOT_FOUND, StatusUtilities.NOT_FOUND_CODE);
             }
-            var EncryptPassword = SecurityUtilities.Encryption(resetPasswordDtoModel.password);
+            string salt = SecurityUtilities.GenerateSalt();
+            string hashPassword = SecurityUtilities.HashPassword(resetPasswordDtoModel.password, salt);
             var parameters = new
             {
                 Id = decryptedUserId.Trim(),
-                Password = EncryptPassword,
+                Password = hashPassword,
+                saltKey = salt,
                 UpdatedBy = decryptedUserId,
                 UpdatedDate = DateTime.UtcNow,
             };
@@ -216,7 +216,7 @@ namespace VoiceFirstApi.Service
 
             if (status > 0)
             {
-                data["Items"] = parameters;
+                
                 return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
             }
             else
@@ -257,6 +257,46 @@ namespace VoiceFirstApi.Service
                 {
                     return (data, StatusUtilities.INVALID_OTP, StatusUtilities.INVALID_OTP_CODE);
                 }
+            }
+        }
+
+        public async Task<(Dictionary<string, object>, string, int)> ForgotPasswordLink(string userName)
+        {
+            
+            var data = new Dictionary<string, object>();
+            var userDetails = await _UserRepo.GetUserDetailsByEmailOrPhone(userName);
+            if (userDetails != null)
+            {
+
+                string encryptedUserId = SecurityUtilities.Encryption(userDetails.id_t5_users);
+                string encryptedDate = SecurityUtilities.Encryption(DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss"));
+                string link = "http://localhost:4200/authentication/auth-test/" + encryptedUserId + "/" + encryptedDate;
+                var emailService = new CommunicationUtilities();
+
+                EmailModel mail = new EmailModel();
+                mail.from_email_password = "frsj ucpw vaww xzmv";
+                mail.from_email = "anil.p@notetech.com";
+                mail.to_email = userDetails.t5_email;
+                mail.email_html_body =
+                    "<html>" +
+                        "<body>" +
+                            "<p>Hi " + userDetails.t5_first_name + ",</p>" +
+                            "<p>You requested to reset your password. Please click the link below to reset your password:</p>" +
+                            "<p><strong><a href='" + link + "' target='_blank'>" + link + "</a></strong></p>" +
+                            "<p>This link will expire in 1 minute.</p>" +
+                            "<p>If you did not request a password reset, please ignore this email.</p>" +
+                            "<p><strong>Thanks & Regards,</strong><br>" +
+                            "<em>Notetech Team</em></p>" +
+                            "<p><em>Powered by Notetech Software</em></p>"+
+                "</body>" +
+                    "</html>";
+                mail.subject = "Your OTP Code to Verify Your Account";
+                emailService.SendMail(mail);
+                return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+            }
+            else
+            {
+                return (data, StatusUtilities.USER_NOT_FOUND, StatusUtilities.NOT_FOUND_CODE);
             }
         }
     }

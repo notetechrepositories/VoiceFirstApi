@@ -9,6 +9,7 @@ namespace VoiceFirstApi.IService
         Task<(Dictionary<string, object>, string, int)> VerificationOTP(VerificationOtpDtoModel verificationOtpDtoModel);
         Task<(Dictionary<string, object>, string, int)> ResetPassword(ResetPasswordDtoModel resetPasswordDtoModel);
         Task<(Dictionary<string, object>, string, int)> ChangePassword(ChangePasswordDtoModel changePasswordDtoModel);
+        Task<(Dictionary<string, object>, string, int)> ForgotPasswordLink(string userName);
 
     }
 }

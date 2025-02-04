@@ -22,6 +22,7 @@
     public class UserDetailsModel:UserModel
     {
         public string t5_password { get; set; }
+        public string t5_salt_key { get; set; }
     }
 
 }

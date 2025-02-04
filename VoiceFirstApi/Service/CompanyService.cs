@@ -221,6 +221,8 @@ namespace VoiceFirstApi.Service
                         return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
                     }
                     var password = StringUtilities.GenerateRandomString(6);
+                    string salt = SecurityUtilities.GenerateSalt();
+                    string hashPassword = SecurityUtilities.HashPassword(password,salt);
                     var parametersUser = new
                     {
                         Id = generatedUserId.Trim(),
@@ -231,7 +233,9 @@ namespace VoiceFirstApi.Service
                         ZipCode = Company.userDtoModel.t5_zip_code.Trim(),
                         Mobile = Company.userDtoModel.t5_mobile_no.Trim(),
                         Email = Company.userDtoModel.t5_email.Trim(),
-                        Password = SecurityUtilities.Encryption(password).Trim(),
+                        //Password = SecurityUtilities.Encryption(password).Trim(),
+                        Password = hashPassword,
+                        SaltKey = salt.Trim(),
                         RoleId = "da65e845-e201-4b24-8664-a78a82284212",
                         BirthDate = Company.userDtoModel.t5_birth_year.Trim(),
                         Sex = Company.userDtoModel.t5_sex.Trim(),

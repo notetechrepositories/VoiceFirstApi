@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -90,15 +91,16 @@ namespace VoiceFirstApi.Utilities
                     encryptString = Convert.ToBase64String(ms.ToArray());
                 }
             }
-
-            return encryptString;
+            return encryptString.Replace("+", "-").Replace("/", "_").Replace("=", "");
+           
         }
 
-        public static string Decryption(string cipherText)
+        public static string Decryption(string encryptedText)
         {
+            
+            string cipherText = encryptedText.Replace("-", "+").Replace("_", "/") + new string('=', (4 - encryptedText.Length % 4) % 4);
             string EncryptionKey = "Iu2TXhw0hqwfuRcpjUuMlWKPWA7P4jnX";
             byte[] cipherBytes = Convert.FromBase64String(cipherText);
-
             using (Aes encryptor = Aes.Create())
             {
                 Rfc2898DeriveBytes pdb = new Rfc2898DeriveBytes(EncryptionKey, new byte[] {
@@ -187,6 +189,34 @@ namespace VoiceFirstApi.Utilities
             public string value { get; set; }
             public string? userDeatils { get; set; }
         }
-        
+        public static string GenerateSalt()
+        {
+            byte[] salt = new byte[32];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(salt);
+            }
+            return Convert.ToBase64String(salt);
+        }
+
+        // Hash the password with the provided salt
+        public static string HashPassword(string password, string salt)
+        {
+            byte[] saltBytes = Convert.FromBase64String(salt);
+            string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                password: password,
+                salt: saltBytes,
+                prf: KeyDerivationPrf.HMACSHA256,
+                iterationCount: 10000,
+                numBytesRequested: 32));
+            return hashed;
+        }
+
+        // Verify password
+        public static bool VerifyPassword(string enteredPassword, string storedHash, string storedSalt)
+        {
+            string hashOfInput = HashPassword(enteredPassword, storedSalt);
+            return hashOfInput == storedHash;
+        }
     }
 }
