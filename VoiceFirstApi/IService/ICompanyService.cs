@@ -9,6 +9,7 @@ namespace VoiceFirstApi.IService
         Task<(Dictionary<string, object>, string,int)> InsertCompany(InsertCompanyDTOModel Company);
         Task<(Dictionary<string, object>, string, int)> UpdateAsync(UpdateCompanyDtoModel Company);
         Task<(Dictionary<string, object>, string, int)> GetAllAsync(Dictionary<string, string> filters);
+        Task<(Dictionary<string, object>, string, int)> GetAllCompanyDetails(Dictionary<string, string> filters);
         Task<(Dictionary<string, object>, string, int)> GetByIdAsync(string id, Dictionary<string, string> filters);
         Task<(Dictionary<string, object>, string, int)> DeleteAsync(string id);
         Task<(Dictionary<string, object>, string, int)> UpdateStatus(UpdateStatusDtoModel updateStatusDtoModel);

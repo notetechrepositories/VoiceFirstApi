@@ -47,7 +47,9 @@ namespace VoiceFirstApi.Repository
 
         public async Task<IEnumerable<CompanyModel>> GetAllAsync(Dictionary<string, string> filters)
         {
-          var query = "SELECT * FROM t1_company ";
+            var query = "select t1_company.id_t1_company,t1_company.t1_company_name,t1_company.is_active,t1_company.id_company_type,t1_company.is_active_till_date,t4_1_selection_values.t4_1_selection_values_name as company_type,currency.t4_1_selection_values_name as curreny_name,t1_company.id_currency from t1_company" +
+                  " LEFT JOIN t4_1_selection_values as currency on currency.id_t4_1_selection_values=t1_company.id_currency" +
+                  " inner join t4_1_selection_values on t4_1_selection_values.id_t4_1_selection_values=t1_company.id_company_type ";
 
           if (filters != null && filters.Any())
           {
@@ -56,17 +58,22 @@ namespace VoiceFirstApi.Repository
               for (int i = 0; i < keys.Count; i++)
               {
                   string key = keys[i];
-                  string value = filters[key];
+                  string value = filters[key]; 
                   if (i == 0)
                   {
-                      whereClauses = " " + key + "='" + value + "'";
+                      whereClauses = " t1_company." + key + "='" + value + "'";
                   }
                   else
                   {
-                      whereClauses += " AND " + key + "='" + value + "'";
+                      whereClauses += " AND t1_company." + key + "='" + value + "'";
                   }
               }
-              query += " WHERE " + whereClauses + ";";
+                if (whereClauses != "")
+                {
+                    query += " WHERE " + whereClauses + ";";
+                }
+                
+            
           }
 
           using (var connection = _dapperContext.CreateConnection())
@@ -74,6 +81,7 @@ namespace VoiceFirstApi.Repository
                   return await connection.QueryAsync<CompanyModel>(query);
             }
         }
+
 
         public async Task<CompanyModel> GetByIdAsync(string id, Dictionary<string, string> filters)
         {

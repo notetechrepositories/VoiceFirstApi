@@ -397,5 +397,36 @@ namespace VoiceFirstApi.Service
             }
         }
 
+        public async Task<(Dictionary<string, object>, string, int)> GetAllCompanyDetails(Dictionary<string, string> filters)
+        {
+            var data = new Dictionary<string, object>();
+            List<CompanyWithBranchAndUserDetailsModel> companyWithBranchAndUserDetailsModels = new List<CompanyWithBranchAndUserDetailsModel>();
+            var companylist = await _CompanyRepo.GetAllAsync(filters);
+            if (companylist != null)
+            {
+                foreach(var company in companylist)
+                {
+                    CompanyWithBranchAndUserDetailsModel obj = new CompanyWithBranchAndUserDetailsModel();
+                    obj.id_company_type = company.id_company_type;
+                    obj.company_type = company.company_type;
+                    obj.id_t1_company = company.id_t1_company;
+                    obj.t1_company_name = company.t1_company_name;
+                    obj.currency_name = company.currency_name;
+                    obj.id_currency = company.id_currency;
+                    obj.is_active_till_date = company.is_active_till_date;
+                    obj.is_active = company.is_active;
+                    var branchFilter = new Dictionary<string, string>
+                    {
+                        { "id_t1_company",company.id_t1_company }
+                    };
+                    var branchList = _BranchRepo.GetAllAsync(branchFilter);
+                    obj.branchDetailsModel = branchList.Result.ToList();
+                    companyWithBranchAndUserDetailsModels.Add(obj);
+
+                } 
+            }
+            data["Item"] = companyWithBranchAndUserDetailsModels;
+            return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+        }
     }
 }
