@@ -188,7 +188,7 @@ namespace VoiceFirstApi.Service
                     {
                             { "t5_email",Company.userDtoModel.t5_email },
                             { "t5_mobile_no",Company.userDtoModel.t5_mobile_no },
-                            { "t5_mobile_no",Company.userDtoModel.t5_mobile_no }
+                            
                     };
                     var UserList = _UserRepo.GetAllAsync(filterUser).Result.FirstOrDefault();
 
