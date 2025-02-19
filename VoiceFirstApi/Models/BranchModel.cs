@@ -6,6 +6,7 @@
         public string id_t1_company { get; set; }
         public string t2_company_branch_name { get; set; }
         public string t2_id_branch_type { get; set; }
+        public string company_branch_type_name { get; set; }
         public string t2_address_1 { get; set; }
         public string? t2_address_2 { get; set; }
         public string t2_zip_code { get; set; }
