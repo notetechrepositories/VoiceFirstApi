@@ -26,14 +26,14 @@
     }
     public class UserProfileModel : UserModel
     {
-        public string id_t2_1_country { get; set; }
-        public string id_t2_1_div1 { get; set; }
-        public string id_t2_1_div2 { get; set; }
-        public string id_t2_1_div3 { get; set; }
-        public string t2_1_local_name { get; set; }
-        public string t2_1_country_name { get; set; }
-        public string t2_1_div1_name { get; set; }
-        public string t2_1_div2_name { get; set; }
-        public string t2_1_div3_name { get; set; }
+        public string? id_t2_1_country { get; set; }
+        public string? id_t2_1_div1 { get; set; }
+        public string? id_t2_1_div2 { get; set; }
+        public string? id_t2_1_div3 { get; set; }
+        public string? t2_1_local_name { get; set; }
+        public string? t2_1_country_name { get; set; }
+        public string? t2_1_div1_name { get; set; }
+        public string? t2_1_div2_name { get; set; }
+        public string? t2_1_div3_name { get; set; }
     }
 }

@@ -79,9 +79,9 @@ namespace VoiceFirstApi.Repository
                 "t2_1_local.id_t2_1_div3,t2_1_local.t2_1_local_name,t2_1_country.t2_1_country_name," +
                 "t2_1_div1.t2_1_div1_name,t2_1_div2.t2_1_div2_name,t2_1_div3.t2_1_div3_name from t2_1_local " +
                 "inner join t2_1_country on t2_1_country.id_t2_1_country=t2_1_local.id_t2_1_country " +
-                "inner join t2_1_div1 on t2_1_div1.id_t2_1_div1= t2_1_local.id_t2_1_div1 " +
-                "inner join t2_1_div2 on t2_1_div2.id_t2_1_div2=t2_1_local.id_t2_1_div2 " +
-                "inner join t2_1_div3 on t2_1_div3.id_t2_1_div3=t2_1_local.id_t2_1_div3  WHERE t2_1_local.id_t2_1_local = @id";
+                "left join t2_1_div1 on t2_1_div1.id_t2_1_div1= t2_1_local.id_t2_1_div1 " +
+                "left join t2_1_div2 on t2_1_div2.id_t2_1_div2=t2_1_local.id_t2_1_div2 " +
+                "left join t2_1_div3 on t2_1_div3.id_t2_1_div3=t2_1_local.id_t2_1_div3  WHERE t2_1_local.id_t2_1_local = @id";
 
             if (filters != null && filters.Any())
             {

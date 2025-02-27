@@ -131,7 +131,6 @@ namespace VoiceFirstApi.Repository
                     t5_email = @Email, 
                     t5_birth_year = @BirthDate, 
                     t5_sex = @Sex, 
-                    id_t5_1_m_user_roles = @RoleId, 
                     id_t2_1_local = @Local, 
                     updated_by = @UpdatedBy, 
                     updated_date = @UpdatedDate

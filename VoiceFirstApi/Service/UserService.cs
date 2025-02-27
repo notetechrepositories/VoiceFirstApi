@@ -172,7 +172,6 @@ namespace VoiceFirstApi.Service
                 Mobile = User.t5_mobile_no.Trim(),
                 Email = User.t5_email.Trim(),
                 BirthDate = User.t5_birth_year.Trim(),
-                RoleId = User.id_t5_1_m_user_roles.Trim(),
                 Sex = User.t5_sex.Trim(),
                 Local = User.id_t2_1_local.Trim(),
                 UpdatedBy = userId,
@@ -205,32 +204,46 @@ namespace VoiceFirstApi.Service
             var data = new Dictionary<string, object>();
             Dictionary<string, string> localfilters = new Dictionary<string, string>();
             var list = await _UserRepo.GetByIdAsync(id, filters);
-            var locationDetail = _LocalRepo.GetByIdAsync(list.id_t2_1_local, localfilters);
-            UserProfileModel userProfileModel=new UserProfileModel();
-            userProfileModel.id_t5_users = list.id_t5_users;
-            userProfileModel.t5_first_name = list.t5_first_name;
-            userProfileModel.t5_last_name = list.t5_last_name;
-            userProfileModel.t5_address_1 = list.t5_address_1;
-            userProfileModel.t5_address_2 = list.t5_address_2;
-            userProfileModel.t5_zip_code = list.t5_zip_code;
-            userProfileModel.t5_mobile_no = list.t5_mobile_no;
-            userProfileModel.t5_email = list.t5_email;
-            userProfileModel.t5_birth_year = list.t5_birth_year;
-            userProfileModel.t5_sex = list.t5_sex;
-            userProfileModel.id_t2_1_local= list.id_t2_1_local;
-            userProfileModel.id_t5_1_m_user_roles = list.id_t5_1_m_user_roles;
-            userProfileModel.id_t2_1_country = locationDetail.Result.id_t2_1_country;
-            userProfileModel.id_t2_1_div1 = locationDetail.Result.id_t2_1_div1;
-            userProfileModel.id_t2_1_div2 = locationDetail.Result.id_t2_1_div2;
-            userProfileModel.id_t2_1_div3 = locationDetail.Result.id_t2_1_div3;
-            userProfileModel.t2_1_local_name = locationDetail.Result.t2_1_local_name;
-            userProfileModel.t2_1_country_name = locationDetail.Result.t2_1_country_name;
-            userProfileModel.t2_1_div1_name = locationDetail.Result.t2_1_div1_name;
-            userProfileModel.t2_1_div2_name = locationDetail.Result.t2_1_div2_name;
-            userProfileModel.t2_1_div3_name = locationDetail.Result.t2_1_div3_name;
+            if (list != null)
+            {
+                var locationDetail = _LocalRepo.GetByIdAsync(list.id_t2_1_local, localfilters);
 
-            data["Items"] = userProfileModel;
-            return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+                UserProfileModel userProfileModel = new UserProfileModel();
+                userProfileModel.id_t5_users = list.id_t5_users;
+                userProfileModel.t5_first_name = list.t5_first_name;
+                userProfileModel.t5_last_name = list.t5_last_name;
+                userProfileModel.t5_address_1 = list.t5_address_1;
+                userProfileModel.t5_address_2 = list.t5_address_2;
+                userProfileModel.t5_zip_code = list.t5_zip_code;
+                userProfileModel.t5_mobile_no = list.t5_mobile_no;
+                userProfileModel.t5_email = list.t5_email;
+                userProfileModel.t5_birth_year = list.t5_birth_year;
+                userProfileModel.t5_sex = list.t5_sex;
+                userProfileModel.id_t2_1_local = list.id_t2_1_local;
+                userProfileModel.id_t5_1_m_user_roles = list.id_t5_1_m_user_roles;
+                if (locationDetail.Result == null)
+                {
+                    return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+                }
+                else
+                {
+                    userProfileModel.id_t2_1_country = locationDetail.Result.id_t2_1_country;
+                    userProfileModel.id_t2_1_div1 = locationDetail.Result.id_t2_1_div1;
+                    userProfileModel.id_t2_1_div2 = locationDetail.Result.id_t2_1_div2;
+                    userProfileModel.id_t2_1_div3 = locationDetail.Result.id_t2_1_div3;
+                    userProfileModel.t2_1_local_name = locationDetail.Result.t2_1_local_name;
+                    userProfileModel.t2_1_country_name = locationDetail.Result.t2_1_country_name;
+                    userProfileModel.t2_1_div1_name = locationDetail.Result.t2_1_div1_name;
+                    userProfileModel.t2_1_div2_name = locationDetail.Result.t2_1_div2_name;
+                    userProfileModel.t2_1_div3_name = locationDetail.Result.t2_1_div3_name;
+                }
+
+
+                data["Items"] = userProfileModel;
+                return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+            }
+
+            return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
         }
 
         public async Task<(Dictionary<string, object>, string, int)> DeleteAsync(string id)
