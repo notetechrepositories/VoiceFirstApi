@@ -156,14 +156,14 @@ namespace VoiceFirstApi.Service
             };
             var UserList = _UserRepo.GetAllAsync(filter).Result.FirstOrDefault();
 
-            if (UserList != null  && UserList.id_t5_users!= User.id_t5_users)
+            if (UserList != null  && UserList.id_t5_users!= userId)
             {
                 return (data, StatusUtilities.EMAIL_OR_MOBILE_ALREADY_EXIST, StatusUtilities.ALREADY_EXIST_CODE);
             }
 
             var parameters = new
             {
-                Id = User.id_t5_users,
+                Id = userId,
                 FirstName = User.t5_first_name.Trim(),
                 LastName = User.t5_last_name.Trim(),
                 Address1 = User.t5_address_1.Trim(),
