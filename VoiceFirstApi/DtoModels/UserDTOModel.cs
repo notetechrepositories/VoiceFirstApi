@@ -24,7 +24,6 @@ namespace VoiceFirstApi.DtoModels
     public class UpdateUserDtoModel : UserDtoModel
     {
         [Required(ErrorMessage = "Name is required.")]
-        public string id_t5_users { get; set; }
         public string id_t2_1_local { get; set; }
 
     }
