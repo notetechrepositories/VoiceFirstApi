@@ -13,7 +13,8 @@
         public string? t2_mobile_no { get; set; }
         public string? t2_phone_no { get; set; }
         public string t2_email { get; set; }
-        
+
+        public string id_t2_1_local { get; set; }
         public string inserted_by { get; set; }
         public DateTime inserted_date { get; set; }
         public string updated_by { get; set; }

@@ -2,9 +2,9 @@
 
 namespace VoiceFirstApi.DtoModels
 {
-    public class BranchDtoModel
+    public class BranchDtoModel :LocalDtoModel
     {
-        [Required(ErrorMessage = "Name is required.")]
+
         public string id_t1_company { get; set; }
         public string t2_company_branch_name { get; set; }
         public string t2_id_branch_type { get; set; }
@@ -14,13 +14,14 @@ namespace VoiceFirstApi.DtoModels
         public string? t2_mobile_no { get; set; }
         public string? t2_phone_no { get; set; }
         public string t2_email { get; set; }
-        public string id_t2_1_local { get; set; }
+
   
     }
     public class UpdateBranchDtoModel : BranchDtoModel
     {
-        [Required(ErrorMessage = "Name is required.")]
+  
         public string id_t2_company_branch { get; set; }
+        public string id_t2_1_local { get; set; }
 
     }
 }
