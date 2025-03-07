@@ -23,11 +23,12 @@ namespace VoiceFirstApi.Controllers
             _UserService = UserService;
         }
 
-        [HttpPost]
+        [HttpPost("user-register")]
         public async Task<IActionResult> AddAsync([FromBody] UserDtoModel UserDto)
         {
             try
             {
+                UserDto.id_t5_1_m_user_roles = "EF2DBD65-1B3D-4543-96B6-93FE0B0F9910";
                 var (data, message, status_code) = await _UserService.AddAsync(UserDto);
                 return Ok(new { data = data, message = message, status = status_code });
             }
@@ -42,7 +43,26 @@ namespace VoiceFirstApi.Controllers
                 });
             }
         }
+        [HttpPost("add-user")]
+        public async Task<IActionResult> AddUserAsync([FromBody] UserDtoModel UserDto)
+        {
+            try
+            {
 
+                var (data, message, status_code) = await _UserService.AddAsync(UserDto);
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
+        }
         [HttpPut]
         public async Task<IActionResult> UpdateAsync([FromBody] UpdateUserDtoModel UserDto)
         {

@@ -54,6 +54,18 @@
         {
             return "Media/";
         }
+        public static string GetUploadIssueImage()
+        {
+            return "/Uploads/Images/";
+        }
+        public static string GetUploadIssueVideo()
+        {
+            return "/Uploads/Videos/";
+        }
+        public static string GetUploadIssueAudio()
+        {
+            return "/Uploads/Audio/";
+        }
         public static string GetFileName(string fileName)
         {
 

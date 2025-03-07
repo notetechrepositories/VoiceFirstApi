@@ -278,16 +278,7 @@ namespace VoiceFirstApi.Service
                         var UserLinkStatus = await _UserCompanyLinkRepo.AddAsync(parametersOfUserCompanyLink);
                         if (UserLinkStatus > 0)
                         {
-                            EmailModel mailUser = new EmailModel();
-                            mailUser.from_email_password = "frsj ucpw vaww xzmv";
-                            mailUser.from_email = "anil.p@notetech.com";
-                            mailUser.to_email = Company.userDtoModel.t5_email;
-                            mailUser.email_html_body = "<html><body><p> Hi " + Company.userDtoModel.t5_first_name + " " + Company.userDtoModel.t5_last_name + "</p><p> Your Password is " + password +
-                                    "<br> Don`t share the Password.</p><p><strong> Thanks & Regards,</strong><br><em> " +
-                                    " Leadwear Team </em></p><p><em> Powered by Leadwear </em></p></body></html>";
-                            mailUser.subject = "Yor Passward";
-
-                            emailService.SendMail(mailUser);
+                           
 
                             EmailModel mail = new EmailModel();
                             mail.from_email_password = "frsj ucpw vaww xzmv";

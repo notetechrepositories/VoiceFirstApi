@@ -6,6 +6,7 @@ using VoiceFirstApi.IService;
 using VoiceFirstApi.Models;
 using VoiceFirstApi.Repository;
 using VoiceFirstApi.Utilities;
+using VoiceFirstApi.Utilits;
 namespace VoiceFirstApi.Service
 {
     public class UserService : IUserService
@@ -51,7 +52,13 @@ namespace VoiceFirstApi.Service
 
         public async Task<(Dictionary<string, object>, string, int)> AddAsync(UserDtoModel UserDtoModel)
         {
-            var userId = GetCurrentUserId();
+            var userId = "";
+            var emailService = new CommunicationUtilities();
+            if (UserDtoModel.id_t5_1_m_user_roles!= "EF2DBD65-1B3D-4543-96B6-93FE0B0F9910")
+            {
+                 userId = GetCurrentUserId();
+            }
+            
             var data = new Dictionary<string, object>();
             var generatedId = Guid.NewGuid().ToString();
             var generatedLocalId = Guid.NewGuid().ToString();
@@ -64,6 +71,7 @@ namespace VoiceFirstApi.Service
                 Division2Id = UserDtoModel.id_t2_1_div2.Trim(),
                 Division3Id = UserDtoModel.id_t2_1_div3.Trim(),
                 Name = UserDtoModel.t2_1_local_name.Trim(),
+
                 InsertedBy = userId.Trim(),
                 InsertedDate = DateTime.UtcNow
             };
@@ -85,7 +93,9 @@ namespace VoiceFirstApi.Service
             {
                 return (data, StatusUtilities.EMAIL_OR_MOBILE_ALREADY_EXIST, StatusUtilities.ALREADY_EXIST_CODE);
             }
-            var password =  StringUtilities.GenerateRandomString(6);
+            var password = StringUtilities.GenerateRandomString(6);
+            string salt = SecurityUtilities.GenerateSalt();
+            string hashPassword = SecurityUtilities.HashPassword(password, salt);
             var parameters = new
             {
                 Id = generatedId.Trim(),
@@ -96,7 +106,8 @@ namespace VoiceFirstApi.Service
                 ZipCode = UserDtoModel.t5_zip_code.Trim(),
                 Mobile = UserDtoModel.t5_mobile_no.Trim(),
                 Email = UserDtoModel.t5_email.Trim(),
-                Password = SecurityUtilities.Encryption(password).Trim(),
+                Password = hashPassword,
+                SaltKey = salt.Trim(),
                 BirthDate = UserDtoModel.t5_birth_year.Trim(),
                 RoleId = UserDtoModel.id_t5_1_m_user_roles.Trim(),
                 Sex = UserDtoModel.t5_sex.Trim(),
@@ -110,6 +121,18 @@ namespace VoiceFirstApi.Service
             if (status > 0)
             {
                 data["Items"] = parameters;
+                EmailModel mailUser = new EmailModel();
+                mailUser.from_email_password = "frsj ucpw vaww xzmv";
+                mailUser.from_email = "anil.p@notetech.com";
+                mailUser.to_email = UserDtoModel.t5_email;
+                mailUser.email_html_body = "<html><body><p> Hi " + UserDtoModel.t5_first_name + " " + UserDtoModel.t5_last_name + "</p><p> Your Password is " + password +
+                        "<br> Don`t share the Password.</p><p><strong> Thanks & Regards,</strong><br><em> " +
+                        " Leadwear Team </em></p><p><em> Powered by Leadwear </em></p></body></html>";
+                mailUser.subject = "Yor Passward";
+
+                emailService.SendMail(mailUser);
+
+         
                 return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
             }
             else
