@@ -17,13 +17,14 @@ namespace VoiceFirstApi.Service
         private readonly IPermissionRepo _PermissionRepo;
         private readonly IHttpContextAccessor _HttpContextAccessor;
         private readonly IProgramRepo _ProgramRepo;
-
-        public RoleService(IRoleRepo RoleRepo, IPermissionRepo PermissionRepo, IHttpContextAccessor httpContextAccessor, IProgramRepo programRepo)
+        private readonly IUserCompanyLinkRepo _userCompanyLinkRepo;
+        public RoleService(IRoleRepo RoleRepo, IPermissionRepo PermissionRepo, IHttpContextAccessor httpContextAccessor, IProgramRepo programRepo, IUserCompanyLinkRepo userCompanyLinkRepo)
         {
             _RoleRepo = RoleRepo;
             _PermissionRepo = PermissionRepo;
             _HttpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
             _ProgramRepo = programRepo;
+            _userCompanyLinkRepo = userCompanyLinkRepo;
         }
 
         private string GetCurrentUserId()
@@ -289,7 +290,7 @@ namespace VoiceFirstApi.Service
                 return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
             }
         }
-        public async Task<(Dictionary<string, object>, string, int)> GetBtRoleIdAsync(string id)
+        public async Task<(Dictionary<string, object>, string, int)> GetByRoleIdAsync(string id)
         {
             var data = new Dictionary<string, object>();
             var filterRole = new Dictionary<string, string>
@@ -321,8 +322,21 @@ namespace VoiceFirstApi.Service
 
             return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
         }
-        public async Task<(Dictionary<string, object>, string,int)> GetAllAsync(Dictionary<string, string> filters)
+        public async Task<(Dictionary<string, object>, string,int)> GetAllAsync()
         {
+            var UserId = GetCurrentUserId();
+            var filter = new Dictionary<string, string>
+            {
+                {"id_t5_users",UserId },
+                {"is_delete","0" }
+            };
+            
+            var UserCompanyDetails = await _userCompanyLinkRepo.GetAllAsync( filter);
+            var UserCompanyOrBranchId = UserCompanyDetails.FirstOrDefault().id_t4_1_selection_values;
+            var filters = new Dictionary<string, string>
+            {
+                {"id_t4_1_selection_values",UserCompanyOrBranchId }
+            };   
             var data = new Dictionary<string, object>();
             var list = await _RoleRepo.GetAllAsync(filters);
             data["Items"] = list;

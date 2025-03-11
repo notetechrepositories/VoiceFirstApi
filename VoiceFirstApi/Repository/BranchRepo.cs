@@ -51,30 +51,26 @@ namespace VoiceFirstApi.Repository
             var query = "SELECT t4_1_selection_values.t4_1_selection_values_name as company_branch_type_name,t2_company_branch.id_t2_company_branch,t2_company_branch.id_t1_company," +
                 "t2_company_branch.t2_company_branch_name,t2_company_branch.t2_id_branch_type,t2_company_branch.t2_address_1,t2_company_branch.t2_address_2," +
                 "t2_company_branch.t2_zip_code,t2_company_branch.t2_mobile_no,t2_company_branch.t2_phone_no,t2_company_branch.t2_email,t2_1_local.t2_1_local_name," +
-                "t2_1_country.t2_1_country_name,t2_1_div1.t2_1_div1_name,t2_1_div2.t2_1_div2_name,t2_1_div3.t2_1_div3_name,t2_1_local.id_t2_1_div1,t2_1_local.id_t2_1_div2,t2_1_local.id_t2_1_div3,t2_1_local.id_t2_1_country" +
+                "t2_1_country.t2_1_country_name,t2_1_div1.t2_1_div1_name,t2_1_div2.t2_1_div2_name,t2_1_div3.t2_1_div3_name,t2_1_local.id_t2_1_div1,t2_1_local.id_t2_1_div2,t2_1_local.id_t2_1_div3,t2_1_local.id_t2_1_country," +
+                "t2_company_branch.is_active,t2_company_branch.is_delete" +
                   " FROM t2_company_branch" +
                   " INNER JOIN t2_1_local ON t2_1_local.id_t2_1_local = t2_company_branch.id_t2_1_local LEFT JOIN t2_1_country ON t2_1_country.id_t2_1_country = t2_1_local.id_t2_1_country" +
                   " LEFT JOIN t2_1_div1 ON t2_1_div1.id_t2_1_div1 = t2_1_local.id_t2_1_div1" +
                   " LEFT JOIN t2_1_div2 ON t2_1_div2.id_t2_1_div2 = t2_1_local.id_t2_1_div2" +
                   " Left join t4_1_selection_values on t4_1_selection_values.id_t4_1_selection_values=t2_company_branch.t2_id_branch_type" +
-                  " LEFT JOIN t2_1_div3 ON t2_1_div3.id_t2_1_div3 = t2_1_local.id_t2_1_div3";
+                  " LEFT JOIN t2_1_div3 ON t2_1_div3.id_t2_1_div3 = t2_1_local.id_t2_1_div3 ";
 
           if (filters != null && filters.Any())
           {
               var keys = new List<string>(filters.Keys);
-              var whereClauses = "";
+              var whereClauses = "t2_company_branch.is_delete=0 ";
               for (int i = 0; i < keys.Count; i++)
               {
                   string key = keys[i];
                   string value = filters[key];
-                  if (i == 0)
-                  {
-                      whereClauses = " t2_company_branch." + key + "='" + value + "'";
-                  }
-                  else
-                  {
+                  
                       whereClauses += " AND t2_company_branch." + key + "='" + value + "'";
-                  }
+                  
               }
               query += " WHERE " + whereClauses + ";"; 
           }

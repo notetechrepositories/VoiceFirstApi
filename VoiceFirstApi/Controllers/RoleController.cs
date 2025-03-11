@@ -97,11 +97,11 @@ namespace VoiceFirstApi.Controllers
             }
         }
         [HttpGet("get-permission-by-role-id")]
-        public async Task<IActionResult> GetBtRoleIdAsync(string id)
+        public async Task<IActionResult> GetByRoleIdAsync(string id)
         {
             try
             {
-                var (data, message, status_code) = await _RoleService.GetBtRoleIdAsync(id);
+                var (data, message, status_code) = await _RoleService.GetByRoleIdAsync(id);
                 return Ok(new { data = data, message = message, status = status_code });
             }
             catch (Exception ex)
@@ -116,12 +116,12 @@ namespace VoiceFirstApi.Controllers
             }
         }
 
-        [HttpPost("get-all")]
-        public async Task<IActionResult> GetAllAsync([FromBody] FilterDtoModel filters)
+        [HttpGet("get-all")]
+        public async Task<IActionResult> GetAllAsync()
         {
             try
             {
-                var (data, message, status_code) = await _RoleService.GetAllAsync(filters.filters);
+                var (data, message, status_code) = await _RoleService.GetAllAsync();
                 return Ok(new { data = data, message = message, status = status_code });
             }
             catch (Exception ex)

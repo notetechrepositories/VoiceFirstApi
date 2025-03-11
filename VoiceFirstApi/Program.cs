@@ -7,10 +7,13 @@ using VoiceFirstApi.IRepository;
 using VoiceFirstApi.Repository;
 using VoiceFirstApi.IService;
 using VoiceFirstApi.Service;
+using Microsoft.AspNetCore.Http.Features;
 var builder = WebApplication.CreateBuilder(args);
-
+if (string.IsNullOrEmpty(builder.Environment.WebRootPath))
+{
+    builder.Environment.WebRootPath = Path.Combine(builder.Environment.ContentRootPath, "wwwroot");
+}
 // Add services to the container.
-
 builder.Services.AddControllers();
 builder.Services.AddSingleton<DapperContext>();
 builder.Services.AddScoped<IDivisionOneService, DivisionOneService>();
@@ -44,6 +47,8 @@ builder.Services.AddScoped<IDivisionThreeService, DivisionThreeService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ICommonService, CommonService>();
 builder.Services.AddScoped<IProgramRepo, ProgramRepo>();
+builder.Services.AddScoped<IIssueService, IssueService>();
+builder.Services.AddScoped<IIssueRepo, IssueRepo>();
 
 builder.Services.AddScoped<ICountryService, CountryService>();
 builder.Services.AddScoped<ICountryRepo, CountryRepo>();
@@ -69,7 +74,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
     };
 });
-
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Voice First Api", Version = "v1" });
@@ -94,8 +98,25 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 500_000_000;
+});
 var app = builder.Build();
+
+app.Use(async (context, next) =>
+{
+    var maxRequestSizeFeature = context.Features.Get<IHttpMaxRequestBodySizeFeature>();
+    if (maxRequestSizeFeature != null)
+    {
+        maxRequestSizeFeature.MaxRequestBodySize = 500_000_000; // 200MB
+    }
+    await next();
+});
+
+
 app.UseMiddleware<BasicAuthMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -105,7 +126,6 @@ if (app.Environment.IsDevelopment())
         c.RoutePrefix = "swagger";
     });
 }
-
 app.UseCors("CORSPolicy");
 app.UseHttpsRedirection();
 
@@ -114,5 +134,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.UseStaticFiles();
 
 app.Run();

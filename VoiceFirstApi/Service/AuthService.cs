@@ -54,7 +54,7 @@ namespace VoiceFirstApi.Service
         {
             var data = new Dictionary<string, object>();
             var userDetails = await _UserRepo.GetUserDetailsByEmailOrPhone(authDtoModel.username);
-            if(userDetails != null)
+            if(userDetails != null && userDetails.t5_password!=null && userDetails.t5_salt_key != null)
             {
                 bool status =  SecurityUtilities.VerifyPassword(authDtoModel.password, userDetails.t5_password, userDetails.t5_salt_key);
                 if (status) 
@@ -78,14 +78,34 @@ namespace VoiceFirstApi.Service
                             { "id_t5_1_m_user_roles", userDetails.id_t5_1_m_user_roles }
                     };
                     var roleDeatils = _RoleRepo.GetAllAsync(filter).Result.FirstOrDefault();
-                    if(roleDeatils.id_t4_1_selection_values == "6d5b7f76-bae0-44d6-ac6b-52a66ebe786b")
+
+                    if (roleDeatils.t5_1_m_type_id != "")
                     {
-                        data["role"] = "Notetech";
+                        if (roleDeatils.id_t4_1_selection_values == "6d5b7f76-bae0-44d6-ac6b-52a66ebe786b")
+                        {
+                            data["role"] = "Notetech";
+                        }
+                        else
+                        {
+                            data["role"] = "Company";
+                        }
                     }
                     else
                     {
-                        data["role"] = "Comapny";
+                        if(roleDeatils.id_t5_1_m_user_roles== "55b957be-efa6-4ca2-be49-9e574a29ab46")
+                        {
+                            data["role"] = "Notetech";
+                        }
+                        else if (roleDeatils.id_t5_1_m_user_roles == "da65e845-e201-4b24-8664-a78a82284212")
+                        {
+                            data["role"] = "Company";
+                        }
+                        else 
+                        {
+                            data["role"] = "User";
+                        }
                     }
+                   
                     data["token"] = token;
                     data["userDetails"] = users;
 
