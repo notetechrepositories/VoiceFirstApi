@@ -71,7 +71,7 @@ namespace VoiceFirstApi.Repository
 
         public async Task<UserDetailsModel> GetAllUserDetailsByUserId(string userId)
         {
-            var query = "select * from t5_users where userId = @userId";
+            var query = "select * from t5_users where id_t5_users = @userId";
 
 
             using (var connection = _dapperContext.CreateConnection())
