@@ -13,14 +13,20 @@ namespace VoiceFirstApi.Service
         private readonly IBranchRepo _BranchRepo;
         private readonly IHttpContextAccessor _HttpContextAccessor;
         private readonly IUserCompanyLinkRepo _userCompanyLinkRepo;
+        private readonly ISelectionValuesRepo _selectionValuesRepo;
 
         private readonly ILocalRepo _LocalRepo;
-        public BranchService(IBranchRepo BranchRepo, ILocalRepo localRepo, IHttpContextAccessor httpContextAccessor, IUserCompanyLinkRepo userCompanyLinkRepo)
+        public BranchService(IBranchRepo BranchRepo,
+            ILocalRepo localRepo,
+            IHttpContextAccessor httpContextAccessor,
+            IUserCompanyLinkRepo userCompanyLinkRepo,
+            ISelectionValuesRepo selectionValuesRepo)
         {
             _BranchRepo = BranchRepo;
             _LocalRepo = localRepo;
             _HttpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
             _userCompanyLinkRepo = userCompanyLinkRepo;
+            _selectionValuesRepo = selectionValuesRepo;
         }
 
         private string GetCurrentUserId()
@@ -84,7 +90,34 @@ namespace VoiceFirstApi.Service
             {
                 return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
             }
-            if (BranchDtoModel.id_t1_company == null)
+            var branch_type_id = "";
+            if (BranchDtoModel.branch_type == "")
+            {
+                branch_type_id = BranchDtoModel.t2_id_branch_type.Trim();
+            }
+            else
+            {
+                var branchTypeId = Guid.NewGuid().ToString();
+                var addBranchTypeParameters = new
+                {
+                    Id = branchTypeId.Trim(),
+                    SelectionId = "dbb3999e-36ba-4d63-827f-61e19cd698f9",
+                    Name = BranchDtoModel.branch_type.Trim(),
+                    InsertedBy = userId.Trim(),
+                    InsertedDate = DateTime.UtcNow
+                };
+
+                var branchTypeStatus = await _selectionValuesRepo.AddAsync(addBranchTypeParameters);
+                if (branchTypeStatus > 0)
+                {
+                    branch_type_id = addBranchTypeParameters.Id;
+                }
+                else
+                {
+                    return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+                }
+            }
+            if (BranchDtoModel.id_t1_company == null || BranchDtoModel.id_t1_company=="")
             {
                 var companyUserfilter = new Dictionary<string, string>
                 {
