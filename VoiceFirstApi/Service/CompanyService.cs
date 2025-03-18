@@ -14,11 +14,12 @@ namespace VoiceFirstApi.Service
         private readonly IBranchRepo _BranchRepo;
         private readonly IUserRepo _UserRepo;
         private readonly ILocalRepo _LocalRepo;
+        private readonly ISelectionValuesRepo _SelectionValuesRepo;
         private readonly IUserCompanyLinkRepo _UserCompanyLinkRepo;
         private readonly IHttpContextAccessor _HttpContextAccessor;
 
         public CompanyService(ICompanyRepo CompanyRepo, IBranchRepo BranchRepo, IUserRepo UserRepo,
-            ILocalRepo localRepo, IUserCompanyLinkRepo userCompanyLinkRepo, IHttpContextAccessor httpContextAccessor)
+            ILocalRepo localRepo, IUserCompanyLinkRepo userCompanyLinkRepo, IHttpContextAccessor httpContextAccessor, ISelectionValuesRepo selectionValuesRepo)
         {
             _CompanyRepo = CompanyRepo;
             _BranchRepo = BranchRepo;
@@ -26,6 +27,7 @@ namespace VoiceFirstApi.Service
             _LocalRepo = localRepo;
             _UserCompanyLinkRepo = userCompanyLinkRepo;
             _HttpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+            _SelectionValuesRepo = selectionValuesRepo;
         }
 
         private string GetCurrentUserId()
@@ -110,13 +112,40 @@ namespace VoiceFirstApi.Service
             {
                 return (data, StatusUtilities.ALREADY_EXIST, StatusUtilities.ALREADY_EXIST_CODE);
             }
+            var company_type_id = "";
+            if (Company.company_type == "")
+            {
+                company_type_id=Company.id_company_type.Trim();
+            }
+            else
+            {
+                var companyTypeId = Guid.NewGuid().ToString();
+                var addCompanyTypeParameters = new
+                {
+                    Id = companyTypeId.Trim(),
+                    SelectionId = "43E256AF-AC0F-4A89-AE2C-B0EAB8860C61",
+                    Name = Company.company_type.Trim(),
+                    InsertedBy = userId.Trim(),
+                    InsertedDate = DateTime.UtcNow
+                };
+            
+                var companyTypeStatus =await _SelectionValuesRepo.AddAsync(addCompanyTypeParameters);
+                if (companyTypeStatus > 0)
+                {
+                    company_type_id = addCompanyTypeParameters.Id;
+                }
+                else
+                {
+                    return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+                }
+            }
             var generatedId = Guid.NewGuid().ToString();
 
             var parameters = new
             {
                 Id = generatedId.Trim(),
                 Name = Company.t1_company_name.Trim(),
-                Type = Company.id_company_type.Trim(),
+                Type = company_type_id.Trim(),
                 Currency = "",
                 Date = "",
                 InsertedBy = userId.Trim(),
@@ -166,7 +195,7 @@ namespace VoiceFirstApi.Service
                     Id = generatedBranchId.Trim(),
                     CompanyId = parameters.Id.Trim(),
                     Name = Company.insertBranchDTOModel.t2_company_branch_name.Trim(),
-                    BranchType = Company.insertBranchDTOModel.t2_id_branch_type.Trim(),
+                    BranchType = "EE393854-A560-46EA-A05B-203573D14520",
                     Address1 = Company.insertBranchDTOModel.t2_address_1.Trim(),
                     Address2 = Company.insertBranchDTOModel.t2_address_2.Trim(),
                     ZipCode = Company.insertBranchDTOModel.t2_zip_code.Trim(),
@@ -236,7 +265,7 @@ namespace VoiceFirstApi.Service
                         //Password = SecurityUtilities.Encryption(password).Trim(),
                         Password = hashPassword,
                         SaltKey = salt.Trim(),
-                        RoleId = "da65e845-e201-4b24-8664-a78a82284212",
+                        RoleId = "3E1070BB-560C-4B2B-8D3C-5833A44759FB",
                         BirthDate = Company.userDtoModel.t5_birth_year.Trim(),
                         Sex = Company.userDtoModel.t5_sex.Trim(),
                         Local = parametersUserLocal.Id.Trim(),
@@ -269,8 +298,8 @@ namespace VoiceFirstApi.Service
                         {
                             Id = generateUserCompanyLinkId.Trim(),
                             UserId = parametersUser.Id,
-                            TypeId = parameters.Id,
-                            SelectionValueId = "35c0c4e0-1a33-4a7f-9705-636cd5f9403f",
+                            TypeId = "1D91E976-9171-4FC3-B80B-53CDDF5199D0",
+                            SelectionValueId = parameters.Id,
                             InsertedBy = userId.Trim(),
                             InsertedDate = DateTime.UtcNow
                         };

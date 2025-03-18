@@ -310,7 +310,30 @@ namespace VoiceFirstApi.Service
            return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
             
         }
+        public async Task<(Dictionary<string, object>, string, int)> GetCompanyType()
+        {
+            var userId = GetCurrentUserId();
+            var data = new Dictionary<string, object>();
 
+            var filter = new Dictionary<string, string>
+            {
+                    { "id_t4_selection","c2e63589-4324-417f-8f26-88c16f346e96"},
+                    { "inserted_by",userId},
+            };
+
+            var selectionvalue = await _SelectionValuesRepo.GetAllAsync(filter);
+            if (selectionvalue != null)
+            {
+                
+               
+                    data["Items"] = selectionvalue;
+                    return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+                
+
+            }
+            return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+
+        }
         public async Task<(Dictionary<string, object>, string, int)> UpdateStatus(UpdateStatusDtoModel updateStatusDtoModel)
         {
             var data = new Dictionary<string, object>();

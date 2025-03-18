@@ -79,37 +79,60 @@ namespace VoiceFirstApi.Service
                     };
                     var roleDeatils = _RoleRepo.GetAllAsync(filter).Result.FirstOrDefault();
 
-                    if (roleDeatils.t5_1_m_type_id != "")
+
+                    if (roleDeatils != null)
                     {
-                        if (roleDeatils.id_t4_1_selection_values == "6d5b7f76-bae0-44d6-ac6b-52a66ebe786b")
+                        if (roleDeatils.t5_1_m_type_id != "")
                         {
-                            data["role"] = "Notetech";
+                            if (roleDeatils.id_t4_1_selection_values == "87508D63-6105-4960-AA4A-946912B6AD9D")
+                            {
+                                data["role"] = "Notetech";
+                            }
+                            else if (roleDeatils.id_t4_1_selection_values == "87508D63-6105-4960-AA4A-946912B6AD9D")
+                            {
+                                data["role"] = "Company";
+                            }
+                            else if (roleDeatils.id_t4_1_selection_values == "75691995-E415-4D5C-8B69-9741F91FFA3B")
+                            {
+                                data["role"] = "Company";
+                            }
+                            else
+                            {
+                                return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+                            }
+
                         }
                         else
                         {
-                            data["role"] = "Company";
+                            if (roleDeatils.id_t5_1_m_user_roles == "FA0C1FC5-58EA-4EF0-A167-1F1282A7E9E6")
+                            {
+                                data["role"] = "Notetech";
+                            }
+                            else if (roleDeatils.id_t5_1_m_user_roles == "3E1070BB-560C-4B2B-8D3C-5833A44759FB")
+                            {
+                                data["role"] = "Company";
+                            }
+                            else if (roleDeatils.id_t5_1_m_user_roles == "FC970C84-E654-4C7F-9893-87D1D2EF03F5")
+                            {
+                                data["role"] = "User";
+                            }
+                            else
+                            {
+                                return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+                            }
                         }
+
+                        data["token"] = token;
+                        data["userDetails"] = users;
+
+                        return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+
                     }
                     else
                     {
-                        if(roleDeatils.id_t5_1_m_user_roles== "55b957be-efa6-4ca2-be49-9e574a29ab46")
-                        {
-                            data["role"] = "Notetech";
-                        }
-                        else if (roleDeatils.id_t5_1_m_user_roles == "da65e845-e201-4b24-8664-a78a82284212")
-                        {
-                            data["role"] = "Company";
-                        }
-                        else 
-                        {
-                            data["role"] = "User";
-                        }
+                        return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
                     }
                    
-                    data["token"] = token;
-                    data["userDetails"] = users;
-
-                    return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
                     
                 }
                 else

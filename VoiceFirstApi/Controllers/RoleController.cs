@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.NetworkInformation;
@@ -117,6 +118,7 @@ namespace VoiceFirstApi.Controllers
         }
 
         [HttpGet("get-all")]
+        [Authorize]
         public async Task<IActionResult> GetAllAsync()
         {
             try

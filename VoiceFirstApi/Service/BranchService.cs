@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Linq.Expressions;
+using System.Security.Claims;
 using VoiceFirstApi.DtoModels;
 using VoiceFirstApi.IRepository;
 using VoiceFirstApi.IService;
@@ -11,13 +12,15 @@ namespace VoiceFirstApi.Service
     {
         private readonly IBranchRepo _BranchRepo;
         private readonly IHttpContextAccessor _HttpContextAccessor;
+        private readonly IUserCompanyLinkRepo _userCompanyLinkRepo;
 
         private readonly ILocalRepo _LocalRepo;
-        public BranchService(IBranchRepo BranchRepo, ILocalRepo localRepo, IHttpContextAccessor httpContextAccessor)
+        public BranchService(IBranchRepo BranchRepo, ILocalRepo localRepo, IHttpContextAccessor httpContextAccessor, IUserCompanyLinkRepo userCompanyLinkRepo)
         {
             _BranchRepo = BranchRepo;
             _LocalRepo = localRepo;
             _HttpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+            _userCompanyLinkRepo = userCompanyLinkRepo;
         }
 
         private string GetCurrentUserId()
@@ -75,10 +78,53 @@ namespace VoiceFirstApi.Service
                 InsertedDate = DateTime.UtcNow
             };
 
+            
             var statusLocal = await _LocalRepo.AddAsync(parametersLocal);
             if (statusLocal == 0)
             {
                 return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+            }
+            if (BranchDtoModel.id_t1_company == null)
+            {
+                var companyUserfilter = new Dictionary<string, string>
+                {
+                        { "id_t5_users", userId },
+                        {"is_delete","0" }
+
+                };
+                var companyUserLink =await _userCompanyLinkRepo.GetAllAsync(companyUserfilter);
+
+                if (companyUserLink.Count() > 0)
+                {
+                    if (companyUserLink.FirstOrDefault().t5_1_m_type_id == "1D91E976-9171-4FC3-B80B-53CDDF5199D0")
+                    {
+                        BranchDtoModel.id_t1_company = companyUserLink.FirstOrDefault().id_t4_1_selection_values;
+                    }
+                    else if(companyUserLink.FirstOrDefault().t5_1_m_type_id == "75691995-E415-4D5C-8B69-9741F91FFA3B")
+                    {
+                        var branchfilter = new Dictionary<string, string>
+                        {
+                                    { "id_t2_company_branch", companyUserLink.FirstOrDefault().id_t4_1_selection_values },
+                                    {"is_delete","0" }
+
+                        };
+                        var branchDetails = await _BranchRepo.GetAllAsync(branchfilter);
+                        if(branchDetails.Count() > 0)
+                        {
+                            BranchDtoModel.id_t1_company = branchDetails.FirstOrDefault().id_t1_company;
+                        }
+                        else
+                        {
+                            await _LocalRepo.DeleteAsync(parametersLocal.Id);
+                            return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+                        }
+                    }
+                    else
+                    {
+                        await _LocalRepo.DeleteAsync(parametersLocal.Id);
+                        return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+                    }
+                }
             }
             var parameters = new
             {
@@ -106,7 +152,7 @@ namespace VoiceFirstApi.Service
             }
             else
             {
-                await _LocalRepo.DeleteAsync(parameters.Id);
+                await _LocalRepo.DeleteAsync(parametersLocal.Id);
                 return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
             }
         }
@@ -197,6 +243,60 @@ namespace VoiceFirstApi.Service
             var list = await _BranchRepo.GetAllAsync(filters);
             data["Items"] = list;
             return (data, StatusUtilities.SUCCESS,StatusUtilities.SUCCESS_CODE);
+        }
+        public async Task<(Dictionary<string, object>, string, int)> GetAllCompanyAsync()
+        {
+            var userId = GetCurrentUserId();
+            var data = new Dictionary<string, object>();
+            var companyUserfilter = new Dictionary<string, string>
+            {
+                        { "id_t5_users", userId },
+                        {"is_delete","0" }
+
+            };
+            var companyUserLink = await _userCompanyLinkRepo.GetAllAsync(companyUserfilter);
+            var companyId = "";
+            if (companyUserLink.Count() > 0)
+            {
+                if (companyUserLink.FirstOrDefault().t5_1_m_type_id == "1D91E976-9171-4FC3-B80B-53CDDF5199D0")
+                {
+                    companyId = companyUserLink.FirstOrDefault().id_t4_1_selection_values;
+                }
+                else if (companyUserLink.FirstOrDefault().t5_1_m_type_id == "75691995-E415-4D5C-8B69-9741F91FFA3B")
+                {
+                    var branchfilter = new Dictionary<string, string>
+                        {
+                                    { "id_t2_company_branch", companyUserLink.FirstOrDefault().id_t4_1_selection_values },
+                                    {"is_delete","0" }
+
+                        };
+                    var branchDetails = await _BranchRepo.GetAllAsync(branchfilter);
+                    if (branchDetails.Count() > 0)
+                    {
+                        companyId = branchDetails.FirstOrDefault().id_t1_company;
+                    }
+                    else
+                    {
+                       
+                        return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+                    }
+                }
+                else
+                {
+                   
+                    return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+                }
+            }
+  
+            Dictionary<string, string> filters = new Dictionary<string, string>
+            {
+                {"is_delete","0" },
+                {"id_t1_company",companyId },
+            };
+            
+            var list = await _BranchRepo.GetAllAsync(filters);
+            data["Items"] = list;
+            return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
         }
 
         public async Task<(Dictionary<string, object>, string,int)> GetByIdAsync(string id, Dictionary<string, string> filters)

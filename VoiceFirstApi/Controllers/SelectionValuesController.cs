@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.NetworkInformation;
@@ -79,6 +80,28 @@ namespace VoiceFirstApi.Controllers
                 });
             }
         }
+        [HttpGet("get-all-company-type")]
+        [Authorize]
+        public async Task<IActionResult> GetCompanyType()
+        {
+            try
+            {
+                
+                var (data, message, status_code) = await _SelectionValuesService.GetCompanyType();
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
+        }
+
         [HttpGet("get-all-role-type")]
         public async Task<IActionResult> GetRoleType()
         {

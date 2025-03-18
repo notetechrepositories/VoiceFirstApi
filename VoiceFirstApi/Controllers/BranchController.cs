@@ -60,12 +60,32 @@ namespace VoiceFirstApi.Controllers
             }
         }
 
+
         [HttpPost("get-all")]
         public async Task<IActionResult> GetAllAsync([FromBody] FilterDtoModel filters)
         {
             try
             {
                 var (data, message, status_code) = await _BranchService.GetAllAsync(filters.filters);
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
+        }
+        [HttpGet("get-all")]
+        public async Task<IActionResult> GetAllCompanyAsync()
+        {
+            try
+            {
+                var (data, message, status_code) = await _BranchService.GetAllCompanyAsync();
                 return Ok(new { data = data, message = message, status = status_code });
             }
             catch (Exception ex)

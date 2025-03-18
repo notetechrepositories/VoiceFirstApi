@@ -138,7 +138,8 @@ namespace VoiceFirstApi.Service
             var filter = new Dictionary<string, string>
             {
                     { "t5_1_m_user_roles_name",Role.t5_1_m_user_roles_name },
-                { "is_delete", "0" }
+                { "is_delete", "0" },
+                { "inserted_by", userId },
             };
             var RoleList = _RoleRepo.GetAllAsync(filter).Result.FirstOrDefault();
 
@@ -325,22 +326,37 @@ namespace VoiceFirstApi.Service
         public async Task<(Dictionary<string, object>, string,int)> GetAllAsync()
         {
             var UserId = GetCurrentUserId();
+            var data = new Dictionary<string, object>();
+            //var filter = new Dictionary<string, string>
+            //{
+            //    {"id_t5_users",UserId },
+            //    {"is_delete","0" }
+            //};
+
+            //var UserCompanyDetails = await _userCompanyLinkRepo.GetAllAsync(filter);
+            //if (UserCompanyDetails.Count() >0)
+            //{
+            //    var UserCompanyOrBranchId = UserCompanyDetails.FirstOrDefault().id_t4_1_selection_values;
+            //    var filters = new Dictionary<string, string>
+            //    {
+            //        {"id_t4_1_selection_values",UserCompanyOrBranchId }
+            //    };
+
+            //    var list = await _RoleRepo.GetAllAsync(filters);
+            //    data["Items"] = list;
+            //    return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+            //}
+            //return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
             var filter = new Dictionary<string, string>
             {
-                {"id_t5_users",UserId },
+                {"inserted_by",UserId },
                 {"is_delete","0" }
             };
-            
-            var UserCompanyDetails = await _userCompanyLinkRepo.GetAllAsync( filter);
-            var UserCompanyOrBranchId = UserCompanyDetails.FirstOrDefault().id_t4_1_selection_values;
-            var filters = new Dictionary<string, string>
-            {
-                {"id_t4_1_selection_values",UserCompanyOrBranchId }
-            };   
-            var data = new Dictionary<string, object>();
-            var list = await _RoleRepo.GetAllAsync(filters);
+
+            var list = await _RoleRepo.GetAllAsync(filter);
             data["Items"] = list;
             return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+            
         }
 
         public async Task<(Dictionary<string, object>, string,int)> GetByIdAsync(string id, Dictionary<string, string> filters)
