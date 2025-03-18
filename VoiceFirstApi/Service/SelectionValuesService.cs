@@ -322,16 +322,39 @@ namespace VoiceFirstApi.Service
             };
 
             var selectionvalue = await _SelectionValuesRepo.GetAllAsync(filter);
-            if (selectionvalue != null)
-            {
+   
                 
                
                     data["Items"] = selectionvalue;
                     return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
-                
 
-            }
-            return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+
+        }
+        public async Task<(Dictionary<string, object>, string, int)> GetBranchType()
+        {
+            var userId = GetCurrentUserId();
+            var data = new Dictionary<string, object>();
+            List<SelectionValuesModel> selectionValuesModels = new List<SelectionValuesModel>();
+            var filterByUser = new Dictionary<string, string>
+            {
+                    { "id_t4_selection","dbb3999e-36ba-4d63-827f-61e19cd698f9"},
+                    { "inserted_by",userId},
+            };
+
+            var selectionvalue = await _SelectionValuesRepo.GetAllAsync(filterByUser);
+            selectionValuesModels = selectionvalue.ToList();
+            var filter = new Dictionary<string, string>
+            {
+                    { "id_t4_selection","dbb3999e-36ba-4d63-827f-61e19cd698f9"},
+                    { "id_t4_1_selection_values","EE393854-A560-46EA-A05B-203573D14520"},
+            };
+
+            var allUserSelectionvalue = await _SelectionValuesRepo.GetAllAsync(filter);
+            selectionValuesModels.Add(allUserSelectionvalue.ToList().FirstOrDefault());
+            data["Items"] = selectionValuesModels;
+            return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+
+
 
         }
         public async Task<(Dictionary<string, object>, string, int)> UpdateStatus(UpdateStatusDtoModel updateStatusDtoModel)

@@ -82,7 +82,7 @@ namespace VoiceFirstApi.Service
 
                     if (roleDeatils != null)
                     {
-                        if (roleDeatils.t5_1_m_type_id != "")
+                        if (roleDeatils.t5_1_m_type_id != null && roleDeatils.t5_1_m_type_id != "")
                         {
                             if (roleDeatils.id_t4_1_selection_values == "87508D63-6105-4960-AA4A-946912B6AD9D")
                             {

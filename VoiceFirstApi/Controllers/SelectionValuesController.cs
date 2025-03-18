@@ -80,6 +80,27 @@ namespace VoiceFirstApi.Controllers
                 });
             }
         }
+        [HttpGet("get-all-branch-type")]
+        [Authorize]
+        public async Task<IActionResult> GetBranchType()
+        {
+            try
+            {
+
+                var (data, message, status_code) = await _SelectionValuesService.GetBranchType();
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
+        }
         [HttpGet("get-all-company-type")]
         [Authorize]
         public async Task<IActionResult> GetCompanyType()
@@ -121,6 +142,7 @@ namespace VoiceFirstApi.Controllers
                 });
             }
         }
+
         [HttpPost("get-by-id")]
         public async Task<IActionResult> GetByIdAsync([FromBody] FiltersAndIdDtoModel filters)
         {

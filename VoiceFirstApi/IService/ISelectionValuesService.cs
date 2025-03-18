@@ -12,6 +12,7 @@ namespace VoiceFirstApi.IService
         Task<(Dictionary<string, object>, string, int)> DeleteAsync(string id);
         Task<(Dictionary<string, object>, string, int)> GetRoleType();
         Task<(Dictionary<string, object>, string, int)> GetCompanyType();
+        Task<(Dictionary<string, object>, string, int)> GetBranchType();
         Task<(Dictionary<string, object>, string, int)> UpdateStatus(UpdateStatusDtoModel updateStatusDtoModel);
     }
 }
