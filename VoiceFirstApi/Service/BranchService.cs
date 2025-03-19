@@ -196,11 +196,9 @@ namespace VoiceFirstApi.Service
             var data = new Dictionary<string, object>();
 
 
-
             var parameters = new
             {
                 Id = Branch.id_t2_company_branch,
-                CompanyId = Branch.id_t1_company?.Trim(),
                 Name = Branch.t2_company_branch_name?.Trim(),
                 BranchType = Branch.t2_id_branch_type?.Trim(),
                 Address1 = Branch.t2_address_1?.Trim(),
@@ -235,14 +233,39 @@ namespace VoiceFirstApi.Service
                 {
                     return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
                 }
+                var branch_type_id = "";
+                if (Branch.branch_type == "")
+                {
+                    branch_type_id = Branch.t2_id_branch_type.Trim();
+                }
+                else
+                {
+                    var branchTypeId = Guid.NewGuid().ToString();
+                    var addBranchTypeParameters = new
+                    {
+                        Id = branchTypeId.Trim(),
+                        SelectionId = "dbb3999e-36ba-4d63-827f-61e19cd698f9",
+                        Name = Branch.branch_type.Trim(),
+                        InsertedBy = userId.Trim(),
+                        InsertedDate = DateTime.UtcNow
+                    };
 
+                    var branchTypeStatus = await _selectionValuesRepo.AddAsync(addBranchTypeParameters);
+                    if (branchTypeStatus > 0)
+                    {
+                        branch_type_id = addBranchTypeParameters.Id;
+                    }
+                    else
+                    {
+                        return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+                    }
+                }
                 // Since anonymous types are immutable, create a new object with updated Local value
                 parameters = new
                 {
                     parameters.Id,
-                    parameters.CompanyId,
                     parameters.Name,
-                    parameters.BranchType,
+                    BranchType= branch_type_id,
                     parameters.Address1,
                     parameters.Address2,
                     parameters.ZipCode,

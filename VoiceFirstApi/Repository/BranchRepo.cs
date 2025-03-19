@@ -112,7 +112,6 @@ namespace VoiceFirstApi.Repository
             var query = @"
                 UPDATE t2_company_branch
                 SET 
-                    id_t1_company = @CompanyId, 
                     t2_company_branch_name = @Name, 
                     t2_id_branch_type = @BranchType, 
                     t2_address_1 = @Address1, 
