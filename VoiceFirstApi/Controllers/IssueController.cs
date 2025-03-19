@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using VoiceFirstApi.DtoModels;
@@ -18,6 +19,7 @@ namespace VoiceFirstApi.Controllers
             _issueService = IssueService;
         }
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> AddAsync([FromForm] IssueDtoModel IssueDto)
         {
             try

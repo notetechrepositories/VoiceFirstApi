@@ -54,19 +54,19 @@ namespace VoiceFirstApi.Service
         public async Task<(Dictionary<string, object>, string, int)> AddAsync(IssueDtoModel issue)
         {
             var fileMappings = new Dictionary<string, IFormFile?>
-    {
-        { "IssueVoice", issue.t11_issue_voice },
-        { "Image1", issue.t11_issue_image1 },
-        { "Image2", issue.t11_issue_image2 },
-        { "Image3", issue.t11_issue_image3 },
-        { "Image4", issue.t11_issue_image4 },
-        { "Video1", issue.t11_issue_video1 },
-        { "Video2", issue.t11_issue_video2 },
-        { "Video3", issue.t11_issue_video3 },
-        { "Video4", issue.t11_issue_video4 },
-        { "EvidenceImage1", issue.t11_evidence_image1 },
-        { "EvidenceImage2", issue.t11_evidence_image2 }
-    };
+            {
+                { "IssueVoice", issue.t11_issue_voice },
+                { "Image1", issue.t11_issue_image1 },
+                { "Image2", issue.t11_issue_image2 },
+                { "Image3", issue.t11_issue_image3 },
+                { "Image4", issue.t11_issue_image4 },
+                { "Video1", issue.t11_issue_video1 },
+                { "Video2", issue.t11_issue_video2 },
+                { "Video3", issue.t11_issue_video3 },
+                { "Video4", issue.t11_issue_video4 },
+                { "EvidenceImage1", issue.t11_evidence_image1 },
+                { "EvidenceImage2", issue.t11_evidence_image2 }
+            };
 
             // Dictionary to store uploaded file names
             var uploadedFiles = new Dictionary<string, string>();

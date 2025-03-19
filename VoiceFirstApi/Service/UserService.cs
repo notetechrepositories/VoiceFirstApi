@@ -222,6 +222,20 @@ namespace VoiceFirstApi.Service
             return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
         }
 
+        public async Task<(Dictionary<string, object>, string, int)> GetAllEmployeeAsync()
+        {
+            var data = new Dictionary<string, object>();
+            var userId = GetCurrentUserId();
+
+            Dictionary<string, string> filters = new Dictionary<string, string>
+            {
+
+            };
+            var list = await _UserRepo.GetAllAsync(filters);
+            data["Items"] = list;
+            return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+        }
+
         public async Task<(Dictionary<string, object>, string, int)> GetByIdAsync(string id, Dictionary<string, string> filters)
         {
             var data = new Dictionary<string, object>();
