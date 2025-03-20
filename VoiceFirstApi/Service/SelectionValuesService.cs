@@ -318,7 +318,7 @@ namespace VoiceFirstApi.Service
             var filter = new Dictionary<string, string>
             {
                     { "id_t4_selection","43E256AF-AC0F-4A89-AE2C-B0EAB8860C61"},
-                    { "inserted_by",userId},
+                    
             };
 
             var selectionvalue = await _SelectionValuesRepo.GetAllAsync(filter);

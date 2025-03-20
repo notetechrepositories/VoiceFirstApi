@@ -15,6 +15,7 @@ namespace VoiceFirstApi.Service
         private readonly IUserCompanyLinkRepo _userCompanyLinkRepo;
         private readonly ISelectionValuesRepo _selectionValuesRepo;
         private readonly ICompanyRepo _companyRepo;
+        private readonly ISectionRepo _SectionRepo;
 
         private readonly ILocalRepo _LocalRepo;
         public BranchService(IBranchRepo BranchRepo,
@@ -22,7 +23,8 @@ namespace VoiceFirstApi.Service
             IHttpContextAccessor httpContextAccessor,
             IUserCompanyLinkRepo userCompanyLinkRepo,
             ISelectionValuesRepo selectionValuesRepo,
-            ICompanyRepo companyRepo)
+            ICompanyRepo companyRepo,
+            ISectionRepo sectionRepo)
         {
             _BranchRepo = BranchRepo;
             _LocalRepo = localRepo;
@@ -30,6 +32,7 @@ namespace VoiceFirstApi.Service
             _userCompanyLinkRepo = userCompanyLinkRepo;
             _selectionValuesRepo = selectionValuesRepo;
             _companyRepo = companyRepo;
+            _SectionRepo = sectionRepo;
         }
 
         private string GetCurrentUserId()
@@ -183,8 +186,30 @@ namespace VoiceFirstApi.Service
 
             if (status > 0)
             {
-                data["Items"] = parameters;
-                return (data, StatusUtilities.SUCCESS,StatusUtilities.SUCCESS_CODE);
+                var generatedSectionId = Guid.NewGuid().ToString();
+
+                var sectionParameters = new
+                {
+                    Id = generatedSectionId,
+                    SectionName = BranchDtoModel.t2_company_branch_name.Trim(),
+                    CompanyBranchId = BranchDtoModel.id_t1_company.Trim(),
+                    InsertedBy = userId,
+                    InsertedDate = DateTime.UtcNow
+                };
+
+                var branchSectionStatus = await _SectionRepo.AddAsync(sectionParameters);
+                if (branchSectionStatus > 0)
+                {
+                    data["Items"] = parameters;
+                    return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+                }
+                else
+                {
+                    await _BranchRepo.DeleteAsync(parameters.Id);
+                    await _LocalRepo.DeleteAsync(parametersLocal.Id);
+                    return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+                }
+                    
             }
             else
             {

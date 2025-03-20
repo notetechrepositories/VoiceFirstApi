@@ -59,7 +59,7 @@ namespace VoiceFirstApi.Service
         {
             var userId = "";
             var emailService = new CommunicationUtilities();
-            if (UserDtoModel.id_t5_1_m_user_roles!= "EF2DBD65-1B3D-4543-96B6-93FE0B0F9910")
+            if (UserDtoModel.id_t5_1_m_user_roles!= "FC970C84-E654-4C7F-9893-87D1D2EF03F5")
             {
                  userId = GetCurrentUserId();
             }

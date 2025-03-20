@@ -226,11 +226,11 @@ namespace VoiceFirstApi.Service
                         Id = generatedSectionId,
                         SectionName = parametersBranch.Name.Trim(),
                         CompanyBranchId = parametersBranch.Id.Trim(),
-                        UpdatedBy = userId,
-                        UpdatedDate = DateTime.UtcNow
+                        InsertedBy = userId,
+                        InsertedDate = DateTime.UtcNow
                     };
 
-                    var branchSectionStatus = await _SectionRepo.AddAsync(parameters);
+                    var branchSectionStatus = await _SectionRepo.AddAsync(sectionParameters);
                     if (branchSectionStatus > 0)
                     {
                         var generatedUserId = Guid.NewGuid().ToString();
