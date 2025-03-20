@@ -14,19 +14,22 @@ namespace VoiceFirstApi.Service
         private readonly IHttpContextAccessor _HttpContextAccessor;
         private readonly IUserCompanyLinkRepo _userCompanyLinkRepo;
         private readonly ISelectionValuesRepo _selectionValuesRepo;
+        private readonly ICompanyRepo _companyRepo;
 
         private readonly ILocalRepo _LocalRepo;
         public BranchService(IBranchRepo BranchRepo,
             ILocalRepo localRepo,
             IHttpContextAccessor httpContextAccessor,
             IUserCompanyLinkRepo userCompanyLinkRepo,
-            ISelectionValuesRepo selectionValuesRepo)
+            ISelectionValuesRepo selectionValuesRepo,
+            ICompanyRepo companyRepo)
         {
             _BranchRepo = BranchRepo;
             _LocalRepo = localRepo;
             _HttpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
             _userCompanyLinkRepo = userCompanyLinkRepo;
             _selectionValuesRepo = selectionValuesRepo;
+            _companyRepo = companyRepo;
         }
 
         private string GetCurrentUserId()
@@ -296,9 +299,44 @@ namespace VoiceFirstApi.Service
         public async Task<(Dictionary<string, object>, string,int)> GetAllAsync(Dictionary<string, string> filters)
         {
             var data = new Dictionary<string, object>();
+            List<BranchWithCompanyModel> branchDetails = new List<BranchWithCompanyModel>();
             var list = await _BranchRepo.GetAllAsync(filters);
-            data["Items"] = list;
-            return (data, StatusUtilities.SUCCESS,StatusUtilities.SUCCESS_CODE);
+
+            if (list.ToList().Count() > 0)
+            {
+                
+                foreach (var item in list)
+                {
+                    BranchWithCompanyModel branchWithCompany = new BranchWithCompanyModel();
+                    branchWithCompany.id_t2_company_branch = item.id_t2_company_branch;
+                    branchWithCompany.id_t1_company = item.id_t1_company;
+                    branchWithCompany.t2_company_branch_name = item.t2_company_branch_name;
+                    branchWithCompany.t2_id_branch_type = item.t2_id_branch_type;
+                    branchWithCompany.company_branch_type_name = item.company_branch_type_name;
+                    branchWithCompany.t2_address_1 = item.t2_address_1;
+                    branchWithCompany.t2_address_2 = item.t2_address_2;
+                    branchWithCompany.t2_zip_code = item.t2_zip_code;
+                    branchWithCompany.t2_mobile_no = item.t2_mobile_no;
+                    branchWithCompany.t2_phone_no = item.t2_phone_no;
+                    branchWithCompany.t2_email = item.t2_email;
+                    Dictionary<string, string> companyfilter = new Dictionary<string, string>
+                    {
+                        {"id_t1_company",item.id_t1_company }
+                    };
+                    var companyDetails = await _companyRepo.GetAllAsync(companyfilter);
+                    if (companyDetails.Count() > 0)
+                    {
+                        branchWithCompany.company_details = companyDetails.FirstOrDefault();
+                        branchDetails.Add(branchWithCompany);
+                    }
+                    
+                    
+                }
+               
+            }
+            data["Items"] = branchDetails;
+            return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+
         }
         public async Task<(Dictionary<string, object>, string, int)> GetAllCompanyAsync()
         {

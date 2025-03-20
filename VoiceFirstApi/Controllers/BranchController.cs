@@ -59,14 +59,38 @@ namespace VoiceFirstApi.Controllers
                 });
             }
         }
+        //[HttpPost("get-all")]
+        //public async Task<IActionResult> GetAllAsync([FromBody] FilterDtoModel filters)
+        //{
+        //    try
+        //    {
+              
+        //        var (data, message, status_code) = await _BranchService.GetAllAsync(filters.filters);
+        //        return Ok(new { data = data, message = message, status = status_code });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, new
+        //        {
+        //            data = (object)null,
+        //            message = "An error occurred while processing your request.",
+        //            status = 500,
+        //            error = ex.Message
+        //        });
+        //    }
+        //}
 
-
-        [HttpPost("get-all")]
-        public async Task<IActionResult> GetAllAsync([FromBody] FilterDtoModel filters)
+        [HttpGet("get-all-branch")]
+        public async Task<IActionResult> GetAllAsync()
         {
             try
             {
-                var (data, message, status_code) = await _BranchService.GetAllAsync(filters.filters);
+                Dictionary<string, string>? filters = new Dictionary<string, string>
+                {
+                    {"is_delete","0" },
+                    {"is_active","1" }
+                };
+                var (data, message, status_code) = await _BranchService.GetAllAsync(filters);
                 return Ok(new { data = data, message = message, status = status_code });
             }
             catch (Exception ex)

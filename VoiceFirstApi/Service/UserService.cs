@@ -14,12 +14,17 @@ namespace VoiceFirstApi.Service
         private readonly IUserRepo _UserRepo;
         private readonly ILocalRepo _LocalRepo;
         private readonly IHttpContextAccessor _HttpContextAccessor;
+        private readonly IRoleRepo _RoleRepo;
 
-        public UserService(IUserRepo UserRepo, ILocalRepo LocalRepo, IHttpContextAccessor httpContextAccessor)
+        public UserService(IUserRepo UserRepo,
+            ILocalRepo LocalRepo,
+            IHttpContextAccessor httpContextAccessor,
+            IRoleRepo roleRepo)
         {
             _UserRepo = UserRepo;
             _LocalRepo = LocalRepo;
             _HttpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+            _RoleRepo = roleRepo;
         }
 
         private string GetCurrentUserId()
@@ -226,10 +231,11 @@ namespace VoiceFirstApi.Service
         {
             var data = new Dictionary<string, object>();
             var userId = GetCurrentUserId();
-
+            
             Dictionary<string, string> filters = new Dictionary<string, string>
             {
-
+                {"inserted_by",userId },
+                {"is_delete","0" }
             };
             var list = await _UserRepo.GetAllAsync(filters);
             data["Items"] = list;

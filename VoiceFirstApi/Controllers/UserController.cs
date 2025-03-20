@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
@@ -89,6 +90,26 @@ namespace VoiceFirstApi.Controllers
             try
             {
                 var (data, message, status_code) = await _UserService.GetAllAsync(filters.filters);
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
+        }
+        [HttpGet("get-all-employee")]
+        [Authorize]
+        public async Task<IActionResult> GetAllEmployeeAsync()
+        {
+            try
+            {
+                var (data, message, status_code) = await _UserService.GetAllEmployeeAsync();
                 return Ok(new { data = data, message = message, status = status_code });
             }
             catch (Exception ex)

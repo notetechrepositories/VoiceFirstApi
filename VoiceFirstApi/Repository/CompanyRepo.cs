@@ -49,7 +49,7 @@ namespace VoiceFirstApi.Repository
         {
             var query = "select t1_company.id_t1_company,t1_company.t1_company_name,t1_company.is_active,t1_company.id_company_type,t1_company.is_active_till_date,t4_1_selection_values.t4_1_selection_values_name as company_type,currency.t4_1_selection_values_name as curreny_name,t1_company.id_currency from t1_company" +
                   " LEFT JOIN t4_1_selection_values as currency on currency.id_t4_1_selection_values=t1_company.id_currency" +
-                  " inner join t4_1_selection_values on t4_1_selection_values.id_t4_1_selection_values=t1_company.id_company_type ";
+                  " LEFT join t4_1_selection_values on t4_1_selection_values.id_t4_1_selection_values=t1_company.id_company_type ";
 
           if (filters != null && filters.Any())
           {

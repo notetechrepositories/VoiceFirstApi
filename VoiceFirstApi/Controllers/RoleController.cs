@@ -21,25 +21,25 @@ namespace VoiceFirstApi.Controllers
             _RoleService = RoleService;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> AddAsync([FromBody] RoleDtoModel RoleDto)
-        {
-            try
-            {
-                var (data, message, status_code) = await _RoleService.AddAsync(RoleDto);
-                return Ok(new { data = data, message = message, status = status_code });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new
-                {
-                    data = (object)null,
-                    message = "An error occurred while processing your request.",
-                    status = 500,
-                    error = ex.Message
-                });
-            }
-        }
+        //[HttpPost]
+        //public async Task<IActionResult> AddAsync([FromBody] RoleDtoModel RoleDto)
+        //{
+        //    try
+        //    {
+        //        var (data, message, status_code) = await _RoleService.AddAsync(RoleDto);
+        //        return Ok(new { data = data, message = message, status = status_code });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, new
+        //        {
+        //            data = (object)null,
+        //            message = "An error occurred while processing your request.",
+        //            status = 500,
+        //            error = ex.Message
+        //        });
+        //    }
+        //}
         [HttpPost("add-role-with-permission")]
         public async Task<IActionResult> AddRoleWithPermissionAsync([FromBody] InsertRoleWithPermissionDTOModel RoleDto)
         {
@@ -59,25 +59,25 @@ namespace VoiceFirstApi.Controllers
                 });
             }
         }
-        [HttpPut]
-        public async Task<IActionResult> UpdateAsync([FromBody] UpdateRoleDtoModel RoleDto)
-        {
-            try
-            {
-                var (data, message, status_code) = await _RoleService.UpdateAsync(RoleDto);
-                return Ok(new { data = data, message = message, status = status_code });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new
-                {
-                    data = (object)null,
-                    message = "An error occurred while processing your request.",
-                    status = 500,
-                    error = ex.Message
-                });
-            }
-        }
+        //[HttpPut]
+        //public async Task<IActionResult> UpdateAsync([FromBody] UpdateRoleDtoModel RoleDto)
+        //{
+        //    try
+        //    {
+        //        var (data, message, status_code) = await _RoleService.UpdateAsync(RoleDto);
+        //        return Ok(new { data = data, message = message, status = status_code });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, new
+        //        {
+        //            data = (object)null,
+        //            message = "An error occurred while processing your request.",
+        //            status = 500,
+        //            error = ex.Message
+        //        });
+        //    }
+        //}
         [HttpPut("update-role-with-permission")]
         public async Task<IActionResult> UpdateRoleWithPermissionAsync([FromBody] UpdateRoleWithPermissionDtoModel RoleDto)
         {
