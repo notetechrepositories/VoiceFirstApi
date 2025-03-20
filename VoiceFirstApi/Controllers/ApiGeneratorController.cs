@@ -446,7 +446,7 @@ namespace VoiceFirstApi.Controllers
             return Ok(new
             {
                 success = true,
-                message = $"Repository, Interface, Controller, Model, and DTO for {formattedName} created successfully inside their respective folders!"
+                message = $"Repository, ISubSectionRepo, Controller, Model, and DTO for {formattedName} created successfully inside their respective folders!"
             });
         }
     }

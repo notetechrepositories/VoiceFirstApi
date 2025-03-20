@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using Microsoft.VisualBasic;
+using System.Security.Claims;
 using VoiceFirstApi.DtoModels;
 using VoiceFirstApi.IRepository;
 using VoiceFirstApi.IService;
@@ -16,13 +17,21 @@ namespace VoiceFirstApi.Service
         private readonly ILocalRepo _LocalRepo;
         private readonly ISelectionValuesRepo _SelectionValuesRepo;
         private readonly IUserCompanyLinkRepo _UserCompanyLinkRepo;
+        private readonly ISectionRepo _SectionRepo;
         private readonly IHttpContextAccessor _HttpContextAccessor;
 
-        public CompanyService(ICompanyRepo CompanyRepo, IBranchRepo BranchRepo, IUserRepo UserRepo,
-            ILocalRepo localRepo, IUserCompanyLinkRepo userCompanyLinkRepo, IHttpContextAccessor httpContextAccessor, ISelectionValuesRepo selectionValuesRepo)
+        public CompanyService(ICompanyRepo CompanyRepo,
+            ISectionRepo SectionRepo, 
+            IBranchRepo BranchRepo, 
+            IUserRepo UserRepo,
+            ILocalRepo localRepo,
+            IUserCompanyLinkRepo userCompanyLinkRepo, 
+            IHttpContextAccessor httpContextAccessor,
+            ISelectionValuesRepo selectionValuesRepo)
         {
             _CompanyRepo = CompanyRepo;
             _BranchRepo = BranchRepo;
+            _SectionRepo = SectionRepo;
             _UserRepo = UserRepo;
             _LocalRepo = localRepo;
             _UserCompanyLinkRepo = userCompanyLinkRepo;
@@ -210,125 +219,142 @@ namespace VoiceFirstApi.Service
                 var branchStatus= await _BranchRepo.AddAsync(parametersBranch);
                 if (branchStatus > 0)
                 {
-                   
+                    var generatedSectionId = Guid.NewGuid().ToString();
 
-                    var generatedUserId = Guid.NewGuid().ToString();
-                    var filterUser = new Dictionary<string, string>
+                    var sectionParameters = new
                     {
-                            { "t5_email",Company.userDtoModel.t5_email },
-                            { "t5_mobile_no",Company.userDtoModel.t5_mobile_no },
-                            
-                    };
-                    var UserList = _UserRepo.GetAllAsync(filterUser).Result.FirstOrDefault();
-
-                    if (UserList != null)
-                    {
-                        await _CompanyRepo.DeleteAsync(parameters.Id);
-                        await _BranchRepo.DeleteAsync(parametersBranch.Id);
-                        return (data, StatusUtilities.EMAIL_OR_MOBILE_ALREADY_EXIST_IN_USER, StatusUtilities.ALREADY_EXIST_CODE);
-                    }
-                    var generatedUserLocalId = Guid.NewGuid().ToString();
-
-                    var parametersUserLocal = new
-                    {
-                        Id = generatedUserLocalId.Trim(),
-                        CountryId = Company.insertBranchDTOModel.id_t2_1_country.Trim(),
-                        Division1Id = Company.insertBranchDTOModel.id_t2_1_div1.Trim(),
-                        Division2Id = Company.insertBranchDTOModel.id_t2_1_div2.Trim(),
-                        Division3Id = Company.insertBranchDTOModel.id_t2_1_div3.Trim(),
-                        Name = Company.insertBranchDTOModel.t2_1_local_name.Trim(),
-                        InsertedBy = userId.Trim(),
-                        InsertedDate = DateTime.UtcNow
+                        Id = generatedSectionId,
+                        SectionName = parametersBranch.Name.Trim(),
+                        CompanyBranchId = parametersBranch.Id.Trim(),
+                        UpdatedBy = userId,
+                        UpdatedDate = DateTime.UtcNow
                     };
 
-                    var statusUserLocal = await _LocalRepo.AddAsync(parametersUserLocal);
-
-                    if (statusUserLocal == 0)
+                    var branchSectionStatus = await _SectionRepo.AddAsync(parameters);
+                    if (branchSectionStatus > 0)
                     {
-                        await _CompanyRepo.DeleteAsync(parameters.Id);
-                        await _BranchRepo.DeleteAsync(parametersBranch.Id);
-                        return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
-                    }
-                    var password = StringUtilities.GenerateRandomString(6);
-                    string salt = SecurityUtilities.GenerateSalt();
-                    string hashPassword = SecurityUtilities.HashPassword(password,salt);
-                    var parametersUser = new
-                    {
-                        Id = generatedUserId.Trim(),
-                        FirstName = Company.userDtoModel.t5_first_name.Trim(),
-                        LastName = Company.userDtoModel.t5_last_name.Trim(),
-                        Address1 = Company.userDtoModel.t5_address_1.Trim(),
-                        Address2 = Company.userDtoModel.t5_address_2.Trim(),
-                        ZipCode = Company.userDtoModel.t5_zip_code.Trim(),
-                        Mobile = Company.userDtoModel.t5_mobile_no.Trim(),
-                        Email = Company.userDtoModel.t5_email.Trim(),
-                        //Password = SecurityUtilities.Encryption(password).Trim(),
-                        Password = hashPassword,
-                        SaltKey = salt.Trim(),
-                        RoleId = "3E1070BB-560C-4B2B-8D3C-5833A44759FB",
-                        BirthDate = Company.userDtoModel.t5_birth_year.Trim(),
-                        Sex = Company.userDtoModel.t5_sex.Trim(),
-                        Local = parametersUserLocal.Id.Trim(),
-                        InsertedBy = userId.Trim(),
-                        InsertedDate = DateTime.UtcNow
-                    };
-
-                    var statusUser = await _UserRepo.AddAsync(parametersUser);
-
-                    if (statusUser > 0)
-                    {
-                        var UserLinkFilters = new Dictionary<string, string>
+                        var generatedUserId = Guid.NewGuid().ToString();
+                        var filterUser = new Dictionary<string, string>
                         {
-                            { "id_t5_users",parametersUser.Id },
-                            { "is_delete", "0" }
-                        };
-                        var UserCopmanyList = _UserCompanyLinkRepo.GetAllAsync(UserLinkFilters).Result.FirstOrDefault();
+                                { "t5_email",Company.userDtoModel.t5_email },
+                                { "t5_mobile_no",Company.userDtoModel.t5_mobile_no },
 
-                        if (UserCopmanyList != null)
+                        };
+                        var UserList = _UserRepo.GetAllAsync(filterUser).Result.FirstOrDefault();
+
+                        if (UserList != null)
                         {
                             await _CompanyRepo.DeleteAsync(parameters.Id);
                             await _BranchRepo.DeleteAsync(parametersBranch.Id);
-                            await _UserRepo.DeleteAsync(parametersUser.Id);
-                            return (data, StatusUtilities.ALREADY_EXIST, StatusUtilities.ALREADY_EXIST_CODE);
+                            return (data, StatusUtilities.EMAIL_OR_MOBILE_ALREADY_EXIST_IN_USER, StatusUtilities.ALREADY_EXIST_CODE);
                         }
-                        var generateUserCompanyLinkId = Guid.NewGuid().ToString();
+                        var generatedUserLocalId = Guid.NewGuid().ToString();
 
-
-                        var parametersOfUserCompanyLink = new
+                        var parametersUserLocal = new
                         {
-                            Id = generateUserCompanyLinkId.Trim(),
-                            UserId = parametersUser.Id,
-                            TypeId = "1D91E976-9171-4FC3-B80B-53CDDF5199D0",
-                            SelectionValueId = parameters.Id,
+                            Id = generatedUserLocalId.Trim(),
+                            CountryId = Company.insertBranchDTOModel.id_t2_1_country.Trim(),
+                            Division1Id = Company.insertBranchDTOModel.id_t2_1_div1.Trim(),
+                            Division2Id = Company.insertBranchDTOModel.id_t2_1_div2.Trim(),
+                            Division3Id = Company.insertBranchDTOModel.id_t2_1_div3.Trim(),
+                            Name = Company.insertBranchDTOModel.t2_1_local_name.Trim(),
                             InsertedBy = userId.Trim(),
                             InsertedDate = DateTime.UtcNow
                         };
 
-                        var UserLinkStatus = await _UserCompanyLinkRepo.AddAsync(parametersOfUserCompanyLink);
-                        if (UserLinkStatus > 0)
-                        {
-                           
+                        var statusUserLocal = await _LocalRepo.AddAsync(parametersUserLocal);
 
-                            EmailModel mail = new EmailModel();
-                            mail.from_email_password = "frsj ucpw vaww xzmv";
-                            mail.from_email = "anil.p@notetech.com";
-                            mail.to_email = Company.insertBranchDTOModel.t2_email;
-                            mail.email_html_body = "<html><body><p> Hi " + Company.insertBranchDTOModel.t2_company_branch_name + ",</p><p> Thank you for register your company  " +
-                                "<p><strong> Thanks & Regards,</strong><br><em> " +
-                                " Notetech Team </em></p><p><em> Powered by Notetech software </em></p></body></html>";
-                            mail.subject = "Company successfully register";
-                            emailService.SendMail(mail);
-                            return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+                        if (statusUserLocal == 0)
+                        {
+                            await _CompanyRepo.DeleteAsync(parameters.Id);
+                            await _BranchRepo.DeleteAsync(parametersBranch.Id);
+                            return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+                        }
+                        var password = StringUtilities.GenerateRandomString(6);
+                        string salt = SecurityUtilities.GenerateSalt();
+                        string hashPassword = SecurityUtilities.HashPassword(password, salt);
+                        var parametersUser = new
+                        {
+                            Id = generatedUserId.Trim(),
+                            FirstName = Company.userDtoModel.t5_first_name.Trim(),
+                            LastName = Company.userDtoModel.t5_last_name.Trim(),
+                            Address1 = Company.userDtoModel.t5_address_1.Trim(),
+                            Address2 = Company.userDtoModel.t5_address_2.Trim(),
+                            ZipCode = Company.userDtoModel.t5_zip_code.Trim(),
+                            Mobile = Company.userDtoModel.t5_mobile_no.Trim(),
+                            Email = Company.userDtoModel.t5_email.Trim(),
+                            //Password = SecurityUtilities.Encryption(password).Trim(),
+                            Password = hashPassword,
+                            SaltKey = salt.Trim(),
+                            RoleId = "3E1070BB-560C-4B2B-8D3C-5833A44759FB",
+                            BirthDate = Company.userDtoModel.t5_birth_year.Trim(),
+                            Sex = Company.userDtoModel.t5_sex.Trim(),
+                            Local = parametersUserLocal.Id.Trim(),
+                            InsertedBy = userId.Trim(),
+                            InsertedDate = DateTime.UtcNow
+                        };
+
+                        var statusUser = await _UserRepo.AddAsync(parametersUser);
+
+                        if (statusUser > 0)
+                        {
+                            var UserLinkFilters = new Dictionary<string, string>
+                            {
+                                { "id_t5_users",parametersUser.Id },
+                                { "is_delete", "0" }
+                            };
+                            var UserCopmanyList = _UserCompanyLinkRepo.GetAllAsync(UserLinkFilters).Result.FirstOrDefault();
+
+                            if (UserCopmanyList != null)
+                            {
+                                await _CompanyRepo.DeleteAsync(parameters.Id);
+                                await _BranchRepo.DeleteAsync(parametersBranch.Id);
+                                await _UserRepo.DeleteAsync(parametersUser.Id);
+                                return (data, StatusUtilities.ALREADY_EXIST, StatusUtilities.ALREADY_EXIST_CODE);
+                            }
+                            var generateUserCompanyLinkId = Guid.NewGuid().ToString();
+
+
+                            var parametersOfUserCompanyLink = new
+                            {
+                                Id = generateUserCompanyLinkId.Trim(),
+                                UserId = parametersUser.Id,
+                                TypeId = "1D91E976-9171-4FC3-B80B-53CDDF5199D0",
+                                SelectionValueId = parameters.Id,
+                                InsertedBy = userId.Trim(),
+                                InsertedDate = DateTime.UtcNow
+                            };
+
+                            var UserLinkStatus = await _UserCompanyLinkRepo.AddAsync(parametersOfUserCompanyLink);
+                            if (UserLinkStatus > 0)
+                            {
+
+
+                                EmailModel mail = new EmailModel();
+                                mail.from_email_password = "frsj ucpw vaww xzmv";
+                                mail.from_email = "anil.p@notetech.com";
+                                mail.to_email = Company.insertBranchDTOModel.t2_email;
+                                mail.email_html_body = "<html><body><p> Hi " + Company.insertBranchDTOModel.t2_company_branch_name + ",</p><p> Thank you for register your company  " +
+                                    "<p><strong> Thanks & Regards,</strong><br><em> " +
+                                    " Notetech Team </em></p><p><em> Powered by Notetech software </em></p></body></html>";
+                                mail.subject = "Company successfully register";
+                                emailService.SendMail(mail);
+                                return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+                            }
+                            else
+                            {
+                                await _CompanyRepo.DeleteAsync(parameters.Id);
+                                await _BranchRepo.DeleteAsync(parametersBranch.Id);
+                                await _UserRepo.DeleteAsync(parametersUser.Id);
+                            }
+
+
                         }
                         else
                         {
                             await _CompanyRepo.DeleteAsync(parameters.Id);
                             await _BranchRepo.DeleteAsync(parametersBranch.Id);
-                            await _UserRepo.DeleteAsync(parametersUser.Id);
                         }
-                        
-
-
                     }
                     else
                     {
@@ -392,8 +418,8 @@ namespace VoiceFirstApi.Service
         public async Task<(Dictionary<string, object>, string, int)> DeleteAsync(string id)
         {
             var data = new Dictionary<string, object>();
-            var list = await _CompanyRepo.DeleteAsync(id);
-            if (list > 0)
+            var status = await _CompanyRepo.DeleteAsync(id);
+            if (status > 0)
             {
                 return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
             }
@@ -406,8 +432,8 @@ namespace VoiceFirstApi.Service
         public async Task<(Dictionary<string, object>, string, int)> UpdateStatus(UpdateStatusDtoModel updateStatusDtoModel)
         {
             var data = new Dictionary<string, object>();
-            var list = await _BranchRepo.UpdateStatus(updateStatusDtoModel.id, updateStatusDtoModel.status);
-            if (list > 0)
+            var status = await _BranchRepo.UpdateStatus(updateStatusDtoModel.id, updateStatusDtoModel.status);
+            if (status > 0)
             {
                 return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
             }

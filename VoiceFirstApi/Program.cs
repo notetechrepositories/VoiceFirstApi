@@ -50,6 +50,12 @@ builder.Services.AddScoped<IProgramRepo, ProgramRepo>();
 builder.Services.AddScoped<IIssueService, IssueService>();
 builder.Services.AddScoped<IIssueRepo, IssueRepo>();
 
+
+
+builder.Services.AddScoped<ISectionRepo, SectionRepo>();
+builder.Services.AddScoped<ISectionService, SectionService>();
+builder.Services.AddScoped<ISubSectionRepo, SubSectionRepo>();
+builder.Services.AddScoped<ISubSectionService, SubSectionService>();
 builder.Services.AddScoped<ICountryService, CountryService>();
 builder.Services.AddScoped<ICountryRepo, CountryRepo>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
