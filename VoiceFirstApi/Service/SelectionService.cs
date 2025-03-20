@@ -10,12 +10,17 @@ namespace VoiceFirstApi.Service
     public class SelectionService : ISelectionService
     {
         private readonly ISelectionRepo _SelectionRepo;
+
         private readonly IHttpContextAccessor _HttpContextAccessor;
 
-        public SelectionService(ISelectionRepo SelectionRepo, IHttpContextAccessor httpContextAccessor)
+        public SelectionService(ISelectionRepo SelectionRepo,
+            IHttpContextAccessor httpContextAccessor
+
+            )
         {
             _SelectionRepo = SelectionRepo;
             _HttpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+        
         }
 
         private string GetCurrentUserId()
@@ -124,7 +129,7 @@ namespace VoiceFirstApi.Service
             data["Items"] = list;
             return (data, StatusUtilities.SUCCESS,StatusUtilities.SUCCESS_CODE);
         }
-
+        
         public async Task<(Dictionary<string, object>, string,int)> GetByIdAsync(string id, Dictionary<string, string> filters)
         {
             var data = new Dictionary<string, object>();

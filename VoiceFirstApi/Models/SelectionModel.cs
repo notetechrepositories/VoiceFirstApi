@@ -9,4 +9,6 @@
         public string updated_by { get; set; }
         public DateTime updated_date { get; set; }
     }
+   
+
 }

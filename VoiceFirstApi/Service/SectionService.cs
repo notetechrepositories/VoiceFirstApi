@@ -2,6 +2,7 @@
 using VoiceFirstApi.DtoModels;
 using VoiceFirstApi.IRepository;
 using VoiceFirstApi.IService;
+using VoiceFirstApi.Models;
 using VoiceFirstApi.Repository;
 using VoiceFirstApi.Utilities;
 
@@ -11,11 +12,18 @@ namespace VoiceFirstApi.Service
     {
         private readonly ISectionRepo _SectionRepo;
         private readonly IHttpContextAccessor _HttpContextAccessor;
-
-        public SectionService(ISectionRepo SectionRepo, IHttpContextAccessor httpContextAccessor)
+        private readonly ICompanyRepo _companyRepo;
+        private readonly IBranchRepo _BranchRepo;
+        public SectionService(ISectionRepo SectionRepo, 
+            IHttpContextAccessor httpContextAccessor,
+                        IBranchRepo BranchRepo,
+                   ICompanyRepo companyRepo
+            )
         {
             _SectionRepo = SectionRepo;
             _HttpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+            _BranchRepo = BranchRepo;
+            _companyRepo = companyRepo;
         }
 
         private string GetCurrentUserId()
@@ -105,7 +113,53 @@ namespace VoiceFirstApi.Service
             data["Items"] = list;
             return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
         }
+        public async Task<(Dictionary<string, object>, string, int)> GetAllSectionAsync(Dictionary<string, string> filters)
+        {
+            var data = new Dictionary<string, object>();
+            List<SectionModelWithBranch> sectionWithBranchList = new List<SectionModelWithBranch>();
+            var list = await _SectionRepo.GetAllAsync(filters);
 
+            if (list != null)
+            {
+                foreach (var item in list)
+                {
+                    SectionModelWithBranch sectionWithBranch = new SectionModelWithBranch();
+                    sectionWithBranch.id_t2_company_branch = item.id_t2_company_branch;
+                    sectionWithBranch.id_t3_branch_section = item.id_t3_branch_section;
+                    sectionWithBranch.t4_selection_name = item.t4_selection_name;
+
+                    Dictionary<string, string> branchfilter = new Dictionary<string, string>
+                    {
+                        {"id_t2_company_branch",item.id_t2_company_branch }
+                    };
+                    var branchDetails = await _BranchRepo.GetAllAsync(branchfilter);
+                    if (branchDetails.Count() > 0)
+                    {
+                        sectionWithBranch.branch_details = branchDetails.FirstOrDefault();
+                        Dictionary<string, string> companyfilter = new Dictionary<string, string>
+                        {
+                            {"id_t1_company",branchDetails.FirstOrDefault().id_t1_company }
+                        };
+                        var companyDetails = await _companyRepo.GetAllAsync(companyfilter);
+                        if (companyDetails.Count() > 0)
+                        {
+                            sectionWithBranch.company_details = companyDetails.FirstOrDefault();
+                            sectionWithBranchList.Add(sectionWithBranch);
+                        }
+
+                    }
+
+
+
+
+                }
+                data["Items"] = sectionWithBranchList;
+                return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+            }
+            data["Items"] = sectionWithBranchList;
+            return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+
+        }
         public async Task<(Dictionary<string, object>, string, int)> GetByIdAsync(string id, Dictionary<string, string> filters)
         {
             var data = new Dictionary<string, object>();

@@ -19,19 +19,21 @@ namespace VoiceFirstApi.Service
 
         private readonly ILocalRepo _LocalRepo;
         public BranchService(IBranchRepo BranchRepo,
+                   ICompanyRepo companyRepo,
             ILocalRepo localRepo,
             IHttpContextAccessor httpContextAccessor,
             IUserCompanyLinkRepo userCompanyLinkRepo,
             ISelectionValuesRepo selectionValuesRepo,
-            ICompanyRepo companyRepo,
+     
             ISectionRepo sectionRepo)
         {
             _BranchRepo = BranchRepo;
+            _companyRepo = companyRepo;
             _LocalRepo = localRepo;
             _HttpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
             _userCompanyLinkRepo = userCompanyLinkRepo;
             _selectionValuesRepo = selectionValuesRepo;
-            _companyRepo = companyRepo;
+
             _SectionRepo = sectionRepo;
         }
 
