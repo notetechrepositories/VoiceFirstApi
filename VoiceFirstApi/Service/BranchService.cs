@@ -319,6 +319,16 @@ namespace VoiceFirstApi.Service
                     branchWithCompany.t2_mobile_no = item.t2_mobile_no;
                     branchWithCompany.t2_phone_no = item.t2_phone_no;
                     branchWithCompany.t2_email = item.t2_email;
+                    branchWithCompany.id_t2_1_local = item.id_t2_1_local;
+                    branchWithCompany.id_t2_1_country = item.id_t2_1_country;
+                    branchWithCompany.id_t2_1_div1 = item.id_t2_1_div1;
+                    branchWithCompany.id_t2_1_div2 = item.id_t2_1_div2;
+                    branchWithCompany.id_t2_1_div3 = item.id_t2_1_div3;
+                    branchWithCompany.t2_1_local_name = item.t2_1_local_name;
+                    branchWithCompany.t2_1_country_name = item.t2_1_country_name;
+                    branchWithCompany.t2_1_div1_name = item.t2_1_div1_name;
+                    branchWithCompany.t2_1_div2_name = item.t2_1_div2_name;
+                    branchWithCompany.t2_1_div3_name = item.t2_1_div3_name;
                     Dictionary<string, string> companyfilter = new Dictionary<string, string>
                     {
                         {"id_t1_company",item.id_t1_company }
