@@ -201,5 +201,248 @@ namespace VoiceFirstApi.Controllers
                 });
             }
         }
+
+
+        //---------------------------------------------------------------- Sys selection values --------------------------------------------------------------------------------
+
+
+        [HttpPost("add-sys-selection-values")]
+        public async Task<IActionResult> AddSysAsync([FromBody] SysSelectionValuesDtoModel SelectionValuesDto)
+        {
+            try
+            {
+                var (data, message, status_code) = await _SelectionValuesService.AddSysAsync(SelectionValuesDto);
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
+        }
+
+        [HttpPut("update-sys-selection-values")]
+        public async Task<IActionResult> UpdateSysAsync([FromBody] UpdateSysSelectionValuesDtoModel SelectionValuesDto)
+        {
+            try
+            {
+                var (data, message, status_code) = await _SelectionValuesService.UpdateSysAsync(SelectionValuesDto);
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
+        }
+
+        [HttpPost("get-all-sys-selection-values")]
+        public async Task<IActionResult> GetAllSysAsync([FromBody] FilterDtoModel filters)
+        {
+            try
+            {
+                var (data, message, status_code) = await _SelectionValuesService.GetAllSysAsync(filters.filters);
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
+        }
+        [HttpPost("all-sys-selection-values-by-selection-id")]
+        public async Task<IActionResult> GetAllSysSelectionValueBySelectionId([FromBody] string selectionId)
+        {
+            try
+            {
+                var (data, message, status_code) = await _SelectionValuesService.GetAllSysValuesBySectionTypeAsync(selectionId);
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
+        }
+
+        [HttpDelete("sys-selection-values-delete")]
+        public async Task<IActionResult> DeleteSysAsync(string id)
+        {
+            try
+            {
+                var (data, message, status_code) = await _SelectionValuesService.DeleteSysAsync(id);
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
+        }
+        [HttpPut("update-sys-selection-values-status")]
+        public async Task<IActionResult> UpdateSysStatus(UpdateStatusDtoModel updateStatusDtoModel)
+        {
+            try
+            {
+                var (data, message, status_code) = await _SelectionValuesService.UpdateSysStatus(updateStatusDtoModel);
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
+        }
+
+        //------------------------------------------------------------------ user selection values ------------------------------------------------------------------------------
+
+
+        [HttpPost("add-user-selection-values")]
+        public async Task<IActionResult> AddUserAsync([FromBody] UserSelectionValuesDtoModel SelectionValuesDto)
+        {
+            try
+            {
+                var (data, message, status_code) = await _SelectionValuesService.AddUserAsync(SelectionValuesDto);
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
+        }
+
+        [HttpPut("update-user-selection-values")]
+        public async Task<IActionResult> UpdateUserAsync([FromBody] UpdateUserSelectionValuesDtoModel SelectionValuesDto)
+        {
+            try
+            {
+                var (data, message, status_code) = await _SelectionValuesService.UpdateUserAsync(SelectionValuesDto);
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
+        }
+
+        [HttpPost("get-all-user-selection-values")]
+        public async Task<IActionResult> GetAllUserAsync([FromBody] FilterDtoModel filters)
+        {
+            try
+            {
+                var (data, message, status_code) = await _SelectionValuesService.GetAllUserAsync(filters.filters);
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
+        }
+
+        [HttpPost("all-user-selection-values-by-selection-id")]
+        public async Task<IActionResult> GetAllSelectionValueBySelectionId([FromBody] string selectionId)
+        {
+            try
+            {
+                var (data, message, status_code) = await _SelectionValuesService.GetAllValuesBySectionTypeAsync(selectionId);
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
+        }
+        [HttpDelete("user-selection-values-delete")]
+        public async Task<IActionResult> DeleteUserAsync(string id)
+        {
+            try
+            {
+                var (data, message, status_code) = await _SelectionValuesService.DeleteUserAsync(id);
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
+        }
+        [HttpPut("update-user-selection-values-status")]
+        public async Task<IActionResult> UpdateUserStatus(UpdateStatusDtoModel updateStatusDtoModel)
+        {
+            try
+            {
+                var (data, message, status_code) = await _SelectionValuesService.UpdateUserStatus(updateStatusDtoModel);
+                return Ok(new { data = data, message = message, status = status_code });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    data = (object)null,
+                    message = "An error occurred while processing your request.",
+                    status = 500,
+                    error = ex.Message
+                });
+            }
+        }
     }
 }

@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using Newtonsoft.Json.Linq;
+using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Security.Claims;
 using VoiceFirstApi.DtoModels;
 using VoiceFirstApi.IRepository;
@@ -247,9 +249,9 @@ namespace VoiceFirstApi.Service
                             if (userCompanyLinkList.id_t4_1_selection_values == "35c0c4e0-1a33-4a7f-9705-636cd5f9403f" || value.id_t4_1_selection_values == "6d5b7f76-bae0-44d6-ac6b-52a66ebe786b")
                             {
                                 var ComapnyFilter = new Dictionary<string, string>
-                            {
-                                        { "id_t1_company",userCompanyLinkList.t5_1_m_type_id},
-                            };
+                                {
+                                            { "id_t1_company",userCompanyLinkList.t5_1_m_type_id},
+                                };
                                 var BranchDataList = _BranchRepo.GetAllAsync(ComapnyFilter).Result;
                                 if (BranchDataList != null)
                                 {
@@ -268,9 +270,9 @@ namespace VoiceFirstApi.Service
                             if (userCompanyLinkList.id_t4_1_selection_values == "5efb48b2-c6c5-40e7-bafd-94f59bc6cd3f")
                             {
                                 var BranchFilter = new Dictionary<string, string>
-                            {
-                                        { "id_t2_company_branch",userCompanyLinkList.t5_1_m_type_id},
-                            };
+                                {
+                                            { "id_t2_company_branch",userCompanyLinkList.t5_1_m_type_id},
+                                };
                                 var branchData = _BranchRepo.GetAllAsync(BranchFilter).Result.FirstOrDefault();
                                 if (branchData != null)
                                 {
@@ -361,6 +363,386 @@ namespace VoiceFirstApi.Service
         {
             var data = new Dictionary<string, object>();
             var list = await _SelectionValuesRepo.UpdateStatus(updateStatusDtoModel.id, updateStatusDtoModel.status);
+            if (list > 0)
+            {
+                return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+            }
+            else
+            {
+                return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+            }
+        }
+
+
+
+        //---------------------------------------------------------------------- sys selection values --------------------------------------------------------------------------
+
+
+        public async Task<(Dictionary<string, object>, string, int)> AddSysAsync(SysSelectionValuesDtoModel SelectionValuesDtoModel)
+        {
+            var userId = GetCurrentUserId();
+            var data = new Dictionary<string, object>();
+            var generatedId = Guid.NewGuid().ToString();
+            var filter = new Dictionary<string, string>
+            {
+                    { "t4_1_sys_selection_values_name",SelectionValuesDtoModel.t4_1_sys_selection_values_name },
+                    { "id_t4_selection",SelectionValuesDtoModel.id_t4_selection }
+            };
+            var selectionValueList = _SelectionValuesRepo.GetAllSysAsync(filter).Result.FirstOrDefault();
+
+            if (selectionValueList != null)
+            {
+                return (data, StatusUtilities.ALREADY_EXIST, StatusUtilities.ALREADY_EXIST_CODE);
+            }
+            var parameters = new
+            {
+                Id = generatedId.Trim(),
+                SelectionId = SelectionValuesDtoModel.id_t4_selection.Trim(),
+                Name = SelectionValuesDtoModel.t4_1_sys_selection_values_name.Trim(),
+                InsertedBy = userId.Trim(),
+                InsertedDate = DateTime.UtcNow
+            };
+
+            var status = await _SelectionValuesRepo.AddSysAsync(parameters);
+
+            if (status > 0)
+            {
+                data["Items"] = parameters;
+                return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+            }
+            else
+            {
+                return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+            }
+        }
+
+        public async Task<(Dictionary<string, object>, string, int)> UpdateSysAsync(UpdateSysSelectionValuesDtoModel SelectionValues)
+        {
+            var userId = GetCurrentUserId();
+            var data = new Dictionary<string, object>();
+            var filter = new Dictionary<string, string>
+            {
+                    { "t4_1_sys_selection_values_name",SelectionValues.t4_1_sys_selection_values_name },
+                    { "id_t4_selection",SelectionValues.id_t4_selection }
+            };
+            var selectionValueList = _SelectionValuesRepo.GetAllSysAsync(filter).Result.FirstOrDefault();
+
+            if (selectionValueList != null && selectionValueList.id_t4_sys_selection_values != SelectionValues.id_t4_sys_selection_values)
+            {
+                return (data, StatusUtilities.ALREADY_EXIST, StatusUtilities.ALREADY_EXIST_CODE);
+            }
+            var parameters = new
+            {
+                Id = SelectionValues.id_t4_sys_selection_values,
+                SelectionId = SelectionValues.id_t4_selection,
+                Name = SelectionValues.t4_1_sys_selection_values_name,
+                UpdatedBy = userId,
+                UpdatedDate = DateTime.UtcNow
+            };
+
+            var status = await _SelectionValuesRepo.UpdateSysAsync(parameters);
+
+            if (status > 0)
+            {
+                data["Items"] = parameters;
+                return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+            }
+            else
+            {
+                return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+            }
+        }
+
+        public async Task<(Dictionary<string, object>, string, int)> GetAllSysAsync(Dictionary<string, string> filters)
+        {
+            var data = new Dictionary<string, object>();
+            var list = await _SelectionValuesRepo.GetAllSysAsync(filters);
+            data["Items"] = list;
+            return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+        }
+
+        public async Task<(Dictionary<string, object>, string, int)> DeleteSysAsync(string id)
+        {
+            var data = new Dictionary<string, object>();
+            var list = await _SelectionValuesRepo.DeleteSysAsync(id);
+            if (list > 0)
+            {
+                return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+            }
+            else
+            {
+                return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+            }
+        }
+
+        public async Task<(Dictionary<string, object>, string, int)> GetAllSysValuesBySectionTypeAsync(string selectionId)
+        {
+            var userId = GetCurrentUserId();
+            var companyId = "";
+            var data = new Dictionary<string, object>();
+            
+            Dictionary<string, string> branchTypeFilter = new Dictionary<string, string>
+            {
+                 { "is_delete","0"},
+                 { "id_t4_selection",selectionId},
+            };
+            var list = await _SelectionValuesRepo.GetAllSysAsync(branchTypeFilter);
+            data["Items"] = list;
+            return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+        }
+        public async Task<(Dictionary<string, object>, string, int)> UpdateSysStatus(UpdateStatusDtoModel updateStatusDtoModel)
+        {
+            var data = new Dictionary<string, object>();
+            var list = await _SelectionValuesRepo.UpdateSysStatus(updateStatusDtoModel.id, updateStatusDtoModel.status);
+            if (list > 0)
+            {
+                return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+            }
+            else
+            {
+                return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+            }
+        }
+
+
+
+        //------------------------------------------------------------------------------ user selection values -----------------------------------------------------------------------
+
+
+        public async Task<(Dictionary<string, object>, string, int)> AddUserAsync(UserSelectionValuesDtoModel SelectionValuesDtoModel)
+        {
+            var userId = GetCurrentUserId();
+            var data = new Dictionary<string, object>();
+            var generatedId = Guid.NewGuid().ToString();
+
+            
+            var filters = new Dictionary<string, string>
+            {
+                        { "id_t5_users",userId},
+            };
+            var userCompanyLinkList = _UserCompanyLinkRepo.GetAllAsync(filters).Result.FirstOrDefault();
+            if (userCompanyLinkList != null)
+            {
+                var companyId = "";
+                if (userCompanyLinkList.id_t4_1_selection_values == "35c0c4e0-1a33-4a7f-9705-636cd5f9403f" )
+                {
+
+                    companyId = userCompanyLinkList.t5_1_m_type_id;
+                 
+                }
+                if (userCompanyLinkList.id_t4_1_selection_values == "5efb48b2-c6c5-40e7-bafd-94f59bc6cd3f")
+                {
+                    var BranchFilter = new Dictionary<string, string>
+                    {
+                                { "id_t2_company_branch",userCompanyLinkList.t5_1_m_type_id},
+                    };
+                    var branchData = _BranchRepo.GetAllAsync(BranchFilter).Result.FirstOrDefault();
+                    if (branchData != null)
+                    {
+                        companyId = branchData.id_t1_company;
+                    }
+                    else
+                    {
+                        return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+                    }
+
+                }
+                var filter = new Dictionary<string, string>
+                {
+                        { "t4_1_user_selection_values_name",SelectionValuesDtoModel.t4_1_user_selection_values_name },
+                        { "id_t1_company",companyId}
+                };
+                var selectionValueList = _SelectionValuesRepo.GetAllUserAsync(filter).Result.FirstOrDefault();
+
+                if (selectionValueList != null)
+                {
+                    return (data, StatusUtilities.ALREADY_EXIST, StatusUtilities.ALREADY_EXIST_CODE);
+                }
+                var parameters = new
+                {
+                    Id = generatedId.Trim(),
+                    SelectionId = SelectionValuesDtoModel.id_t4_selection.Trim(),
+                    Name = SelectionValuesDtoModel.t4_1_user_selection_values_name.Trim(),
+                    CompanyId = companyId.Trim(),
+                    SysSelectionId = SelectionValuesDtoModel.id_t4_sys_selection_values.Trim(),
+                    InsertedBy = userId.Trim(),
+                    InsertedDate = DateTime.UtcNow
+                };
+
+                var status = await _SelectionValuesRepo.AddUserAsync(parameters);
+
+                if (status > 0)
+                {
+                    data["Items"] = parameters;
+                    return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+                }
+                else
+                {
+                    return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+                }
+            }
+            else
+            {
+                return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+            }
+        }
+
+        public async Task<(Dictionary<string, object>, string, int)> UpdateUserAsync(UpdateUserSelectionValuesDtoModel SelectionValues)
+        {
+            var userId = GetCurrentUserId();
+            var data = new Dictionary<string, object>();
+            var companyId = "";
+            var filters = new Dictionary<string, string>
+            {
+                        { "id_t5_users",userId},
+            };
+            var userCompanyLinkList = _UserCompanyLinkRepo.GetAllAsync(filters).Result.FirstOrDefault();
+            if (userCompanyLinkList != null)
+            {
+                
+                if (userCompanyLinkList.id_t4_1_selection_values == "35c0c4e0-1a33-4a7f-9705-636cd5f9403f")
+                {
+
+                    companyId = userCompanyLinkList.t5_1_m_type_id;
+
+                }
+                if (userCompanyLinkList.id_t4_1_selection_values == "5efb48b2-c6c5-40e7-bafd-94f59bc6cd3f")
+                {
+                    var BranchFilter = new Dictionary<string, string>
+                    {
+                                { "id_t2_company_branch",userCompanyLinkList.t5_1_m_type_id},
+                    };
+                    var branchData = _BranchRepo.GetAllAsync(BranchFilter).Result.FirstOrDefault();
+                    if (branchData != null)
+                    {
+                        companyId = branchData.id_t1_company;
+                    }
+                    else
+                    {
+                        return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+                    }
+
+                }
+               
+            }
+            else
+            {
+                return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+            }
+            var filter = new Dictionary<string, string>
+            {
+                    { "t4_1_user_selection_values_name",SelectionValues.t4_1_user_selection_values_name },
+                    { "id_t1_company",companyId }
+            };
+            var selectionValueList = _SelectionValuesRepo.GetAllUserAsync(filter).Result.FirstOrDefault();
+
+            if (selectionValueList != null && selectionValueList.id_t4_user_selection_values != SelectionValues.id_t4_user_selection_values)
+            {
+                return (data, StatusUtilities.ALREADY_EXIST, StatusUtilities.ALREADY_EXIST_CODE);
+            }
+            var parameters = new
+            {
+                Id = SelectionValues.id_t4_sys_selection_values,
+                SelectionId = SelectionValues.id_t4_selection,
+                Name = SelectionValues.t4_1_user_selection_values_name,
+                CompanyId = companyId.Trim(),
+                SysSelectionId = SelectionValues.id_t4_sys_selection_values.Trim(),
+                UpdatedBy = userId,
+                UpdatedDate = DateTime.UtcNow
+            };
+
+            var status = await _SelectionValuesRepo.UpdateUserAsync(parameters);
+
+            if (status > 0)
+            {
+                data["Items"] = parameters;
+                return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+            }
+            else
+            {
+                return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+            }
+        }
+
+        public async Task<(Dictionary<string, object>, string, int)> GetAllUserAsync(Dictionary<string, string> filters)
+        {
+            var data = new Dictionary<string, object>();
+            var list = await _SelectionValuesRepo.GetAllUserAsync(filters);
+            data["Items"] = list;
+            return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+        }
+        public async Task<(Dictionary<string, object>, string, int)> GetAllValuesBySectionTypeAsync(string selectionId)
+        {
+            var userId = GetCurrentUserId();
+            var companyId = "";
+            var data = new Dictionary<string, object>();
+            var filters = new Dictionary<string, string>
+            {
+                        { "id_t5_users",userId},
+            };
+            var userCompanyLinkList = _UserCompanyLinkRepo.GetAllAsync(filters).Result.FirstOrDefault();
+            if (userCompanyLinkList != null)
+            {
+
+                if (userCompanyLinkList.t5_1_m_type_id == "1D91E976-9171-4FC3-B80B-53CDDF5199D0")
+                {
+
+                    companyId = userCompanyLinkList.id_t4_1_selection_values;
+
+                }
+                if (userCompanyLinkList.t5_1_m_type_id == "29D5D6D2-7E76-4948-A2D2-B32F13517A3F")
+                {
+                    var BranchFilter = new Dictionary<string, string>
+                    {
+                                { "id_t2_company_branch",userCompanyLinkList.id_t4_1_selection_values},
+                    };
+                    var branchData = _BranchRepo.GetAllAsync(BranchFilter).Result.FirstOrDefault();
+                    if (branchData != null)
+                    {
+                        companyId = branchData.id_t1_company;
+                    }
+                    else
+                    {
+                        return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+                    }
+
+                }
+
+            }
+            else
+            {
+                return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+            }
+            Dictionary<string, string> branchTypeFilter = new Dictionary<string, string>
+            {
+                 { "id_t1_company",companyId},
+                 { "is_delete","0"},
+                 { "id_t4_selection",selectionId},
+            };
+            var list = await _SelectionValuesRepo.GetAllUserAsync(branchTypeFilter);
+            data["Items"] = list;
+            return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+        }
+
+        public async Task<(Dictionary<string, object>, string, int)> DeleteUserAsync(string id)
+        {
+            var data = new Dictionary<string, object>();
+            var list = await _SelectionValuesRepo.DeleteSysAsync(id);
+            if (list > 0)
+            {
+                return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);
+            }
+            else
+            {
+                return (data, StatusUtilities.FAILED, StatusUtilities.FAILED_CODE);
+            }
+        }
+
+
+        public async Task<(Dictionary<string, object>, string, int)> UpdateUserStatus(UpdateStatusDtoModel updateStatusDtoModel)
+        {
+            var data = new Dictionary<string, object>();
+            var list = await _SelectionValuesRepo.UpdateUserStatus(updateStatusDtoModel.id, updateStatusDtoModel.status);
             if (list > 0)
             {
                 return (data, StatusUtilities.SUCCESS, StatusUtilities.SUCCESS_CODE);

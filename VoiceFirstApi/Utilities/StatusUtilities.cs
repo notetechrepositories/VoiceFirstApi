@@ -30,6 +30,7 @@
         public const string COMPANY_NOT_FOUND = "COMPANY NOT FOUND";
         public const string INVALID_REFERAL_CODE = "INVALID REFERAL CODE";
         public const string ALREADY_EXIST = "ALREADY EXIST";
+        public const string ALREADY_EXIST_SYS_TABLE = "ALREADY EXIST SYS_TABLE";
         public const string EMAIL_ALREADY_EXIST_IN_BRANCH = "Email already exist in branch";
         public const string EMAIL_ALREADY_EXIST = "Email already exist";
         public const string EMAIL_OR_MOBILE_ALREADY_EXIST = "Email or mobile number already exist";
